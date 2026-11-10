@@ -155,10 +155,6 @@
     color: var(--barely-color-text);
   }
 
-  :where(a) {
-    color: var(--barely-color-primary);
-  }
-
   :where(:focus-visible) {
     outline: var(--barely-focus-ring-width) solid var(--barely-color-primary);
     outline-offset: var(--barely-focus-ring-offset);
@@ -168,5 +164,94 @@
     :where(:focus-visible) {
       outline-color: Highlight;
     }
+  }
+}
+
+/* ==== typography.css ==== */
+@layer base {
+  :where(h1, h2, h3, h4, h5, h6) {
+    margin-block: calc(var(--barely-spacing) * 2) var(--barely-spacing);
+    font-weight: var(--barely-font-weight-heading);
+    line-height: var(--barely-line-height-heading);
+    text-wrap: balance;
+  }
+
+  :where(h1) { font-size: var(--barely-font-size-h1); }
+  :where(h2) { font-size: var(--barely-font-size-h2); }
+  :where(h3) { font-size: var(--barely-font-size-h3); }
+  :where(h4) { font-size: var(--barely-font-size-h4); }
+  :where(h5) { font-size: var(--barely-font-size-h5); }
+  :where(h6) { font-size: var(--barely-font-size-h6); }
+
+  :where(h1, h2, h3, h4, h5, h6):first-child {
+    margin-block-start: 0;
+  }
+
+  :where(p, ul, ol, dl, blockquote, figure, pre, table, hr, details, form, fieldset) {
+    margin-block: 0 var(--barely-spacing);
+  }
+
+  /* Nested lists sit tight inside their parent item. */
+  :where(li) > :where(ul, ol, dl) {
+    margin-block-end: 0;
+  }
+
+  :where(p) {
+    text-wrap: pretty;
+  }
+
+  :where(a) {
+    color: var(--barely-color-primary);
+    text-decoration: underline;
+    text-decoration-thickness: 0.08em;
+    text-underline-offset: 0.18em;
+  }
+
+  :where(a:hover) {
+    color: var(--barely-color-primary-hover, light-dark(oklch(from var(--barely-color-primary) calc(l - 0.07) c h), oklch(from var(--barely-color-primary) calc(l + 0.07) c h)));
+  }
+
+  :where(blockquote) {
+    margin-inline: 0;
+    padding-inline-start: var(--barely-spacing);
+    border-inline-start: 0.25rem solid var(--barely-color-border);
+    color: var(--barely-color-text-muted);
+  }
+
+  :where(hr) {
+    border: 0;
+    border-block-start: var(--barely-border-width) solid var(--barely-color-border);
+    margin-block: calc(var(--barely-spacing) * 2);
+  }
+
+  :where(mark) {
+    background-color: var(--barely-color-mark);
+    color: var(--barely-color-text);
+    padding-inline: 0.15em;
+    border-radius: 0.125rem;
+  }
+
+  :where(abbr[title]) {
+    text-decoration: underline dotted;
+    cursor: help;
+  }
+
+  :where(small) {
+    font-size: 0.875em;
+  }
+
+  :where(sub, sup) {
+    line-height: 0;
+  }
+
+  :where(sub) { vertical-align: sub; }
+  :where(sup) { vertical-align: super; }
+
+  :where(strong, b, dt) {
+    font-weight: bolder;
+  }
+
+  :where(dd) {
+    margin-inline-start: 1.5rem;
   }
 }

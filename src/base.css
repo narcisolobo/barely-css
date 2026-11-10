@@ -13,10 +13,6 @@
     color: var(--barely-color-text);
   }
 
-  :where(a) {
-    color: var(--barely-color-primary);
-  }
-
   :where(:focus-visible) {
     outline: var(--barely-focus-ring-width) solid var(--barely-color-primary);
     outline-offset: var(--barely-focus-ring-offset);

@@ -22,7 +22,41 @@
   </header>
   <main>
     <h1>barely-css demo</h1>
-    <section id="typography"><h2>Typography</h2><p>Headings, paragraphs, and inline text will appear here.</p></section>
+    <section id="typography">
+      <h2>Typography</h2>
+      <p>Good type does most of the work in a page. Read the <a href="https://developer.mozilla.org/en-US/docs/Web/HTML">HTML reference</a> for the full element list, or keep going to see how <strong>strong</strong>, <em>emphasized</em>, and <mark>highlighted</mark> text sit on one line. Water is H<sub>2</sub>O, and the area of a square is side<sup>2</sup>. The <abbr title="World Wide Web Consortium">W3C</abbr> maintains the standards. <small>Small print stays readable.</small> The price was <del>$40</del> <ins>$32</ins> this week.</p>
+      <h3>Third-level heading</h3>
+      <p>A second paragraph follows a heading, so you can judge the space above and below it. Lines are kept near 1.6 times the font size so long passages stay easy to follow.</p>
+      <h4>Fourth-level heading</h4>
+      <h5>Fifth-level heading</h5>
+      <h6>Sixth-level heading</h6>
+      <ul>
+        <li>Semantic elements
+          <ul>
+            <li>Headings and paragraphs</li>
+            <li>Lists
+              <ol>
+                <li>Ordered inside unordered</li>
+                <li>Still readable</li>
+              </ol>
+            </li>
+          </ul>
+        </li>
+        <li>Tokens you can override</li>
+      </ul>
+      <dl>
+        <dt>Cascade layer</dt>
+        <dd>A named group of rules whose order decides which one wins.</dd>
+        <dt>Design token</dt>
+        <dd>A custom property that holds one design decision, such as a color.</dd>
+      </dl>
+      <blockquote>
+        <p>Simplicity is prerequisite for reliability.</p>
+        <footer><cite>Edsger W. Dijkstra</cite></footer>
+      </blockquote>
+      <hr>
+      <p>Text after a rule resumes with the same rhythm.</p>
+    </section>
     <section id="lists"><h2>Lists</h2><p>Ordered, unordered, and description lists will appear here.</p></section>
     <section id="tables"><h2>Tables</h2><p>Tables will appear here.</p></section>
     <section id="code"><h2>Code</h2><p>Code blocks and keyboard input will appear here.</p></section>

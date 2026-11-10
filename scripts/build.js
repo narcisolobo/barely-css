@@ -9,6 +9,7 @@ export const SOURCES = [
   'src/reset.css',
   'src/tokens.css',
   'src/base.css',
+  'src/typography.css',
 ];
 
 const GROUPING_AT_RULES = /^@(layer|media|supports|container|scope|starting-style)\b/;
@@ -51,6 +52,16 @@ function stripAndCollapse(css) {
   return out.trim();
 }
 
+/** True when the text ends inside an unclosed var( ... ) call. */
+function openVar(text) {
+  const stack = [];
+  for (let k = 0; k < text.length; k++) {
+    if (text[k] === '(') stack.push(text.slice(Math.max(0, k - 3), k) === 'var');
+    else if (text[k] === ')') stack.pop();
+  }
+  return stack.includes(true);
+}
+
 export function minify(css, banner) {
   const src = stripAndCollapse(css);
   const stack = []; // true = declaration block
@@ -71,12 +82,15 @@ export function minify(css, banner) {
       const inDecl = stack[stack.length - 1] === true;
       // A custom property value is serialized verbatim by the CSSOM, so its commas keep their spaces.
       const inCustomProp = inDecl && out.slice(preludeStart).trimStart().startsWith('--');
+      // A var() fallback is also serialized verbatim, so spaces inside an open var( stay too.
+      const decl = out.slice(preludeStart);
+      const inVarFallback = inDecl && openVar(decl);
       const drop =
         prev === undefined ||
         '{};'.includes(prev) ||
-        (prev === ',' && !inCustomProp) ||
+        (prev === ',' && !inCustomProp && !inVarFallback) ||
         (next !== undefined && '{};'.includes(next)) ||
-        (next === ',' && !inCustomProp) ||
+        (next === ',' && !inCustomProp && !inVarFallback) ||
         (prev === ':' && inDecl);
       if (!drop) out += ' ';
       i++;
