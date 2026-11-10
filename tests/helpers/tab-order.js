@@ -9,7 +9,8 @@ export async function tagElements(page) {
 
 /**
  * Ids (as strings, source order) of the elements Tab should reach.
- * required: always a stop. optional: engines differ (media controls, scroll containers).
+ * required: always a stop (an unchecked radio group is one slot, keyed by its first member;
+ * `alternates[firstId]` lists every member, since engines enter such a group at different members). optional: engines differ (media controls, scroll containers).
  */
 export async function expectedStops(page) {
   return page.evaluate(() => {
@@ -32,13 +33,17 @@ export async function expectedStops(page) {
       return false;
     };
 
-    const candidates = [...document.querySelectorAll(FOCUSABLE)].filter((el) => !blocked(el) && rendered(el));
+    // el.tabIndex < 0 covers tabindex="-1" on natively focusable elements and tabindex="-2" and below.
+    const candidates = [...document.querySelectorAll(FOCUSABLE)].filter(
+      (el) => el.tabIndex >= 0 && !blocked(el) && rendered(el),
+    );
 
-    // Radio groups count once: the checked radio, or the first when none is checked.
+    // Radio groups count once: the checked radio; with none checked, one slot (keyed by the first member)
+    // that any member may fill: Chromium enters at the last on Shift+Tab, Firefox at the first. Radios with no name (or name="") are ungrouped: each is its own stop.
     const groups = new Map();
     const stops = [];
     for (const el of candidates) {
-      if (el.matches('input[type=radio][name]')) {
+      if (el.matches('input[type=radio]') && el.name !== '') {
         const key = `${el.form ? [...document.forms].indexOf(el.form) : 'none'}|${el.name}`;
         const members = groups.get(key) ?? [];
         members.push(el);
@@ -47,12 +52,11 @@ export async function expectedStops(page) {
       }
       stops.push(el);
     }
+    const alternates = {};
     for (const members of groups.values()) {
-      stops.push(members.find((r) => r.checked) ?? members[0]);
-    }
-    // Radios without a name are each their own stop.
-    for (const el of candidates) {
-      if (el.matches('input[type=radio]:not([name])')) stops.push(el);
+      const checked = members.find((r) => r.checked);
+      stops.push(checked ?? members[0]);
+      if (!checked && members.length > 1) alternates[id(members[0])] = members.map(id);
     }
 
     const optional = [];
@@ -71,7 +75,7 @@ export async function expectedStops(page) {
     }
 
     const order = (list) => list.map(id).sort((a, b) => Number(a) - Number(b));
-    return { required: order(stops), optional: order(optional) };
+    return { required: order(stops), optional: order(optional), alternates };
   });
 }
 
@@ -112,5 +116,10 @@ export async function walkTabStops(page, key, { max = 400 } = {}) {
 /** Drops optional ids from `actual`, then compares with the required ids. */
 export function assertOrder(actual, expected) {
   const optional = new Set(expected.optional);
-  expect([...actual].filter((id) => !optional.has(id))).toEqual(expected.required);
+  const slotOf = new Map();
+  for (const [slot, members] of Object.entries(expected.alternates ?? {})) {
+    for (const member of members) slotOf.set(member, slot);
+  }
+  const normalized = [...actual].filter((id) => !optional.has(id)).map((id) => slotOf.get(id) ?? id);
+  expect(normalized).toEqual(expected.required);
 }

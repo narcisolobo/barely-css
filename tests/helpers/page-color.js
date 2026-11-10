@@ -18,9 +18,12 @@ export async function paintedRgba(locator, property, pseudo) {
   );
 }
 
-/** Composites background colors up the ancestor chain onto the root background (white if none). */
-export async function effectiveBackground(locator) {
-  return locator.evaluate((el) => {
+/**
+ * Composites background colors up the ancestor chain onto the root background (white if none).
+ * With `fromParent`, the element's own background is left out (it is not behind its outline).
+ */
+export async function effectiveBackground(locator, { fromParent = false } = {}) {
+  return locator.evaluate((el, skipSelf) => {
     const paint = (css) => {
       const ctx = document.createElement('canvas').getContext('2d', { willReadFrequently: true });
       ctx.clearRect(0, 0, 1, 1);
@@ -29,7 +32,7 @@ export async function effectiveBackground(locator) {
       return [...ctx.getImageData(0, 0, 1, 1).data];
     };
     const layers = [];
-    for (let node = el; node; node = node.parentElement) {
+    for (let node = skipSelf ? el.parentElement : el; node; node = node.parentElement) {
       const [r, g, b, a] = paint(getComputedStyle(node).backgroundColor);
       if (a > 0) layers.push([r, g, b, a / 255]);
       if (a === 255) break;
@@ -40,7 +43,7 @@ export async function effectiveBackground(locator) {
       out = [r, g, b].map((v, i) => Math.round(v * a + out[i] * (1 - a)));
     }
     return out;
-  });
+  }, fromParent);
 }
 
 /** Describes the focus ring of document.activeElement; null when nothing is focused. */
@@ -63,12 +66,15 @@ export async function focusRingReport(page) {
       center: [Math.round(cx), Math.round(cy), innerWidth, innerHeight],
       style: s.outlineStyle,
       width: parseFloat(s.outlineWidth),
+      offset: parseFloat(s.outlineOffset),
       inViewport: cx >= 0 && cy >= 0 && cx <= innerWidth && cy <= innerHeight,
       covered: !(hit && (hit === el || el.contains(hit))),
     };
   });
   const [r, g, b] = await paintedRgbaOfHandle(element, 'outlineColor');
-  const bg = await effectiveBackgroundOfHandle(element);
+  // An outline with offset >= 0 paints outside the border box, over the parent's backdrop;
+  // a negative offset paints inside, over the element's own background.
+  const bg = await effectiveBackgroundOfHandle(element, { fromParent: base.offset >= 0 });
   return { ...base, contrast: contrast(srgb8ToLinear([r, g, b]), srgb8ToLinear(bg)) };
 }
 
@@ -76,4 +82,4 @@ export async function focusRingReport(page) {
 // so the locator helpers work on a handle through this thin adapter.
 const asLocator = (handle) => ({ evaluate: (fn, arg) => handle.evaluate(fn, arg) });
 const paintedRgbaOfHandle = (handle, property) => paintedRgba(asLocator(handle), property);
-const effectiveBackgroundOfHandle = (handle) => effectiveBackground(asLocator(handle));
+const effectiveBackgroundOfHandle = (handle, opts) => effectiveBackground(asLocator(handle), opts);

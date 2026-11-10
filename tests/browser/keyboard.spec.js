@@ -16,7 +16,7 @@ test('shift+tab visits the same stops in reverse', async ({ page, browserName })
   const key = `Shift+${tabKey(browserName)}`;
   const actual = await walkTabStops(page, key);
   const expected = await expectedStops(page);
-  assertOrder(actual, { required: [...expected.required].reverse(), optional: expected.optional });
+  assertOrder(actual, { ...expected, required: [...expected.required].reverse() });
 });
 
 test('tabbing past the last element leaves the page', async ({ page, browserName }) => {
