@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { PNG } from 'pngjs';
 import { DEMO } from '../helpers/env.js';
 import { paintedRgba, effectiveBackground } from '../helpers/page-color.js';
 import { srgb8ToLinear, contrast } from '../helpers/color.js';
@@ -71,6 +72,42 @@ test('wrapper shows the focus ring', async ({ page }) => {
   expect(r.matches).toBe(true);
   expect(r.style).toBe('solid');
   expect(r.width).toBeGreaterThanOrEqual(2);
+});
+
+test('thead and tfoot rules paint in border-strong, row rules in border', async ({ page }) => {
+  await page.goto(DEMO);
+  const table = page.locator('#grades');
+  await table.evaluate((t) => {
+    t.style.setProperty('--barely-color-border', 'rgb(255 0 0)');
+    t.style.setProperty('--barely-color-border-strong', 'rgb(0 0 255)');
+    t.style.setProperty('--barely-color-surface', 'rgb(255 255 255)');
+    t.style.setProperty('--barely-border-width', '6px');
+    t.style.backgroundColor = 'rgb(255 255 255)';
+    t.scrollIntoView();
+  });
+  const edges = await table.evaluate((t) => {
+    const box = t.getBoundingClientRect();
+    return {
+      theadBottom: t.tHead.getBoundingClientRect().bottom - box.top,
+      tfootTop: t.tFoot.getBoundingClientRect().top - box.top,
+      betweenBody: t.tBodies[0].rows[0].getBoundingClientRect().bottom - box.top,
+      x: t.rows[1].cells[1].getBoundingClientRect().left - box.left + 8,
+    };
+  });
+  const png = PNG.sync.read(await table.screenshot({ scale: 'css' }));
+  const near = (y0) => {
+    const found = new Set();
+    for (let y = Math.round(y0) - 3; y <= Math.round(y0) + 3; y++) {
+      const i = (y * png.width + Math.round(edges.x)) * 4;
+      found.add(`${png.data[i]},${png.data[i + 1]},${png.data[i + 2]}`);
+    }
+    return found;
+  };
+  for (const y of [edges.theadBottom, edges.tfootTop]) {
+    expect(near(y).has('0,0,255')).toBe(true);
+    expect(near(y).has('255,0,0')).toBe(false);
+  }
+  expect(near(edges.betweenBody).has('255,0,0')).toBe(true);
 });
 
 for (const theme of ['light', 'dark']) {

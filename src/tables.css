@@ -29,11 +29,13 @@
     border-block-end: var(--barely-border-width) solid var(--barely-color-border);
   }
 
-  :where(thead) {
+  /* Under border-collapse a row's border beats a row group's at equal width, but a cell's beats a row's,
+     so the strong rules go on the cells. */
+  :where(thead > tr:last-child > *) {
     border-block-end: var(--barely-border-width) solid var(--barely-color-border-strong);
   }
 
-  :where(tfoot) {
+  :where(tfoot > tr:first-child > *) {
     border-block-start: var(--barely-border-width) solid var(--barely-color-border-strong);
   }
 
