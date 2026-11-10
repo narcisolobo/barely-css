@@ -1,7 +1,10 @@
 @layer tokens {
-  :root {
+  /* Follow the system theme. Zero specificity, so data-theme on html can override it. */
+  :where(:root) {
     color-scheme: light dark;
+  }
 
+  :root {
     /* Page background. */
     --barely-color-background: light-dark(oklch(0.985 0.004 250), oklch(0.19 0.012 250));
     /* Code blocks, table stripes, secondary buttons. */

@@ -46,3 +46,14 @@ test('tokens.css declares the 12 base color tokens and not primary-hover', () =>
   expect([...tokens.keys()].sort()).toEqual([...BASE].sort());
   expect(readFileSync('src/tokens.css', 'utf8')).not.toMatch(/--barely-color-primary-hover\s*:/);
 });
+
+test('root color-scheme has zero specificity and data-theme rules come after it', () => {
+  const css = readFileSync('src/tokens.css', 'utf8').replace(/\/\*[^]*?\*\//g, '');
+  const root = css.search(/:where\(:root\)\s*\{[^}]*color-scheme:\s*light dark/);
+  const light = css.indexOf(':where([data-theme="light"])');
+  const dark = css.indexOf(':where([data-theme="dark"])');
+  expect(root).toBeGreaterThanOrEqual(0);
+  expect(light).toBeGreaterThan(root);
+  expect(dark).toBeGreaterThan(root);
+  expect(css).not.toMatch(/(^|[^(])\s:root\s*\{[^}]*color-scheme/);
+});

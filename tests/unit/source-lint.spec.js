@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { SOURCES } from '../../scripts/build.js';
+import { findBareTransitions } from '../helpers/lint.js';
 
 const USE_SITE = ['--barely-color-primary-hover', '--barely-control-background'];
 
@@ -66,23 +67,18 @@ test('logical properties only', () => {
 });
 
 test('transitions only under reduced-motion no-preference', () => {
-  const bad = [];
-  for (const f of files) {
-    const css = f.css;
-    for (const m of css.matchAll(/(^|[;{\s])transition(-[a-z-]+)?\s*:/g)) {
-      // Rebuild the chain of enclosing block preludes with a brace stack.
-      const stack = [];
-      for (let i = 0; i < m.index; i++) {
-        if (css[i] === '{') {
-          const start = Math.max(css.lastIndexOf('}', i - 1), css.lastIndexOf('{', i - 1), css.lastIndexOf(';', i - 1)) + 1;
-          stack.push(css.slice(start, i));
-        } else if (css[i] === '}') stack.pop();
-      }
-      if (!stack.some((p) => /@media[^{]*prefers-reduced-motion:\s*no-preference/.test(p)))
-        bad.push(`${f.path}: ${m[0].trim()}`);
-    }
-  }
+  const bad = files.flatMap((f) => findBareTransitions(f.css).map((t) => `${f.path}: ${t}`));
   expect(bad).toEqual([]);
+});
+
+test('transition check accepts a transition first in a nested no-preference media block', () => {
+  const css = 'a { @media (prefers-reduced-motion: no-preference) { transition: color 0.2s; } }';
+  expect(findBareTransitions(css)).toEqual([]);
+});
+
+test('transition check rejects a transition outside any media query', () => {
+  expect(findBareTransitions('a { color: red; transition: color 0.2s; }')).toHaveLength(1);
+  expect(findBareTransitions('a { transition: color 0.2s; }')).toHaveLength(1);
 });
 
 test('outline is never removed', () => {
