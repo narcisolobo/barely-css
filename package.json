@@ -4,6 +4,8 @@
   "private": true,
   "description": "A classless, token-driven CSS baseline for semantic HTML.",
   "scripts": {
+    "build": "node scripts/build.js",
+    "check:dist": "node scripts/build.js --check",
     "test": "playwright test"
   },
   "keywords": [

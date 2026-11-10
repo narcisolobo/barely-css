@@ -1,0 +1,14 @@
+/*! barely-css v0.0.0 | MIT License | Customize by overriding the --barely-* custom properties listed in the tokens section below */
+@layer reset, tokens, base, layout, components, utilities, overrides;
+
+/* ==== reset.css ==== */
+@layer reset {
+}
+
+/* ==== tokens.css ==== */
+@layer tokens {
+}
+
+/* ==== base.css ==== */
+@layer base {
+}
