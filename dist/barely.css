@@ -391,3 +391,58 @@
     text-decoration: none;
   }
 }
+
+/* ==== tables.css ==== */
+@layer base {
+  /* The table keeps its native display: table, so assistive technology keeps its table semantics. */
+  :where(table) {
+    inline-size: 100%;
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+  }
+
+  :where(caption) {
+    caption-side: top;
+    text-align: start;
+    padding-block-end: 0.5rem;
+    color: var(--barely-color-text-muted);
+  }
+
+  /* anywhere (not break-word) lets a long URL shrink the cell's min-content width, so the table fits. */
+  :where(th, td) {
+    padding: 0.5rem 0.75rem;
+    text-align: start;
+    vertical-align: top;
+    overflow-wrap: anywhere;
+  }
+
+  :where(th) {
+    font-weight: bold;
+  }
+
+  :where(tr) {
+    border-block-end: var(--barely-border-width) solid var(--barely-color-border);
+  }
+
+  :where(thead) {
+    border-block-end: var(--barely-border-width) solid var(--barely-color-border-strong);
+  }
+
+  :where(tfoot) {
+    border-block-start: var(--barely-border-width) solid var(--barely-color-border-strong);
+  }
+
+  :where(tbody tr:nth-child(even)) {
+    background-color: var(--barely-color-surface);
+  }
+
+  /* Optional scroll wrapper for a table that is truly too wide. Keyboard users scroll it after focusing it. */
+  :where(div[role="region"][tabindex]:has(> table)) {
+    overflow-x: auto;
+    margin-block-end: var(--barely-spacing);
+  }
+
+  :where(div[role="region"][tabindex] > table) {
+    margin-block-end: 0;
+  }
+}

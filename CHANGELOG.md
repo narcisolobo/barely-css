@@ -13,3 +13,4 @@ Any change to a default value (a token, a spacing step, a color) is listed under
 - Typography styles: headings, paragraphs, links, lists, blockquote, rules, and inline text elements.
 - Page layout without classes: full-width page regions, centered content, masthead header and footer, reading width, and article, section, and aside structure.
 - Masthead navigation (one or two lists, wrapping) and breadcrumbs, with no classes.
+- Table styles and an optional scroll wrapper (`div[role="region"][tabindex]` around a `table`), with no classes.

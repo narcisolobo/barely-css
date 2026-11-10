@@ -34,14 +34,16 @@ const box = (page, selector) =>
     };
   }, selector);
 
-// The wide unwrapped table does not exist yet. Task 8 adds it and re-checks scrolling with it present.
+// The demo keeps one wide table without the scroll wrapper (table#schedule-unwrapped). The spec accepts
+// page overflow only there: the page may scroll sideways, but only if removing that one table removes it.
 async function noPageScroll(page) {
-  await page.evaluate(() => document.querySelectorAll('table').forEach((t) => t.remove()));
-  const d = await page.evaluate(() => ({
-    s: document.documentElement.scrollWidth,
-    c: document.documentElement.clientWidth,
-  }));
-  expect(d.s).toBeLessThanOrEqual(d.c);
+  const overflows = () =>
+    page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+  if (await overflows()) {
+    expect(await page.locator('table#schedule-unwrapped').count()).toBe(1);
+    await page.evaluate(() => document.querySelector('table#schedule-unwrapped').remove());
+  }
+  expect(await overflows()).toBe(false);
 }
 
 test.describe('narrow', () => {

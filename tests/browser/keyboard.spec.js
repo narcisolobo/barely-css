@@ -58,3 +58,18 @@ test('focus is visible and unobscured at every stop', async ({ page, browserName
     expect(r.covered, label).toBe(false);
   }
 });
+
+test.describe('table scroll wrapper', () => {
+  test.use({ viewport: { width: 375, height: 800 } });
+
+  test('table scroll wrapper scrolls with arrow keys', async ({ page, browserName }) => {
+    const wrapper = page.locator('#schedule-region');
+    await wrapper.focus();
+    expect(await wrapper.evaluate((el) => [document.activeElement === el, el.scrollWidth > el.clientWidth])).toEqual([true, true]);
+    // Playwright's WebKit does not arrow-scroll any focused scroll container, even a bare
+    // `<div tabindex=0 style="overflow-x:auto">` with no stylesheet. It is an engine limit, not our CSS.
+    test.skip(browserName === 'webkit', 'Playwright WebKit does not scroll containers with arrow keys');
+    for (let i = 0; i < 3; i++) await page.keyboard.press('ArrowRight');
+    await expect.poll(() => wrapper.evaluate((el) => el.scrollLeft)).toBeGreaterThan(0);
+  });
+});
