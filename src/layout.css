@@ -2,10 +2,11 @@
   /* Page regions: every direct child of body except non-rendered and top-layer elements.
      Regions span the viewport; padding keeps their content centered at the content width. */
   body > :where(:not(script, style, template, dialog)) {
-    padding-inline: max(
+    --_barely-region-inline: max(
       var(--barely-page-padding-inline),
       (100% - var(--barely-content-width)) / 2
     );
+    padding-inline: var(--_barely-region-inline);
   }
 
   /* Prose placed directly in body is a region too. The region spans the viewport, so it carries
@@ -13,15 +14,21 @@
   body > :where(p, ul, ol, dl, blockquote, h1, h2, h3, h4, h5, h6, figcaption, form) {
     max-inline-size: none;
     padding-inline-end: max(
-      max(var(--barely-page-padding-inline), (100% - var(--barely-content-width)) / 2),
-      100% - max(var(--barely-page-padding-inline), (100% - var(--barely-content-width)) / 2) - var(--barely-reading-width)
+      var(--_barely-region-inline),
+      100% - var(--_barely-region-inline) - var(--barely-reading-width)
     );
   }
 
-  /* An aside in body keeps its start border at the content edge: margin takes the place of region padding. */
-  body > :where(aside) {
-    margin-inline-start: max(var(--barely-page-padding-inline), (100% - var(--barely-content-width)) / 2);
+  /* An aside or blockquote in body keeps its start border at the content edge: margin takes the place
+     of region padding, and the text sits one spacing step inside the border. */
+  body > :where(aside, blockquote) {
+    margin-inline-start: var(--_barely-region-inline);
     padding-inline-start: var(--barely-spacing);
+  }
+
+  /* A list in body keeps its markers inside the content edge: the usual list indent is added to the region padding. */
+  body > :where(ul, ol) {
+    padding-inline-start: calc(var(--_barely-region-inline) + 40px);
   }
 
   body > :where(main) {

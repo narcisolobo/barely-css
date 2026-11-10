@@ -286,3 +286,79 @@ for (const width of [375, 1600]) {
     });
   });
 }
+
+for (const width of [375, 1600]) {
+  test.describe(`bordered and list regions in body at ${width}`, () => {
+    test.use({ viewport: { width, height: 900 } });
+
+    const geometry = (page) =>
+      page.evaluate(() => {
+        const rect = (sel) => document.querySelector(sel).getBoundingClientRect();
+        const sec = document.querySelector('body > section');
+        const ss = getComputedStyle(sec);
+        const bq = document.querySelector('body > blockquote');
+        const bs = getComputedStyle(bq);
+        const lists = ['body > ul', 'body > ol'].map((sel) => {
+          const el = document.querySelector(sel);
+          const s = getComputedStyle(el);
+          return {
+            boxLeft: el.getBoundingClientRect().left,
+            boxRight: el.getBoundingClientRect().right,
+            contentLeft: el.getBoundingClientRect().left + parseFloat(s.paddingLeft),
+            liLeft: el.querySelector('li').getBoundingClientRect().left,
+          };
+        });
+        return {
+          edge: sec.getBoundingClientRect().left + parseFloat(ss.paddingLeft),
+          bqLeft: bq.getBoundingClientRect().left,
+          bqBorder: parseFloat(bs.borderLeftWidth),
+          bqPad: parseFloat(bs.paddingLeft),
+          bqText: bq.querySelector('p').getBoundingClientRect().left,
+          spacing: parseFloat(getComputedStyle(document.documentElement).fontSize),
+          lists,
+        };
+      });
+
+    test('region blockquote border sits at the content edge', async ({ page }) => {
+      await page.goto('/tests/pages/no-main.html');
+      const g = await geometry(page);
+      expect(Math.abs(g.bqLeft - g.edge)).toBeLessThanOrEqual(1);
+      expect(g.bqBorder).toBeGreaterThan(0);
+      expect(Math.abs(g.bqText - (g.bqLeft + g.bqBorder + g.spacing))).toBeLessThanOrEqual(1);
+    });
+
+    test('region list markers stay inside the content edge', async ({ page }) => {
+      await page.goto('/tests/pages/no-main.html');
+      const g = await geometry(page);
+      for (const l of g.lists) {
+        expect(l.contentLeft).toBeGreaterThanOrEqual(g.edge - 1);
+        expect(l.liLeft).toBeGreaterThan(g.edge);
+        expect(l.boxLeft).toBe(0);
+        expect(l.boxRight).toBe(width);
+      }
+    });
+  });
+}
+
+test.describe('RTL bordered region', () => {
+  test.use({ viewport: { width: 1600, height: 900 } });
+
+  test('region blockquote border sits at the content edge in RTL', async ({ page }) => {
+    await page.goto('/tests/pages/rtl.html');
+    const r = await page.evaluate(() => {
+      const m = document.querySelector('body > main');
+      const ms = getComputedStyle(m);
+      const bq = document.querySelector('body > blockquote');
+      return {
+        edge: m.getBoundingClientRect().right - parseFloat(ms.paddingRight),
+        bqRight: bq.getBoundingClientRect().right,
+        textRight: bq.querySelector('p').getBoundingClientRect().right,
+        border: parseFloat(getComputedStyle(bq).borderRightWidth),
+        rem: parseFloat(getComputedStyle(document.documentElement).fontSize),
+      };
+    });
+    expect(Math.abs(r.bqRight - r.edge)).toBeLessThanOrEqual(1);
+    expect(r.border).toBeGreaterThan(0);
+    expect(Math.abs(r.textRight - (r.bqRight - r.border - r.rem))).toBeLessThanOrEqual(1);
+  });
+});

@@ -48,12 +48,12 @@
     --barely-line-height-heading: 1.2;
     /* Weight of headings. */
     --barely-font-weight-heading: 700;
-    /* Heading sizes. h1 to h3 are fluid. */
-    --barely-font-size-h1: clamp(2rem, 1.6rem + 1.8vw, 2.75rem);
-    --barely-font-size-h2: clamp(1.625rem, 1.4rem + 1vw, 2.125rem);
-    --barely-font-size-h3: clamp(1.375rem, 1.25rem + 0.6vw, 1.625rem);
-    --barely-font-size-h4: 1.25rem;
-    --barely-font-size-h5: 1.0625rem;
+    /* Heading sizes. h1 to h5 are fluid; each step is at least 1.2x on wide screens. */
+    --barely-font-size-h1: clamp(2.25rem, 1.5rem + 3.2vw, 3.05rem);
+    --barely-font-size-h2: clamp(1.875rem, 1.35rem + 2.2vw, 2.44rem);
+    --barely-font-size-h3: clamp(1.5625rem, 1.2rem + 1.4vw, 1.95rem);
+    --barely-font-size-h4: clamp(1.3125rem, 1.15rem + 0.7vw, 1.5625rem);
+    --barely-font-size-h5: clamp(1.125rem, 1.05rem + 0.35vw, 1.25rem);
     --barely-font-size-h6: 1rem;
 
     /* Vertical rhythm between flow blocks. */

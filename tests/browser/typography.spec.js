@@ -23,6 +23,18 @@ test('heading sizes come from tokens', async ({ page }) => {
   expect(sizes).toEqual(['48px', '48px']);
 });
 
+test.describe('wide heading scale', () => {
+  test.use({ viewport: { width: 1280, height: 800 } });
+
+  test('heading steps are at least 1.2x on wide screens', async ({ page }) => {
+    await page.goto(DEMO);
+    const sizes = await page.evaluate(() =>
+      ['h1', 'h2', 'h3', 'h4', 'h5'].map((t) => parseFloat(getComputedStyle(document.querySelector(`main ${t}`)).fontSize)),
+    );
+    for (let i = 0; i < 4; i++) expect(sizes[i] / sizes[i + 1], `h${i + 1}/h${i + 2} (${sizes})`).toBeGreaterThanOrEqual(1.2);
+  });
+});
+
 test('body line height is 1.6 and headings 1.2', async ({ page }) => {
   await page.goto(DEMO);
   const r = await page.evaluate(() => {
