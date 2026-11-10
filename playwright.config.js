@@ -8,7 +8,7 @@ const browserProjects = engines.flatMap((browserName) =>
   schemes.map((colorScheme) => ({
     name: `${browserName}-${colorScheme}`,
     testDir: 'tests/browser',
-    testIgnore: /(keyboard|forced-colors)\.spec\.js/,
+    testIgnore: /forced-colors\.spec\.js/,
     use: { browserName, colorScheme },
   })),
 );
