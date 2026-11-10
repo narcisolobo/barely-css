@@ -329,6 +329,7 @@ Rules for these tokens:
 - Every element in the baseline table is styled and appears on the demo page in both themes. The demo also includes the nested theme scope and the RTL section.
 - The axe scan reports no violations on the demo page, and all three contrast layers pass in both themes: token pairs, rendered states, and token propagation.
 - Both dist files are current with `src/`, and the README covers everything listed under Deliverables.
+- The visual regression report for every fixture, engine, theme, and width has been reviewed, and every screenshot looks deliberately designed at 375px, 768px, and 1280px. For 1.0 there is no earlier release, so this review judges the screenshots on their own.
 - The Playwright suite passes in Chromium, Firefox, and WebKit, including the `file://` check. The demo page has also been checked by hand in current Chrome, Firefox, and Safari.
 - The demo page has been operated by hand with the keyboard only, without a mouse, in current Chrome, Firefox, and Safari. In Safari this uses Option+Tab. Every control can be reached and used, and focus is always visible.
 - The demo page has been checked by hand in forced colors: Edge or Chrome with at least one dark and one light Windows Contrast theme, and Firefox on macOS with its colors set to override the page's colors.
@@ -386,10 +387,11 @@ Development and published releases:
 - **`## [Unreleased]` exists from the first commit of the build** and always sits at the top of the changelog. A change that a user could notice gets its changelog line in the same commit, or the same pull request, as the change itself. Changes users can't notice, such as tests, refactors with no visible effect, and tooling, get no entry. Not every commit needs a changelog line.
 - **`package.json` keeps the last published version** while work happens on `main`. It is only changed by a release.
 - **Cutting a release:**
-  1. Choose the version from the headings under `[Unreleased]`. Removed, or anything else listed as breaking under Major, means a major release. Added or Changed defaults means at least a minor release. Only Fixed means a patch.
-  2. Rename `[Unreleased]` to `[x.y.z] - YYYY-MM-DD` and add a new, empty `[Unreleased]` above it. Update the comparison links at the bottom of the file.
-  3. Set the version in `package.json`, rebuild `dist/`, and commit with the message `chore(release): x.y.z`.
-  4. Tag the commit `vx.y.z` and publish to npm.
+  1. Run the visual regression suite against the previous release and review its report. Every difference must match an entry under `[Unreleased]`. Add any missing entries, or fix the CSS if a difference wasn't intended.
+  2. Choose the version from the headings under `[Unreleased]`. Removed, or anything else listed as breaking under Major, means a major release. Added or Changed defaults means at least a minor release. Only Fixed means a patch.
+  3. Rename `[Unreleased]` to `[x.y.z] - YYYY-MM-DD` and add a new, empty `[Unreleased]` above it. Update the comparison links at the bottom of the file.
+  4. Set the version in `package.json`, rebuild `dist/`, and commit with the message `chore(release): x.y.z`.
+  5. Tag the commit `vx.y.z` and publish to npm.
 - The first published version is `1.0.0`, which matches the `@1` CDN link in the README. A trial period, if wanted, uses `1.0.0-beta.N` pre-releases, which jsDelivr's `@1` link does not pick up.
 
 Migration guides for major releases:
@@ -491,6 +493,22 @@ Migration guides for major releases:
      Safari doesn't tab to links by default, and Playwright's WebKit behaves the same way. In WebKit the test uses Option+Tab so links are included.
    - **Layout checks.** The page is loaded at phone width (about 400px) and desktop width. It must never scroll horizontally, except for the documented wide-table case.
    - **`file://` check.** The demo page is also loaded over `file://` to confirm the downloaded-file path works.
-   - **Screenshots.** The suite saves screenshots for each engine, theme, and width so changes can be reviewed visually. Whether to fail on screenshot differences is decided when building, because rendering differs slightly between machines.
+   - **Visual regression suite.** A stylesheet update can change the look of every page that links it, with no HTML changes. Accessibility scans and contrast checks can't see an awkward heading margin, an oversized button, or a layout that falls apart at 375px. Screenshot comparison can.
+     - **Fixtures.** A set of representative pages in `tests/fixtures/`, separate from the demo page. The demo shows every element once; fixtures use realistic content at realistic length, the way people will actually use barely-css. Like any barely-css page, fixtures use only semantic HTML, with no classes. The only exception is the optional table scroll wrapper, which is part of the documented API. The set:
+       1. Typography specimen: every heading level, inline elements, lists, `blockquote`, `hr`, and code.
+       2. Long-form article: a blog-style post with figures, a pull quote, and footnotes.
+       3. Documentation page: an `aside` table of contents, code blocks, breadcrumbs, and `details`.
+       4. Complex form: every input type, `fieldset` groups, helper text, and server-rendered errors.
+       5. Data-heavy table: a wide table with the scroll wrapper, `caption`, `tfoot`, and numeric columns.
+       6. Navigation and page structure: masthead `nav` with Pico's two-list pattern, `main`, `footer`, and nested `article` and `section` headers.
+       7. Dialog and popover: captured open, with the backdrop.
+       8. Nested light and dark themes: a light panel inside a dark page and the reverse.
+       9. RTL content: an Arabic or Hebrew page with `dir="rtl"`, including a form and a table.
+       10. A sanitized version of one of the owner's real course pages, matching the Pico-to-barely-css release criterion.
+     - **Matrix.** Every fixture is captured in Chromium, Firefox, and WebKit; in light and dark; at 375px (a narrow phone), 768px, and 1280px. The narrow-viewport case is a width every fixture is captured at, not a separate fixture. Selected states are also captured: keyboard focus on a link, a button, and a field; hover on a link and a button; `:user-invalid` after typing; and an open `details`. Forced-colors captures use Chromium and Firefox only.
+     - **The baseline is the previous release, rendered at test time.** No screenshots are stored in the repository. For each run, the suite renders every fixture twice on the same machine: once with the last published `dist/barely.css` (fetched from the npm package of the latest release tag) and once with the current build. Then it compares the two. Before the first release, the baseline is the `dist/barely.css` committed at the previous commit on `main`. Because both renders use the same machine, fonts, and browser versions, differences come from the CSS, not the environment.
+     - **Stable rendering.** Animations and transitions are disabled, the text caret is hidden, fixtures load no external resources, and content contains no dates or random values.
+     - **A difference is a question, not a failure.** Intended changes produce differences too, so the suite produces a report rather than a pass or fail: side-by-side and highlighted diff images for every changed screenshot, grouped by fixture. Each difference must be explained by a changelog entry. A visual difference with no matching Changed defaults, Added, or Fixed entry is either a bug or a missing changelog line.
+     - **The suite is the evidence for the version number.** A patch release's report may only show differences explained by Fixed entries. Any other unexplained difference means the release needs at least a minor version, under Changed defaults.
    - **Dist freshness.** The suite also includes the check that both dist files are current with `src/` (see Deliverable 1).
 
