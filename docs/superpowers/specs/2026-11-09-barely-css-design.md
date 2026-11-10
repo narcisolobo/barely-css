@@ -201,7 +201,15 @@ The approved preview is at https://claude.ai/artifact/UEC92afWaKez4QYLtMtGpV. Th
   - The check mark is a CSS mask filled with `on-primary`. `:indeterminate` shows a dash. The radio dot and the switch knob are `::before` pseudo-elements. Playwright confirmed these render in Chromium, Firefox, and WebKit.
   - Their label is a block with a hanging indent. The control sits beside the text, wrapped lines align with the text rather than under the control, and inline content flows normally. The control uses `vertical-align: middle` so the checked mark can't shift the line. At line height 1.6 each row is at least 24px tall, meeting the 2.5.8 target size.
   - A switch is written as `input[type="checkbox"][role="switch"]`, following Pico's convention so existing markup keeps working. Its knob mirrors in RTL.
-  - In `forced-colors` mode they fall back to `appearance: auto`.
+  - In `forced-colors` mode they keep their custom drawing, painted with system colors under `forced-color-adjust: none`:
+    - Unchecked: `Canvas` fill with a `ButtonText` border.
+    - Checked or indeterminate: `Highlight` fill. The check mark, dash, and radio dot are `HighlightText`.
+    - Switch knob: `ButtonText` when off, `HighlightText` when on. The switch keeps its shape.
+    - Disabled: `GrayText` border, and a `GrayText` fill when checked.
+    - Focus outline: `Highlight`.
+
+    An earlier version fell back to `appearance: auto`. Playwright testing in forced colors showed the switch then turned into a plain checkbox with misaligned label text.
+- **Status icons in forced colors.** The invalid and valid icons are drawn with a CSS mask over a background color, which forced colors blanks out. In Chromium this left an empty gap and the invalid state relied on the border alone. In forced-colors mode the icons get `forced-color-adjust: none` and a `CanvasText` fill.
 - **Range** stays native, tinted with `accent-color: var(--barely-color-primary)`. It keeps platform keyboard and screen reader behavior, and a custom track can't show progress in Chromium or WebKit without script.
 - **File** inputs get a dashed border. `::file-selector-button` uses the secondary button style.
 - **Color** inputs are a swatch at control height.
@@ -286,7 +294,10 @@ Rules for these tokens:
 - Focus is always visible through `:focus-visible` with a tokenized outline. The outline is never removed.
 - Interactive targets are at least 24×24 CSS px (WCAG 2.2, criterion 2.5.8).
 - `prefers-reduced-motion` turns off non-essential transitions.
-- `forced-colors` mode keeps controls, focus rings, and borders visible, using system colors where needed.
+- `forced-colors` mode keeps controls, focus rings, borders, and state indicators visible.
+  - Anything drawn with a mask, a background color, or a gradient must be checked in forced colors. Browsers replace author background colors there, so these parts can vanish.
+  - Custom-drawn parts use `forced-color-adjust: none` with system colors (`Canvas`, `CanvasText`, `ButtonText`, `Highlight`, `HighlightText`, `GrayText`) rather than falling back to native controls. See [Forms](#forms).
+  - Forced colors is tested from the first milestone, not only before release. See Deliverable 7.
 - Pages stay usable at 200% zoom and with enlarged text. Avoid fixed heights on text containers.
 - Status (error, success) is never conveyed by color alone.
 
@@ -298,6 +309,8 @@ Rules for these tokens:
 - The axe scan reports no violations on the demo page, and all three contrast layers pass in both themes: token pairs, rendered states, and token propagation.
 - Both dist files are current with `src/`, and the README covers everything listed under Deliverables.
 - The Playwright suite passes in Chromium, Firefox, and WebKit, including the `file://` check. The demo page has also been checked by hand in current Chrome, Firefox, and Safari.
+- The demo page has been operated by hand with the keyboard only, without a mouse, in current Chrome, Firefox, and Safari. In Safari this uses Option+Tab. Every control can be reached and used, and focus is always visible.
+- The demo page has been checked by hand in forced colors: Edge or Chrome with at least one dark and one light Windows Contrast theme, and Firefox on macOS with its colors set to override the page's colors.
 - At least one of the owner's real course pages renders correctly with only the stylesheet changed from Pico to barely-css, with no classes or wrappers added to the markup.
 
 Build order and milestones belong in the implementation plan, not in this spec.
@@ -313,15 +326,62 @@ barely-css follows semantic versioning. For a stylesheet, a version change means
   - Markup that worked before needs to change.
 - **Minor:**
   - New tokens or newly styled elements.
-  - Deliberate visual changes to defaults, such as a new spacing or color value. These are not breaking, because overriding the token restores the old look. The changelog lists each one under its own "Changed defaults" heading so users can find them.
+  - Deliberate visual changes to defaults, such as a new spacing or color value. These are not breaking, because overriding the token restores the old look. The changelog lists each one under "Changed defaults" (see below). A patch release never contains a changed default.
 - **Patch:** Bug fixes that restore the intended look, such as a contrast failure, an overflow, or a browser quirk.
 - **Private `--_barely-*` properties** can change in any release and are never covered by the policy.
 
 The changelog plan:
 
-- `CHANGELOG.md` uses the [Keep a Changelog](https://keepachangelog.com) format.
-- It is created when building starts, with an `Unreleased` section that gets a line for each meaningful change as the work happens.
+- `CHANGELOG.md` uses the [Keep a Changelog](https://keepachangelog.com) format, with one added heading, "Changed defaults". Headings appear in this order, and empty ones are left out: Added, Changed, Changed defaults, Deprecated, Removed, Fixed, Security.
+- **Headings are chosen by one test: does existing markup look different after upgrading?** This lets someone tell from the changelog alone whether upgrading will change how their site looks.
+  - **Changed defaults:** any change that makes existing markup look different, whether or not a token value changed. Examples: a new default for `--barely-page-padding-inline`, a new primary color, or more spacing around `blockquote`. Each entry says how to restore the old look, for example "set `--barely-page-padding-inline: clamp(1rem, 4vw, 2rem)`". If no token can restore it, the entry says so. That should be rare, since nearly every visual decision reads from a custom property.
+  - **Changed:** changes that don't alter how existing markup looks, such as packaging, documentation, or internal selectors and layers.
+  - **Fixed:** changes that restore the intended look, such as horizontal overflow in a wide table. A fix may change appearance, but only toward what was always intended.
+  - **Added:** newly styled elements or new tokens. Markup that was previously unstyled can look different, which is expected.
+  - **Deprecated** and **Removed** follow the deprecation policy under Migration guides below.
+- Example:
+  ```md
+  ## [Unreleased]
+
+  ### Added
+  - Style the native `dialog` element.
+
+  ### Changed defaults
+  - Increase the default page inline padding. To restore the old value,
+    set `--barely-page-padding-inline: clamp(1rem, 4vw, 2rem)`.
+  - Increase the spacing around `blockquote`. To restore it, set
+    `--barely-blockquote-spacing: 1rem`.
+  - Change the primary color. To restore it, set
+    `--barely-color-primary: light-dark(oklch(0.5 0.16 255), oklch(0.75 0.12 250))`.
+
+  ### Fixed
+  - Prevent horizontal overflow in wide tables.
+  ```
+  (The token names and values in this example are illustrative.)
+
+Development and published releases:
+
+- **`main` is the development version.** It can contain unreleased work at any time, including the committed `dist/` files. Users get barely-css only from published releases: the npm package, the jsDelivr links in the README (which serve npm releases), or the files attached to a release. The README says not to link to `main` or to jsDelivr's GitHub-branch URLs.
+- **`## [Unreleased]` exists from the first commit of the build** and always sits at the top of the changelog. A change that a user could notice gets its changelog line in the same commit, or the same pull request, as the change itself. Changes users can't notice, such as tests, refactors with no visible effect, and tooling, get no entry. Not every commit needs a changelog line.
+- **`package.json` keeps the last published version** while work happens on `main`. It is only changed by a release.
+- **Cutting a release:**
+  1. Choose the version from the headings under `[Unreleased]`. Removed, or anything else listed as breaking under Major, means a major release. Added or Changed defaults means at least a minor release. Only Fixed means a patch.
+  2. Rename `[Unreleased]` to `[x.y.z] - YYYY-MM-DD` and add a new, empty `[Unreleased]` above it. Update the comparison links at the bottom of the file.
+  3. Set the version in `package.json`, rebuild `dist/`, and commit with the message `chore(release): x.y.z`.
+  4. Tag the commit `vx.y.z` and publish to npm.
 - The first published version is `1.0.0`, which matches the `@1` CDN link in the README. A trial period, if wanted, uses `1.0.0-beta.N` pre-releases, which jsDelivr's `@1` link does not pick up.
+
+Migration guides for major releases:
+
+- **Every major release ships a migration guide.** It is written during that major's beta period, not after the release. A major version is not published until its guide is complete.
+- **One file per major**, such as `docs/migrating/v1-to-v2.md`. That version's changelog entry and the README both link to it. Earlier guides stay in place for users who skip a version.
+- **Fixed structure**, following the four kinds of major change defined above:
+  1. Renamed or removed tokens, as a table mapping each old name to its new name, or to "removed" with the alternative.
+  2. Elements that are no longer styled, or styled differently.
+  3. Layer order changes.
+  4. Markup changes, with before and after snippets.
+  5. How to stay on the previous major, for example by keeping the `@1` CDN link.
+- **Deprecate before removing.** A token that will be renamed is first given its new name in a minor release, with the old name kept as an alias (`--barely-old-name: var(--barely-new-name)`). The changelog lists the old name under a "Deprecated" heading. The next major removes the alias, and its migration guide lists it. Users can then migrate gradually, and nothing disappears without at least one release of warning.
 
 ## Deliverables
 
@@ -335,7 +395,7 @@ The changelog plan:
 2. `package.json` set up for npm publishing, so the file is available from jsDelivr. **(builder's call)**:
    - The package name is `barely-css`, taken from the project folder. Check that it's available before publishing.
    - The license is MIT.
-3. A demo page that renders every element in the baseline, with a theme toggle, a nested theme scope, an RTL section, and a wide table shown with and without the optional scroll wrapper. The theme toggle may use a few lines of inline JavaScript that the framework itself does not depend on.
+3. A demo page that renders every element in the baseline, with a theme toggle, a nested theme scope, an RTL section, and a wide table shown with and without the optional scroll wrapper. For the keyboard checks, it also includes a `dialog` opened by a button, a `popover` with its `popovertarget` button, `details` elements, and links in every page region. The theme toggle may use a few lines of inline JavaScript that the framework itself does not depend on.
 4. A README covering:
    - How to link from the CDN and from npm. The CDN section shows two jsDelivr URLs:
      - A major-version link for most users, such as `https://cdn.jsdelivr.net/npm/barely-css@1/dist/barely.min.css`. It picks up fixes automatically. jsDelivr caches version-range URLs for a while, so a new release can take some time to appear.
@@ -345,7 +405,15 @@ The changelog plan:
    - How theming works.
    - The browser support policy.
 5. `CHANGELOG.md`, following the policy in Versioning and changelog.
-6. Automated checks, run with **Playwright** against the demo page:
+6. **A "Coming from Pico" guide** at `docs/migrating/from-pico.md`, linked from the README. Most v1 users will be moving from Pico, so this is the first migration guide. It covers:
+   - **Wrappers can be removed.** `.container` and similar wrappers are no longer needed, because page regions get their width and padding automatically (see [Page layout](#page-layout)). A before and after example shows this.
+   - **What works the same.** `data-theme` on `<html>` or any element, `input[type="checkbox"][role="switch"]`, `aria-invalid` on form controls, and the two-list `nav` pattern in the masthead.
+   - **What differs.** For example, forms are capped at the reading width, and only the masthead `nav` is horizontal.
+   - **Variable mapping.** A table mapping Pico's commonly overridden `--pico-*` custom properties to their `--barely-*` tokens, with "no equivalent" where none exists.
+   - **Not supported yet.** Pico's classes and components (such as `.grid`, cards, and buttons with classes) are reserved for v2 and later.
+
+   The guide's examples are checked against the owner's real course page used in the release criteria.
+7. Automated checks, run with **Playwright** against the demo page:
    - **Tooling.** Playwright and `@axe-core/playwright` are maintainer-only dev dependencies. Users never install or run them, so the no-build-step rule still holds.
    - **Engines.** Every check runs in Chromium, Firefox, and WebKit. WebKit stands in for Safari in automation. Real Safari is still checked by hand before release.
    - **Accessibility scan.** axe runs on the demo page in both themes and must report no violations.
@@ -357,6 +425,25 @@ The changelog plan:
      - `:visited` styles are hidden from scripts for privacy, so rendered tests can't measure them. If barely-css styles `:visited`, that color is covered only by the token-pair layer.
      - axe's contrast rule only sees the state on screen when it runs, and it reports gradients and overlapping elements as incomplete rather than failing. That is why the rendered-state layer exists alongside it.
      - Users' own token overrides can't be tested by this suite. The README covers this (see Deliverable 4).
+   - **Forced colors.** From the first milestone, every screenshot and state test also runs with Playwright's `forcedColors: 'active'` emulation in Chromium and Firefox, which actually force colors. WebKit only reports the media query as matching and keeps author colors, because Safari has no forced-colors mode, so WebKit results only confirm that the `@media (forced-colors: active)` rules apply. The suite asserts that in forced colors:
+     - Focus outlines are visible.
+     - Control borders differ from the background.
+     - Checked, indeterminate, invalid, and disabled states are still visible: the check mark, dash, dot, switch knob, status icons, and widened invalid border.
+
+     Emulation uses one default palette, so it does not replace the manual check on real Windows Contrast themes (see Release criteria).
+   - **Keyboard navigation.** In each engine and both themes, and again under forced-colors emulation, Playwright operates the demo page with the keyboard only:
+     1. **Every interactive element can be reached.** The test tabs from the top of the page to the bottom and records each element that receives focus. That list must match the page's interactive elements (links, buttons, form controls, `summary`, the table scroll wrapper, and popover triggers), in source order, with nothing skipped.
+     2. **Focus is visible and not hidden.** At every stop, the focused element has an outline that isn't `none`, is at least 2px wide, and reaches 3:1 against its background. After scrolling, the element is inside the viewport and not covered by other content (WCAG 2.4.11).
+     3. **Native controls work from the keyboard:**
+        - `details` opens and closes with Enter and Space.
+        - Radio buttons move with the arrow keys, and range inputs step with them.
+        - A `popover` opens from its `popovertarget` button and closes with Esc.
+        - A `dialog` closes with Esc, and focus returns to the button that opened it.
+        - The table scroll wrapper scrolls with the arrow keys.
+        - Content inside a closed `details` can't receive focus.
+     4. **Nothing traps focus.** Tabbing from the last element leaves the page, and Shift+Tab visits the same stops in reverse order.
+
+     Safari doesn't tab to links by default, and Playwright's WebKit behaves the same way. In WebKit the test uses Option+Tab so links are included.
    - **Layout checks.** The page is loaded at phone width (about 400px) and desktop width. It must never scroll horizontally, except for the documented wide-table case.
    - **`file://` check.** The demo page is also loaded over `file://` to confirm the downloaded-file path works.
    - **Screenshots.** The suite saves screenshots for each engine, theme, and width so changes can be reviewed visually. Whether to fail on screenshot differences is decided when building, because rendering differs slightly between machines.
