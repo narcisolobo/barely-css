@@ -1,0 +1,30 @@
+{
+  "name": "barely-css",
+  "version": "0.0.0",
+  "private": true,
+  "description": "A classless, token-driven CSS baseline for semantic HTML.",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "keywords": [
+    "css",
+    "classless",
+    "semantic-html",
+    "design-tokens"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "12.18.0",
+      "onFail": "download"
+    }
+  },
+  "packageManager": "pnpm@12.18.0",
+  "type": "module",
+  "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "^1.65.0"
+  }
+}
