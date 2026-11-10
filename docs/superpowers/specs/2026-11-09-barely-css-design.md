@@ -1,7 +1,7 @@
 # barely-css — v1 Design
 
 Date: 2026-11-09
-Status: Draft for review
+Status: Approved by the owner on 2026-11-10
 Background: [docs/ideas.md](../../ideas.md) holds the original idea list. This document narrows it to what v1 ships.
 
 Items marked **(builder's call)** were not discussed and are suggestions the builder may change. Everything else was decided with the project owner.
