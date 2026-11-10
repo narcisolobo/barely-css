@@ -75,7 +75,7 @@ Even if everything else works, the project fails if the result looks like unstyl
 - **No classes are needed** for anything in v1.
 - **Every public custom property has a prefix,** so it can't collide with a site's own variables. The prefix is `--barely-`, as in `--barely-color-primary`. The exact prefix was a **(builder's call)**. Internal helper properties should use a separate private prefix, such as `--_barely-`, so they stay out of the documented API.
 - **Plain CSS is the source.** No Sass, PostCSS, or other preprocessor is required to read or edit the source. Shipping a minified copy is fine.
-- **Evergreen browsers only.** Use cascade layers, nesting, `:has()`, `:where()` and `:is()`, `oklch()`, `color-scheme`, logical properties, and container queries freely. The README states the support policy (see Deliverable 4).
+- **Evergreen browsers only.** Use cascade layers, nesting, `:has()`, `:where()` and `:is()`, `oklch()` and relative color syntax, `light-dark()`, `color-scheme`, logical properties, and container queries freely. The README states the support policy (see Deliverable 4).
 - **Fonts:**
   - Body and headings use a system sans-serif stack, exposed as `--barely-font-sans`.
   - Code uses a system monospace stack, exposed as `--barely-font-mono`.
@@ -248,7 +248,7 @@ These values were approved with the owner on 2026-11-10. Once the build begins, 
 | `--barely-color-text` | Body text and headings | `oklch(0.25 0.02 250)` | `oklch(0.93 0.008 250)` |
 | `--barely-color-text-muted` | Captions, `small`, `blockquote` | `oklch(0.48 0.02 250)` | `oklch(0.74 0.015 250)` |
 | `--barely-color-primary` | Links, buttons, focus ring | `oklch(0.5 0.16 255)` | `oklch(0.75 0.12 250)` |
-| `--barely-color-primary-hover` | Hover and active states | `oklch(0.43 0.15 255)` | `oklch(0.82 0.1 250)` |
+| `--barely-color-primary-hover` | Hover and active states. Derived from `primary` unless set (see below). | `primary` lightness − 0.07, which is `oklch(0.43 0.16 255)` with the default primary | `primary` lightness + 0.07, which is `oklch(0.82 0.12 250)` with the default primary |
 | `--barely-color-on-primary` | Text on primary fills | `oklch(0.985 0.004 250)` | `oklch(0.19 0.012 250)` |
 | `--barely-color-mark` | Background of `mark` | `oklch(0.93 0.11 95)` | `oklch(0.45 0.09 95)` |
 | `--barely-color-success` | Valid state, confirmations | `oklch(0.5 0.12 150)` | `oklch(0.76 0.14 150)` |
@@ -258,6 +258,16 @@ These values were approved with the owner on 2026-11-10. Once the build begins, 
 Rules for these tokens:
 
 - **Two border tokens.** `border` is decorative and may be low contrast. `border-strong` outlines form controls and must reach 3:1 against `background` and `surface` (WCAG 1.4.11).
+- **`primary-hover` is derived from `primary`,** so overriding the primary color alone is enough. Hover darkens by 0.07 lightness in the light theme and lightens by 0.07 in the dark theme, keeping chroma and hue:
+  ```css
+  color: var(--barely-color-primary-hover, light-dark(
+    oklch(from var(--barely-color-primary) calc(l - 0.07) c h),
+    oklch(from var(--barely-color-primary) calc(l + 0.07) c h)));
+  ```
+  - **The derivation is written at each use site, never declared on `:root`.** A custom property is calculated on the element where it is declared, and descendants inherit the finished value. Playwright testing showed that a derived `--barely-color-primary-hover` declared on `:root` ignored a primary override on any other element, in all three engines. That broke the promise that overriding a token on any element is enough. Written as the `var()` fallback at each use site, the derivation uses the element's own primary color.
+  - **An explicit value still wins.** Setting `--barely-color-primary-hover` anywhere replaces the derived value for that element and its descendants.
+  - **Tested** in Chromium, Firefox, and WebKit: default colors in light, dark, and a nested dark scope; a primary override on `:root`, on an ancestor, and as a single value; and an explicit hover override. All rendered the expected colors.
+  - The derived defaults pass the contrast matrix: hover on `background` is 7.82:1 in light and 10.45:1 in dark, and `on-primary` on hover has the same ratios.
 - **The focus ring uses `primary`** at 2px with an offset. There is no separate focus token.
 - **The dark theme is not an inversion.** Its background stays above near-black, its text stays below white, and `primary` gets lighter and less saturated.
 - **Status hues stay the same across themes.** Only lightness and chroma change.
@@ -285,6 +295,7 @@ Rules for these tokens:
   ```
   v1 fills only `reset`, `tokens`, and `base`. The other layer names are declared now so v2 can add to them without reordering. Styles a user writes outside any layer beat all framework layers automatically.
 - Element selectors are wrapped in `:where()` wherever possible, which keeps their specificity at or near zero.
+- **Derived tokens are calculated where they are used.** Any token whose default is calculated from another token, such as `primary-hover` from `primary`, is written as a `var()` fallback in the rules that use it, never declared on `:root`. Otherwise an override of the source token on any element other than `:root` would not reach it. The token-propagation check (Deliverable 7) also overrides source tokens on a nested element to catch this.
 - Logical properties are used everywhere (`margin-block`, `padding-inline`, `inset-inline-start`) so RTL layouts work.
 - Source layout **(builder's call)**: one file per area, such as `tokens.css`, `typography.css`, and `forms.css`, concatenated into a single distributable file. The concatenation script exists only for maintainers. Users never need it.
 
@@ -414,17 +425,16 @@ Migration guides for major releases:
      :root {
        /* Color tokens take a light and a dark value. */
        --barely-color-primary: light-dark(oklch(0.5 0.15 150), oklch(0.75 0.15 150));
-       --barely-color-primary-hover: light-dark(oklch(0.43 0.14 150), oklch(0.82 0.12 150));
        --barely-page-padding-inline: 2rem;
        /* barely-css loads no web fonts. Load Inter yourself, or the stack falls back to system-ui. */
        --barely-font-sans: "Inter", system-ui, sans-serif;
      }
      ```
-     The example must keep passing the contrast matrix. A single color value such as `oklch(0.55 0.16 150)` was considered and rejected: it fails AA in both themes (4.29:1 on the light background and 4.12:1 on the dark one), because one lightness can't suit both. The example also overrides `primary-hover`, since otherwise hovered links would stay the default blue. The README explains both points next to the example.
+     The example must keep passing the contrast matrix. A single color value such as `oklch(0.55 0.16 150)` was considered and rejected: it fails AA in both themes (4.29:1 on the light background and 4.12:1 on the dark one), because one lightness can't suit both. The hover color doesn't need its own line, because it is derived from the primary color. The README explains both points next to the example, and shows how to set `--barely-color-primary-hover` for someone who wants a hover color that isn't derived.
    - How theming works.
    - **The browser support statement.** It is stated plainly, without apology, because using modern CSS is a design decision, not a limitation. Proposed wording:
 
-     > barely-css supports the current and previous major versions of Chrome, Edge, Firefox, and Safari, on desktop and mobile. It is written for browsers from 2024 onward and uses modern CSS directly: cascade layers, nesting, `:has()`, `light-dark()`, `oklch()` colors, and `:user-invalid`. It includes no fallbacks or polyfills.
+     > barely-css supports the current and previous major versions of Chrome, Edge, Firefox, and Safari, on desktop and mobile. It is written for browsers from 2024 onward and uses modern CSS directly: cascade layers, nesting, `:has()`, `light-dark()`, `oklch()` colors with relative color syntax, and `:user-invalid`. It includes no fallbacks or polyfills.
      >
      > In older browsers, your HTML still works, because barely-css adds no JavaScript and never hides content. It may look unstyled or partly styled. Bugs that only appear in unsupported browsers aren't fixed.
 
@@ -445,7 +455,7 @@ Migration guides for major releases:
    - **Contrast checks, in three layers.** Each layer catches failures the others miss:
      1. **Token pairs.** Every pair listed under Color tokens is computed from the token values in both themes, without a browser. A token edit that drops any pair below its minimum fails right away.
      2. **Rendered states.** In each engine and both themes, Playwright drives each state for real: hover (`page.hover()`), keyboard focus (Tab), `:user-invalid` (typing invalid input and moving focus away), disabled, and read-only. It then measures the colors the browser actually rendered. Each computed color is converted to sRGB by painting it onto a canvas and reading the pixel, since some engines report computed colors as `oklch()`. The effective background is found by compositing up through the parent elements, so translucent backgrounds are handled. This layer catches a rule that uses the wrong token, and out-of-gamut colors that the browser renders differently than the token math predicts.
-     3. **Token propagation.** The test overrides every `--barely-color-*` token with a distinctive placeholder value, then confirms that every styled element in every state renders one of those placeholders. This proves no color is hard-coded and that every state follows the tokens. It tests the promise that overriding a token is enough.
+     3. **Token propagation.** The test overrides every `--barely-color-*` token with a distinctive placeholder value, then confirms that every styled element in every state renders one of those placeholders, or the color derived from one (such as the hover color derived from the placeholder primary). It runs twice: once with the overrides on `:root`, and once with them on a nested element, which catches a derived token declared on `:root` by mistake. This proves no color is hard-coded and that every state follows the tokens. It tests the promise that overriding a token is enough.
    - **Limits of the contrast checks:**
      - `:visited` styles are hidden from scripts for privacy, so rendered tests can't measure them. If barely-css styles `:visited`, that color is covered only by the token-pair layer.
      - axe's contrast rule only sees the state on screen when it runs, and it reports gradients and overlapping elements as incomplete rather than failing. That is why the rendered-state layer exists alongside it.
