@@ -13,14 +13,29 @@
 </head>
 <body>
   <header>
-    <a href="./">barely-css</a>
-    <div role="group" aria-label="Theme">
-      <button type="button" data-set-theme="" aria-pressed="true">System</button>
-      <button type="button" data-set-theme="light" aria-pressed="false">Light</button>
-      <button type="button" data-set-theme="dark" aria-pressed="false">Dark</button>
-    </div>
+    <nav>
+      <ul><li><a href="./">barely-css</a></li></ul>
+      <ul>
+        <li><a href="#typography">Typography</a></li>
+        <li><a href="#layout">Layout</a></li>
+        <li>
+          <div role="group" aria-label="Theme">
+            <button type="button" data-set-theme="" aria-pressed="true">System</button>
+            <button type="button" data-set-theme="light" aria-pressed="false">Light</button>
+            <button type="button" data-set-theme="dark" aria-pressed="false">Dark</button>
+          </div>
+        </li>
+      </ul>
+    </nav>
   </header>
   <main>
+    <nav aria-label="breadcrumb">
+      <ol>
+        <li><a href="./">Home</a></li>
+        <li><a href="./">Demo</a></li>
+        <li aria-current="page">Everything</li>
+      </ol>
+    </nav>
     <h1>barely-css demo</h1>
     <section id="typography">
       <h2>Typography</h2>

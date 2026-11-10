@@ -11,6 +11,7 @@ export const SOURCES = [
   'src/base.css',
   'src/typography.css',
   'src/layout.css',
+  'src/navigation.css',
 ];
 
 const GROUPING_AT_RULES = /^@(layer|media|supports|container|scope|starting-style)\b/;

@@ -342,3 +342,52 @@
     padding-inline-start: var(--barely-spacing);
   }
 }
+
+/* ==== navigation.css ==== */
+@layer base {
+  /* Masthead navigation: only body > header nav is laid out horizontally. */
+  :where(body > header nav) {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem var(--barely-spacing);
+  }
+
+  /* Top-level lists only: a submenu ul inside an li stays an ordinary vertical list. */
+  :where(body > header nav > ul) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem var(--barely-spacing);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-inline-size: none;
+  }
+
+  /* inline-block so the padding counts toward the target size. */
+  :where(body > header nav a) {
+    display: inline-block;
+    padding-block: 0.25rem;
+  }
+
+  /* Breadcrumbs: styled wherever they appear. */
+  :where(nav[aria-label="breadcrumb" i] > :is(ol, ul)) {
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    padding: 0;
+  }
+
+  /* The empty alternative text after the slash keeps screen readers from announcing it. */
+  :where(nav[aria-label="breadcrumb" i] li + li)::before {
+    content: "/" / "";
+    margin-inline: 0.5rem;
+    color: var(--barely-color-text-muted);
+  }
+
+  :where(nav[aria-label="breadcrumb" i] [aria-current="page"]) {
+    color: var(--barely-color-text);
+    text-decoration: none;
+  }
+}
