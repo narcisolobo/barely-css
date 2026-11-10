@@ -10,6 +10,7 @@ export const SOURCES = [
   'src/tokens.css',
   'src/base.css',
   'src/typography.css',
+  'src/layout.css',
 ];
 
 const GROUPING_AT_RULES = /^@(layer|media|supports|container|scope|starting-style)\b/;
