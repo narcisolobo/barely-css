@@ -5,3 +5,7 @@ All notable changes to barely-css are documented here. The format follows [Keep 
 Any change to a default value (a token, a spacing step, a color) is listed under a **Changed defaults** heading in the release that makes it, so you can see what will look different before you upgrade.
 
 ## [Unreleased]
+
+### Added
+
+- Color, typography, spacing, page, and form tokens; light and dark themes with `data-theme` scopes.
