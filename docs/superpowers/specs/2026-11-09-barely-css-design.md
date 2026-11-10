@@ -259,12 +259,15 @@ Rules for these tokens:
   | ---------- | ---------- | ------- |
   | `text` | `background`, `surface`, `mark` | 4.5:1 |
   | `text-muted` | `background`, `surface` | 4.5:1 |
-  | `primary` | `background` | 4.5:1 |
+  | `primary` | `background`, `surface` | 4.5:1 |
+  | `primary-hover` | `background`, `surface` | 4.5:1 |
   | `on-primary` | `primary`, `primary-hover` | 4.5:1 |
-  | `success`, `warning`, `danger` | `background` | 4.5:1 |
+  | `success`, `warning`, `danger` | `background`, `surface` | 4.5:1 |
   | `border-strong` | `background`, `surface` | 3:1 |
 
-  All pairs pass with the values above. The lowest ratio is `border-strong` on `surface` in the light theme, at 3.46:1.
+  `primary-hover` is checked as a foreground as well as a button fill, because hovered links use it as text. The status colors are checked on `surface` because status text can appear inside striped tables and other surfaces.
+
+  All pairs pass with the values above. The lowest ratio overall is `border-strong` on `surface` in the light theme, at 3.46:1 against 3:1. The lowest text pair is `warning` on `surface` in the light theme, at 4.78:1 against 4.5:1.
 
 ## Architecture
 
@@ -292,7 +295,7 @@ Rules for these tokens:
 `1.0.0` is published only when all of the following are true. Until then, releases are `1.0.0-beta.N`.
 
 - Every element in the baseline table is styled and appears on the demo page in both themes. The demo also includes the nested theme scope and the RTL section.
-- The axe scan reports no violations on the demo page, and every contrast pair under Color tokens passes in both themes.
+- The axe scan reports no violations on the demo page, and all three contrast layers pass in both themes: token pairs, rendered states, and token propagation.
 - Both dist files are current with `src/`, and the README covers everything listed under Deliverables.
 - The Playwright suite passes in Chromium, Firefox, and WebKit, including the `file://` check. The demo page has also been checked by hand in current Chrome, Firefox, and Safari.
 - At least one of the owner's real course pages renders correctly with only the stylesheet changed from Pico to barely-css, with no classes or wrappers added to the markup.
@@ -338,7 +341,7 @@ The changelog plan:
      - A major-version link for most users, such as `https://cdn.jsdelivr.net/npm/barely-css@1/dist/barely.min.css`. It picks up fixes automatically. jsDelivr caches version-range URLs for a while, so a new release can take some time to appear.
      - An exact-version link with an `integrity` hash, such as `https://cdn.jsdelivr.net/npm/barely-css@1.0.0/dist/barely.min.css`, for users who want the file locked down. Subresource integrity only works with exact versions.
    - The full token reference.
-   - How to override tokens.
+   - How to override tokens. This section states that overriding a color token makes the user responsible for its contrast, and lists the pairs from the Color tokens matrix that must keep passing. A command that checks a user's own overrides is a possible v2 addition.
    - How theming works.
    - The browser support policy.
 5. `CHANGELOG.md`, following the policy in Versioning and changelog.
@@ -346,7 +349,14 @@ The changelog plan:
    - **Tooling.** Playwright and `@axe-core/playwright` are maintainer-only dev dependencies. Users never install or run them, so the no-build-step rule still holds.
    - **Engines.** Every check runs in Chromium, Firefox, and WebKit. WebKit stands in for Safari in automation. Real Safari is still checked by hand before release.
    - **Accessibility scan.** axe runs on the demo page in both themes and must report no violations.
-   - **Contrast check.** Every token pair listed under Color tokens is checked in both themes. A token change that drops any pair below its minimum fails the check.
+   - **Contrast checks, in three layers.** Each layer catches failures the others miss:
+     1. **Token pairs.** Every pair listed under Color tokens is computed from the token values in both themes, without a browser. A token edit that drops any pair below its minimum fails right away.
+     2. **Rendered states.** In each engine and both themes, Playwright drives each state for real: hover (`page.hover()`), keyboard focus (Tab), `:user-invalid` (typing invalid input and moving focus away), disabled, and read-only. It then measures the colors the browser actually rendered. Each computed color is converted to sRGB by painting it onto a canvas and reading the pixel, since some engines report computed colors as `oklch()`. The effective background is found by compositing up through the parent elements, so translucent backgrounds are handled. This layer catches a rule that uses the wrong token, and out-of-gamut colors that the browser renders differently than the token math predicts.
+     3. **Token propagation.** The test overrides every `--barely-color-*` token with a distinctive placeholder value, then confirms that every styled element in every state renders one of those placeholders. This proves no color is hard-coded and that every state follows the tokens. It tests the promise that overriding a token is enough.
+   - **Limits of the contrast checks:**
+     - `:visited` styles are hidden from scripts for privacy, so rendered tests can't measure them. If barely-css styles `:visited`, that color is covered only by the token-pair layer.
+     - axe's contrast rule only sees the state on screen when it runs, and it reports gradients and overlapping elements as incomplete rather than failing. That is why the rendered-state layer exists alongside it.
+     - Users' own token overrides can't be tested by this suite. The README covers this (see Deliverable 4).
    - **Layout checks.** The page is loaded at phone width (about 400px) and desktop width. It must never scroll horizontally, except for the documented wide-table case.
    - **`file://` check.** The demo page is also loaded over `file://` to confirm the downloaded-file path works.
    - **Screenshots.** The suite saves screenshots for each engine, theme, and width so changes can be reviewed visually. Whether to fail on screenshot differences is decided when building, because rendering differs slightly between machines.
