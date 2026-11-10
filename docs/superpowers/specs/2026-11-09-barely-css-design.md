@@ -75,7 +75,7 @@ Even if everything else works, the project fails if the result looks like unstyl
 - **No classes are needed** for anything in v1.
 - **Every public custom property has a prefix,** so it can't collide with a site's own variables. The prefix is `--barely-`, as in `--barely-color-primary`. The exact prefix was a **(builder's call)**. Internal helper properties should use a separate private prefix, such as `--_barely-`, so they stay out of the documented API.
 - **Plain CSS is the source.** No Sass, PostCSS, or other preprocessor is required to read or edit the source. Shipping a minified copy is fine.
-- **Evergreen browsers only.** Use cascade layers, nesting, `:has()`, `:where()` and `:is()`, `oklch()`, `color-scheme`, logical properties, and container queries freely. Document the support policy in one sentence.
+- **Evergreen browsers only.** Use cascade layers, nesting, `:has()`, `:where()` and `:is()`, `oklch()`, `color-scheme`, logical properties, and container queries freely. The README states the support policy (see Deliverable 4).
 - **Fonts:**
   - Body and headings use a system sans-serif stack, exposed as `--barely-font-sans`.
   - Code uses a system monospace stack, exposed as `--barely-font-mono`.
@@ -397,13 +397,38 @@ Migration guides for major releases:
    - The license is MIT.
 3. A demo page that renders every element in the baseline, with a theme toggle, a nested theme scope, an RTL section, and a wide table shown with and without the optional scroll wrapper. For the keyboard checks, it also includes a `dialog` opened by a button, a `popover` with its `popovertarget` button, `details` elements, and links in every page region. The theme toggle may use a few lines of inline JavaScript that the framework itself does not depend on.
 4. A README covering:
+   - **A CSS-only installation path, first.** The README opens its installation section with the single `<link>` that needs no npm, build step, or JavaScript:
+     ```html
+     <link
+       rel="stylesheet"
+       href="https://cdn.jsdelivr.net/npm/barely-css@1/dist/barely.min.css"
+     />
+     ```
+     Downloading `barely.css` and linking it from disk comes next, then npm.
    - How to link from the CDN and from npm. The CDN section shows two jsDelivr URLs:
      - A major-version link for most users, such as `https://cdn.jsdelivr.net/npm/barely-css@1/dist/barely.min.css`. It picks up fixes automatically. jsDelivr caches version-range URLs for a while, so a new release can take some time to appear.
      - An exact-version link with an `integrity` hash, such as `https://cdn.jsdelivr.net/npm/barely-css@1.0.0/dist/barely.min.css`, for users who want the file locked down. Subresource integrity only works with exact versions.
    - The full token reference.
-   - How to override tokens. This section states that overriding a color token makes the user responsible for its contrast, and lists the pairs from the Color tokens matrix that must keep passing. A command that checks a user's own overrides is a possible v2 addition.
+   - How to override tokens. This section states that overriding a color token makes the user responsible for its contrast, and lists the pairs from the Color tokens matrix that must keep passing. A command that checks a user's own overrides is a possible v2 addition. It includes this customization example:
+     ```css
+     :root {
+       /* Color tokens take a light and a dark value. */
+       --barely-color-primary: light-dark(oklch(0.5 0.15 150), oklch(0.75 0.15 150));
+       --barely-color-primary-hover: light-dark(oklch(0.43 0.14 150), oklch(0.82 0.12 150));
+       --barely-page-padding-inline: 2rem;
+       /* barely-css loads no web fonts. Load Inter yourself, or the stack falls back to system-ui. */
+       --barely-font-sans: "Inter", system-ui, sans-serif;
+     }
+     ```
+     The example must keep passing the contrast matrix. A single color value such as `oklch(0.55 0.16 150)` was considered and rejected: it fails AA in both themes (4.29:1 on the light background and 4.12:1 on the dark one), because one lightness can't suit both. The example also overrides `primary-hover`, since otherwise hovered links would stay the default blue. The README explains both points next to the example.
    - How theming works.
-   - The browser support policy.
+   - **The browser support statement.** It is stated plainly, without apology, because using modern CSS is a design decision, not a limitation. Proposed wording:
+
+     > barely-css supports the current and previous major versions of Chrome, Edge, Firefox, and Safari, on desktop and mobile. It is written for browsers from 2024 onward and uses modern CSS directly: cascade layers, nesting, `:has()`, `light-dark()`, `oklch()` colors, and `:user-invalid`. It includes no fallbacks or polyfills.
+     >
+     > In older browsers, your HTML still works, because barely-css adds no JavaScript and never hides content. It may look unstyled or partly styled. Bugs that only appear in unsupported browsers aren't fixed.
+
+     The feature list in the statement must match the features the stylesheet actually uses, and it is updated when that changes.
 5. `CHANGELOG.md`, following the policy in Versioning and changelog.
 6. **A "Coming from Pico" guide** at `docs/migrating/from-pico.md`, linked from the README. Most v1 users will be moving from Pico, so this is the first migration guide. It covers:
    - **Wrappers can be removed.** `.container` and similar wrappers are no longer needed, because page regions get their width and padding automatically (see [Page layout](#page-layout)). A before and after example shows this.
