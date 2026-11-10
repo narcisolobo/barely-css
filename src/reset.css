@@ -1,2 +1,28 @@
 @layer reset {
+  html {
+    box-sizing: border-box;
+  }
+
+  *,
+  ::before,
+  ::after {
+    box-sizing: inherit;
+  }
+
+  :where(body) {
+    margin: 0;
+  }
+
+  :where(img, video, svg, canvas) {
+    display: block;
+  }
+
+  :where(button, input, select, textarea) {
+    font: inherit;
+    color: inherit;
+  }
+
+  :where([hidden]:not([hidden="until-found" i])) {
+    display: none;
+  }
 }

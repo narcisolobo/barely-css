@@ -69,10 +69,14 @@ export function minify(css, banner) {
       const prev = out[out.length - 1];
       const next = src[i + 1];
       const inDecl = stack[stack.length - 1] === true;
+      // A custom property value is serialized verbatim by the CSSOM, so its commas keep their spaces.
+      const inCustomProp = inDecl && out.slice(preludeStart).trimStart().startsWith('--');
       const drop =
         prev === undefined ||
-        '{};,'.includes(prev) ||
-        (next !== undefined && '{};,'.includes(next)) ||
+        '{};'.includes(prev) ||
+        (prev === ',' && !inCustomProp) ||
+        (next !== undefined && '{};'.includes(next)) ||
+        (next === ',' && !inCustomProp) ||
         (prev === ':' && inDecl);
       if (!drop) out += ' ';
       i++;

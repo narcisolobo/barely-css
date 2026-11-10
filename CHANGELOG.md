@@ -9,3 +9,4 @@ Any change to a default value (a token, a spacing step, a color) is listed under
 ### Added
 
 - Color, typography, spacing, page, and form tokens; light and dark themes with `data-theme` scopes.
+- Reset, base typography defaults, focus ring, and theme scopes.

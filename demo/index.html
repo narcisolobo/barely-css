@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>barely-css demo</title>
+  <link rel="stylesheet" href="../dist/barely.css">
+  <style>
+    /* Demo only: buttons are styled by the library later; until then keep the toggle readable. */
+    header button { background: transparent; border: 1px solid currentColor; }
+    header button[aria-pressed="true"] { font-weight: 700; }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="./">barely-css</a>
+    <div role="group" aria-label="Theme">
+      <button type="button" data-set-theme="" aria-pressed="true">System</button>
+      <button type="button" data-set-theme="light" aria-pressed="false">Light</button>
+      <button type="button" data-set-theme="dark" aria-pressed="false">Dark</button>
+    </div>
+  </header>
+  <main>
+    <h1>barely-css demo</h1>
+    <section id="typography"><h2>Typography</h2><p>Headings, paragraphs, and inline text will appear here.</p></section>
+    <section id="lists"><h2>Lists</h2><p>Ordered, unordered, and description lists will appear here.</p></section>
+    <section id="tables"><h2>Tables</h2><p>Tables will appear here.</p></section>
+    <section id="code"><h2>Code</h2><p>Code blocks and keyboard input will appear here.</p></section>
+    <section id="media"><h2>Media</h2><p>Images, figures, and embedded media will appear here.</p></section>
+    <section id="forms"><h2>Forms</h2><p>Form controls will appear here.</p></section>
+    <section id="interactive"><h2>Interactive</h2><p>Disclosure, dialog, progress, and meter elements will appear here.</p></section>
+    <section id="nested-theme" data-theme="dark">
+      <h2>Nested theme</h2>
+      <p>This section is always dark. <input type="text" aria-label="Dark scope input"></p>
+      <div data-theme="light">
+        <h3>Light inside dark</h3>
+        <p>This block is always light. <input type="text" aria-label="Light scope input"></p>
+      </div>
+    </section>
+    <section id="rtl" dir="rtl" lang="ar">
+      <h2>الاتجاه من اليمين إلى اليسار</h2>
+      <p>سيظهر هنا نص بالعربية لاختبار الاتجاه.</p>
+    </section>
+  </main>
+  <footer>
+    <a href="https://github.com/narcisolobo/barely-css">Source on GitHub</a>
+  </footer>
+  <script>
+    const buttons = document.querySelectorAll('[data-set-theme]');
+    buttons.forEach((button) => button.addEventListener('click', () => {
+      const theme = button.dataset.setTheme;
+      if (theme) document.documentElement.setAttribute('data-theme', theme);
+      else document.documentElement.removeAttribute('data-theme');
+      buttons.forEach((b) => b.setAttribute('aria-pressed', String(b === button)));
+    }));
+  </script>
+</body>
+</html>
