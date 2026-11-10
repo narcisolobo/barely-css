@@ -5,6 +5,9 @@ import { DEMO } from '../helpers/env.js';
 const serialize = () =>
   [...document.styleSheets].flatMap((sheet) => [...sheet.cssRules].map((r) => r.cssText));
 
+// Chromium keeps source whitespace inside var()-containing values; whitespace runs are equivalent tokens.
+const normalize = (rules) => rules.map((t) => t.replace(/\s+/g, ' '));
+
 test('minified CSS produces the same CSSOM', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'chromium-light', 'Chromium light only');
   await page.goto(DEMO);
@@ -16,5 +19,5 @@ test('minified CSS produces the same CSSOM', async ({ page }, testInfo) => {
   await page.goto(DEMO);
   const minified = await page.evaluate(serialize);
   expect(full.length).toBeGreaterThan(0);
-  expect(minified).toEqual(full);
+  expect(normalize(minified)).toEqual(normalize(full));
 });

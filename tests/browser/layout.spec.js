@@ -235,3 +235,54 @@ test.describe('wide', () => {
     expect(r.pad).toBeCloseTo(rem, 1);
   });
 });
+
+for (const width of [375, 1600]) {
+  test.describe(`prose and aside placed directly in body at ${width}`, () => {
+    test.use({ viewport: { width, height: 900 } });
+
+    test('body > p is a full-width region carrying the reading width', async ({ page }) => {
+      await page.goto('/tests/pages/no-main.html');
+      const contentW = await token(page, '--barely-content-width');
+      const readingW = await page.evaluate(() => {
+        const probe = document.createElement('div');
+        probe.style.inlineSize = 'var(--barely-reading-width)';
+        probe.style.position = 'absolute';
+        document.querySelector('body > p').append(probe);
+        const w = probe.getBoundingClientRect().width;
+        probe.remove();
+        return w;
+      });
+      const p = await box(page, 'body > p');
+      const sec = await box(page, 'body > section');
+      expect(p.left).toBe(0);
+      expect(p.right).toBe(width);
+      expect(p.contentLeft).toBeCloseTo(sec.contentLeft, 0);
+      const content = p.contentRight - p.contentLeft;
+      const avail = sec.contentRight - sec.contentLeft;
+      expect(Math.abs(content - Math.min(readingW, contentW, avail))).toBeLessThanOrEqual(2);
+    });
+
+    test('aside in body keeps its start border and padding at the content edge', async ({ page }) => {
+      await page.goto('/tests/pages/regions.html');
+      const r = await page.evaluate(() => {
+        const a = document.querySelector('body > aside');
+        const m = document.querySelector('body > main');
+        const ms = getComputedStyle(m);
+        const s = getComputedStyle(a);
+        return {
+          borderLeft: a.getBoundingClientRect().left,
+          mainContentLeft: m.getBoundingClientRect().left + parseFloat(ms.paddingLeft),
+          border: parseFloat(s.borderLeftWidth),
+          padStart: parseFloat(s.paddingLeft),
+          textLeft: a.querySelector('p').getBoundingClientRect().left,
+          right: a.getBoundingClientRect().right,
+        };
+      });
+      expect(r.borderLeft).toBeCloseTo(r.mainContentLeft, 0);
+      expect(r.border).toBeGreaterThan(0);
+      expect(r.padStart).toBeGreaterThan(0);
+      expect(r.textLeft).toBeGreaterThan(r.borderLeft + r.border);
+      expect(r.right).toBeLessThanOrEqual(width);
+    });
+  });
+}
