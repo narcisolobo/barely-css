@@ -1,17 +1,9 @@
 import { test, expect } from '@playwright/test';
 import { DEMO, setTheme } from '../helpers/env.js';
+import { paintedRgb } from '../helpers/paint.js';
 
-// Computed colors may serialize as oklch(...), color(srgb ...) or rgb(...), so resolve through a canvas.
-async function rgbOf(page, selector) {
-  return page.evaluate((sel) => {
-    const css = getComputedStyle(document.querySelector(sel)).backgroundColor;
-    const ctx = document.createElement('canvas').getContext('2d');
-    ctx.fillStyle = '#000';
-    ctx.fillStyle = css;
-    ctx.fillRect(0, 0, 1, 1);
-    return [...ctx.getImageData(0, 0, 1, 1).data].slice(0, 3);
-  }, selector);
-}
+const rgbOf = (page, selector) => paintedRgb(page, selector, 'backgroundColor');
+
 
 const isDark = (rgb) => rgb.every((n) => n < 100);
 const isLight = (rgb) => rgb.every((n) => n > 200);

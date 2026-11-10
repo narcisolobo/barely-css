@@ -23,11 +23,9 @@ const forcedProjects = [
   name: `${browserName}-${colorScheme}-forced`,
   testDir: 'tests/browser',
   testMatch: /(keyboard|forced-colors)\.spec\.js/,
-  // WebKit has no forced-colors emulation: its project only checks the media-only behavior.
-  use:
-    browserName === 'webkit'
-      ? { browserName, colorScheme }
-      : { browserName, colorScheme, forcedColors: 'active' },
+  // WebKit only reports the media query as matching; it does not force rendered colors.
+  // forcedMode() returns 'media-only' there, so tests skip rendered-color assertions.
+  use: { browserName, colorScheme, forcedColors: 'active' },
 }));
 
 export default defineConfig({
