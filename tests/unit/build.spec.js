@@ -38,3 +38,16 @@ test('minify keeps strings and data URIs intact', () => {
   const input = `a { background: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16'%3E%3C/svg%3E"); }`;
   expect(minify(input, '/*! b */')).toContain(`viewBox='0 0 16 16'`);
 });
+
+test('minify keeps comma spaces in declarations that contain var()', () => {
+  const min = minify(
+    `a { transition: color var(--d), background-color var(--d); box-shadow: 0 0 0 1px var(--c), inset 0 1px var(--c); }`,
+    '/*! b */',
+  );
+  expect(min).toContain('transition:color var(--d), background-color var(--d)');
+  expect(min).toContain('box-shadow:0 0 0 1px var(--c), inset 0 1px var(--c)');
+});
+
+test('minify still drops comma spaces in declarations without var()', () => {
+  expect(minify(`a { font-family: a, b, c; }`, '/*! b */')).toContain('font-family:a,b,c');
+});
