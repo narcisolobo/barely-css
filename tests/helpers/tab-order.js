@@ -79,6 +79,9 @@ export async function expectedStops(page) {
   });
 }
 
+const SETTLE_MS = 500;
+const SETTLE_STEP_MS = 25;
+
 /**
  * Presses `key` from the top (or bottom, with reverse) and records the data-kb-id of the
  * focused element, collapsing consecutive duplicates (date inputs have inner segments).
@@ -92,11 +95,20 @@ export async function walkTabStops(page, key, { max = 400 } = {}) {
   let end = 'max';
   for (let i = 0; i < max; i++) {
     await page.keyboard.press(key);
-    const id = await page.evaluate(() => {
-      const el = document.activeElement;
-      if (!el || el === document.body || el === document.documentElement) return null;
-      return el.closest('[data-kb-id]')?.getAttribute('data-kb-id') ?? null;
-    });
+    const read = () =>
+      page.evaluate(() => {
+        const el = document.activeElement;
+        if (!el || el === document.body || el === document.documentElement) return null;
+        return el.closest('[data-kb-id]')?.getAttribute('data-kb-id') ?? null;
+      });
+    let id = await read();
+    // Focus can pass through a transient body state while it leaves an iframe's document: WebKit under load reports
+    // activeElement === body (document.hasFocus() true) for a moment and then lands on the previous stop. So a
+    // null reading is only the end of the page once it stays null for a bounded settling window.
+    for (let waited = 0; id === null && waited < SETTLE_MS; waited += SETTLE_STEP_MS) {
+      await page.waitForTimeout(SETTLE_STEP_MS);
+      id = await read();
+    }
     if (id === null) {
       end = 'body';
       break;
