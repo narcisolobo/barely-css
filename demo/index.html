@@ -6,9 +6,6 @@
   <title>barely-css demo</title>
   <link rel="stylesheet" href="../dist/barely.css">
   <style>
-    /* Demo only: buttons are styled by the library later; until then keep the toggle readable. */
-    header button { background: transparent; border: 1px solid currentColor; }
-    header button[aria-pressed="true"] { font-weight: 700; }
     /* Demo only: keep the two schedule tables wider than a phone, to show the wrapper and the accepted overflow. */
     #schedule-region td, #schedule-unwrapped td { white-space: nowrap; }
   </style>
@@ -163,7 +160,76 @@
       </audio>
       <iframe title="Embedded plain text" srcdoc="Plain text inside a frame."></iframe>
     </section>
-    <section id="forms"><h2>Forms</h2><p>Form controls will appear here.</p></section>
+    <section id="forms">
+      <h2>Forms</h2>
+      <form id="demo-form">
+        <fieldset>
+          <legend>Account</legend>
+          <label for="f-text">Full name
+            <input id="f-text" type="text" name="name" autocomplete="name" value="Ada Lovelace">
+          </label>
+          <label for="f-email">Email
+            <input id="f-email" type="email" name="email" autocomplete="email" placeholder="you@school.edu" required aria-describedby="f-email-msg">
+            <small id="f-email-msg">Required. Used for grade notifications.</small>
+          </label>
+          <label for="f-password">Password
+            <input id="f-password" type="password" name="password" autocomplete="new-password" value="correct-horse" minlength="8">
+          </label>
+        </fieldset>
+        <label for="f-search">Search the course
+          <input id="f-search" type="search" name="q" placeholder="Search modules, pages, files">
+        </label>
+        <label for="f-url">Portfolio URL
+          <input id="f-url" type="url" name="url" placeholder="https://" value="https://github.com/ada">
+        </label>
+        <label for="f-tel">Phone
+          <input id="f-tel" type="tel" name="tel" autocomplete="tel" placeholder="555 0142">
+        </label>
+        <label for="f-number">Credits this term
+          <input id="f-number" type="number" name="credits" min="1" max="21" value="15">
+        </label>
+        <label for="f-date">Due date
+          <input id="f-date" type="date" name="due" value="2026-11-20">
+        </label>
+        <label for="f-time">Time
+          <input id="f-time" type="time" name="time" value="17:00">
+        </label>
+        <label for="f-dtl">Exam starts
+          <input id="f-dtl" type="datetime-local" name="exam" value="2026-12-08T09:30">
+        </label>
+        <label for="f-month">Term start
+          <input id="f-month" type="month" name="term" value="2027-01">
+        </label>
+        <label for="f-week">Office hours week
+          <input id="f-week" type="week" name="week" value="2026-W47">
+        </label>
+        <label for="f-range">Confidence with this week's material
+          <input id="f-range" type="range" name="confidence" min="0" max="10" value="7">
+        </label>
+        <label for="f-file">Upload your notebook
+          <input id="f-file" type="file" name="file" accept=".ipynb,.pdf">
+        </label>
+        <label for="f-color">Highlight color
+          <input id="f-color" type="color" name="color" value="#2f6fd6">
+        </label>
+        <label for="f-select">Section
+          <select id="f-select" name="section">
+            <option>CS-101: Mon/Wed 9:00</option>
+            <option selected>CS-101: Tue/Thu 13:00</option>
+            <option>CS-101: Online</option>
+          </select>
+        </label>
+        <label for="f-textarea">Question for the instructor
+          <textarea id="f-textarea" name="question" placeholder="What are you stuck on?"></textarea>
+        </label>
+        <p>
+          <input type="submit" value="Submit assignment">
+          <input type="reset" value="Reset form">
+          <input type="button" value="Preview">
+          <button type="button">Button element</button>
+        </p>
+      </form>
+    </section>
     <section id="interactive"><h2>Interactive</h2><p>Disclosure, dialog, progress, and meter elements will appear here.</p></section>
     <section id="nested-theme" data-theme="dark">
       <h2>Nested theme</h2>
@@ -182,6 +248,7 @@
     <a href="https://github.com/narcisolobo/barely-css">Source on GitHub</a>
   </footer>
   <script>
+    document.getElementById('demo-form').addEventListener('submit', (event) => event.preventDefault());
     const buttons = document.querySelectorAll('[data-set-theme]');
     buttons.forEach((button) => button.addEventListener('click', () => {
       const theme = button.dataset.setTheme;

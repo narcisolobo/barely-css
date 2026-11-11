@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { DEMO, forcedMode, tabKey } from '../helpers/env.js';
+import { distinctColorCount } from '../helpers/pixels.js';
 
 test('forced-colors media query applies', async ({ page }) => {
   await page.goto(DEMO);
@@ -25,4 +26,26 @@ test('focus outline is visible in forced colors', async ({ page, browserName }, 
     expect(outline.style, selector).not.toBe('none');
     expect(outline.width, selector).toBeGreaterThanOrEqual(2);
   }
+});
+
+test('select chevron is visible', async ({ page }) => {
+  await page.goto('/tests/pages/forms.html');
+  const box = await page.locator('#ltr-select').boundingBox();
+  // The chevron sits one padding inline from the end edge; a strip there must hold more than the fill alone.
+  const scrollY = await page.evaluate(() => scrollY);
+  const png = await page.screenshot({
+    fullPage: true,
+    clip: { x: box.x + box.width - 40, y: box.y + scrollY + 8, width: 24, height: box.height - 16 },
+  });
+  expect(distinctColorCount(png)).toBeGreaterThanOrEqual(2);
+});
+
+test('text control border differs from background', async ({ page }, testInfo) => {
+  test.skip(forcedMode(testInfo) !== 'active', 'WebKit only reports the media query');
+  await page.goto('/tests/pages/forms.html');
+  const [border, bg] = await page.locator('#plain').evaluate((el) => {
+    const c = getComputedStyle(el);
+    return [c.borderTopColor, c.backgroundColor];
+  });
+  expect(border).not.toBe(bg);
 });

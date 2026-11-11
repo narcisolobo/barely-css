@@ -15,3 +15,4 @@ Any change to a default value (a token, a spacing step, a color) is listed under
 - Masthead navigation (one or two lists, wrapping) and breadcrumbs, with no classes.
 - Table styles and an optional scroll wrapper (`div[role="region"][tabindex]` around a `table`), with no classes.
 - Code and media styles: `code`, `kbd`, `samp`, scrolling `pre`, responsive `img`, `video`, `audio`, `iframe` (16:9 when it has no height), and `figure` with `figcaption`.
+- Form controls and buttons: block labels that wrap their controls, text-like inputs (including unknown types), `select`, `textarea`, range, file, color, `fieldset` and `legend`, and primary and reset buttons, with no classes.

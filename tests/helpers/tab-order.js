@@ -10,7 +10,7 @@ export async function tagElements(page) {
 /**
  * Ids (as strings, source order) of the elements Tab should reach.
  * required: always a stop (an unchecked radio group is one slot, keyed by its first member;
- * `alternates[firstId]` lists every member, since engines enter such a group at different members). optional: engines differ (media controls, scroll containers).
+ * `alternates[firstId]` lists every member, since engines enter such a group at different members). optional: engines differ (media controls, scroll containers, and color inputs in WebKit).
  */
 export async function expectedStops(page) {
   return page.evaluate(() => {
@@ -62,6 +62,14 @@ export async function expectedStops(page) {
     const optional = [];
     for (const el of document.querySelectorAll('video[controls], audio[controls], iframe')) {
       if (!blocked(el) && rendered(el)) optional.push(el);
+    }
+    // WebKit (the Playwright build) leaves input[type=color] out of the Tab order; Chromium and Firefox keep it.
+    if (!/Chrome|Firefox/.test(navigator.userAgent)) {
+      for (const el of [...stops]) {
+        if (!el.matches('input[type=color]')) continue;
+        stops.splice(stops.indexOf(el), 1);
+        optional.push(el);
+      }
     }
     for (const el of document.querySelectorAll('*')) {
       if (stops.includes(el) || optional.includes(el)) continue;

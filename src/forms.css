@@ -1,0 +1,230 @@
+@layer base {
+  /* Wrapping label: text stacks above the control. The label stays display: block (never grid or flex), so
+     inline content in the label text flows normally and a stretched label can never stretch its control. */
+  :where(label) {
+    display: block;
+    font-weight: 500;
+    font-size: 0.9375rem;
+  }
+
+  :where(label > :is(input:not([type="checkbox"], [type="radio"]), select, textarea)) {
+    display: block;
+    margin-block-start: 0.375rem;
+  }
+
+  /* Helper text after a control. Link it with aria-describedby. */
+  :where(label > small, fieldset > small) {
+    display: block;
+    margin-block-start: 0.375rem;
+    font-weight: 400;
+    font-size: 0.875rem;
+    color: var(--barely-color-text-muted);
+  }
+
+  /* Text-like controls: every input type NOT in the exclusion list, so unknown or future types default here.
+     Tasks for choices and form states build on this same selector. */
+  :where(
+    :is(
+      input:not([type="checkbox"], [type="radio"], [type="range"], [type="file"], [type="color"],
+        [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]),
+      select,
+      textarea
+    )
+  ) {
+    appearance: none;
+    inline-size: 100%;
+    min-block-size: var(--barely-control-height);
+    padding: var(--barely-control-padding-block) var(--barely-control-padding-inline);
+    font: inherit;
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--barely-color-text);
+    background-color: var(--barely-control-background, var(--barely-color-background));
+    border: var(--barely-control-border-width) solid var(--barely-color-border-strong);
+    border-radius: var(--barely-control-radius);
+    margin: 0;
+  }
+
+  :where(textarea) {
+    min-block-size: 6.5rem;
+    resize: vertical;
+  }
+
+  :where(input, textarea)::placeholder {
+    color: var(--barely-color-text-muted);
+    opacity: 1;
+  }
+
+  :where(input)::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+  }
+
+  :where(input:is([type="date"], [type="time"], [type="datetime-local"], [type="month"], [type="week"])) {
+    font-variant-numeric: tabular-nums;
+  }
+
+  :where(input:is([type="date"], [type="time"], [type="datetime-local"], [type="month"], [type="week"]))::-webkit-datetime-edit {
+    padding: 0;
+  }
+
+  /* WebKit keeps focus on the inner editable segments of date and time inputs, so the host never matches
+     :focus-visible there. Draw the same ring when focus is anywhere inside. */
+  :where(input:is([type="date"], [type="time"], [type="datetime-local"], [type="month"], [type="week"]):focus-within) {
+    outline: var(--barely-focus-ring-width) solid var(--barely-color-primary);
+    outline-offset: var(--barely-focus-ring-offset);
+  }
+
+  @media (forced-colors: active) {
+    :where(input:is([type="date"], [type="time"], [type="datetime-local"], [type="month"], [type="week"]):focus-within) {
+      outline-color: Highlight;
+    }
+  }
+
+  /* Select: chevron drawn with gradients in currentColor, so it follows the text token in both themes. */
+  :where(select) {
+    padding-inline-end: calc(var(--barely-control-padding-inline) + 1.25rem);
+    background-image:
+      linear-gradient(45deg, transparent 50%, currentColor 50%),
+      linear-gradient(135deg, currentColor 50%, transparent 50%);
+    background-position:
+      calc(100% - var(--barely-control-padding-inline) - 5px) 52%,
+      calc(100% - var(--barely-control-padding-inline)) 52%;
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+    cursor: pointer;
+  }
+
+  :where(select:dir(rtl)) {
+    background-position:
+      var(--barely-control-padding-inline) 52%,
+      calc(var(--barely-control-padding-inline) + 5px) 52%;
+  }
+
+  /* Fieldset: borderless group; legend reads like a label. */
+  :where(fieldset) {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.5rem;
+    min-inline-size: 0;
+  }
+
+  :where(legend) {
+    padding: 0;
+    margin-block-end: 0.375rem;
+    font-weight: 500;
+    font-size: 0.9375rem;
+  }
+
+  /* Space between fields in a form. Placed after the fieldset reset so it wins on fieldset. Not after the last field, and not between the rows inside a fieldset. */
+  :where(form :is(label, fieldset):not(:last-child, fieldset > label)) {
+    margin-block-end: var(--barely-form-gap);
+  }
+
+  /* Range: native control tinted with accent-color; keeps platform keyboard and assistive technology behavior. */
+  :where(input[type="range"]) {
+    inline-size: 100%;
+    margin: 0;
+    accent-color: var(--barely-color-primary);
+    min-block-size: 1.5rem;
+    cursor: pointer;
+  }
+
+  /* File: the selector button uses the secondary-button look. */
+  :where(input[type="file"]) {
+    inline-size: 100%;
+    font: inherit;
+    font-weight: 400;
+    font-size: 0.9375rem;
+    color: var(--barely-color-text-muted);
+    padding: 0.3125rem;
+    border: var(--barely-control-border-width) dashed var(--barely-color-border-strong);
+    border-radius: var(--barely-control-radius);
+    background: var(--barely-control-background, var(--barely-color-background));
+  }
+
+  :where(input[type="file"])::file-selector-button {
+    font: inherit;
+    font-weight: 500;
+    font-size: 0.9375rem;
+    margin-inline-end: 0.75rem;
+    min-block-size: calc(var(--barely-control-height) - 0.75rem);
+    padding: 0.25rem 0.875rem;
+    color: var(--barely-color-text);
+    background: var(--barely-color-surface);
+    border: var(--barely-control-border-width) solid var(--barely-color-border-strong);
+    border-radius: calc(var(--barely-control-radius) - 0.125rem);
+    cursor: pointer;
+  }
+
+  /* Color: a swatch sized like other controls. */
+  :where(input[type="color"]) {
+    appearance: none;
+    inline-size: 4.5rem;
+    block-size: var(--barely-control-height);
+    padding: 0.3125rem;
+    margin: 0;
+    background: var(--barely-control-background, var(--barely-color-background));
+    cursor: pointer;
+    border: var(--barely-control-border-width) solid var(--barely-color-border-strong);
+    border-radius: var(--barely-control-radius);
+  }
+
+  :where(input[type="color"])::-webkit-color-swatch-wrapper {
+    padding: 0;
+  }
+
+  :where(input[type="color"])::-webkit-color-swatch {
+    border: 0;
+    border-radius: calc(var(--barely-control-radius) - 0.1875rem);
+  }
+
+  :where(input[type="color"])::-moz-color-swatch {
+    border: 0;
+    border-radius: calc(var(--barely-control-radius) - 0.1875rem);
+  }
+
+  /* Buttons: button, submit and button inputs are primary. Reset is secondary. */
+  :where(button, input:is([type="submit"], [type="reset"], [type="button"])) {
+    appearance: none;
+    margin: 0;
+    font: inherit;
+    font-weight: 500;
+    font-size: 1rem;
+    line-height: 1.5;
+    min-block-size: var(--barely-control-height);
+    padding: var(--barely-control-padding-block) 1.25rem;
+    border-radius: var(--barely-control-radius);
+    border: var(--barely-control-border-width) solid var(--barely-color-primary);
+    background: var(--barely-color-primary);
+    color: var(--barely-color-on-primary);
+    cursor: pointer;
+  }
+
+  :where(button, input:is([type="submit"], [type="button"])):where(:hover:not(:disabled)) {
+    background: var(--barely-color-primary-hover, light-dark(oklch(from var(--barely-color-primary) calc(l - 0.07) c h), oklch(from var(--barely-color-primary) calc(l + 0.07) c h)));
+    border-color: var(--barely-color-primary-hover, light-dark(oklch(from var(--barely-color-primary) calc(l - 0.07) c h), oklch(from var(--barely-color-primary) calc(l + 0.07) c h)));
+  }
+
+  :where(input[type="reset"]) {
+    background: var(--barely-color-surface);
+    color: var(--barely-color-text);
+    border-color: var(--barely-color-border-strong);
+  }
+
+  :where(input[type="reset"]:hover:not(:disabled)) {
+    border-color: var(--barely-color-text-muted);
+  }
+
+  @media (forced-colors: active) {
+    /* Forced colors removes the gradient chevron; paint it with system colors instead. */
+    :where(select) {
+      forced-color-adjust: none;
+      color: CanvasText;
+      background-color: Canvas;
+      border-color: ButtonText;
+    }
+  }
+}

@@ -78,3 +78,13 @@ test.describe('table scroll wrapper', () => {
     await expect.poll(() => wrapper.evaluate((el) => el.scrollLeft)).toBeGreaterThan(0);
   });
 });
+
+test('range steps with arrow keys', async ({ page }) => {
+  await page.goto('/tests/pages/forms.html');
+  const range = page.locator('#range');
+  await range.focus();
+  const read = () => range.evaluate((el) => [Number(el.value), Number(el.step)]);
+  const [before, step] = await read();
+  await page.keyboard.press('ArrowRight');
+  expect((await read())[0]).toBe(before + step);
+});
