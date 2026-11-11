@@ -911,17 +911,6 @@
       background: HighlightText;
     }
 
-    /* forced-color-adjust: none would make a disabled choice look enabled, so mark it with GrayText. */
-    :where(input:is([type="checkbox"], [type="radio"])):disabled {
-      background: Canvas;
-      border-color: GrayText;
-    }
-
-    :where(input:is([type="checkbox"], [type="radio"])):disabled:checked {
-      background: GrayText;
-      border-color: GrayText;
-    }
-
     :where(input:is([type="checkbox"], [type="radio"])):focus-visible {
       outline-color: Highlight;
     }
@@ -1040,6 +1029,18 @@
     :where(:is(input, select, textarea)[aria-invalid="false"]) + small::before {
       forced-color-adjust: none;
       background: CanvasText;
+    }
+
+    /* Forced-color-adjust: none (choices.css) would make a disabled choice look enabled, so mark it with GrayText.
+       These live here, after the non-forced disabled rules above, so they win at equal specificity. */
+    :where(input:is([type="checkbox"], [type="radio"])):disabled {
+      background: Canvas;
+      border-color: GrayText;
+    }
+
+    :where(input:is([type="checkbox"], [type="radio"])):disabled:checked {
+      background: GrayText;
+      border-color: GrayText;
     }
 
     /* The select sets forced-color-adjust: none in forms.css, so the browser's own disabled treatment is off. */

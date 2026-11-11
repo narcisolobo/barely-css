@@ -150,17 +150,6 @@
       background: HighlightText;
     }
 
-    /* forced-color-adjust: none would make a disabled choice look enabled, so mark it with GrayText. */
-    :where(input:is([type="checkbox"], [type="radio"])):disabled {
-      background: Canvas;
-      border-color: GrayText;
-    }
-
-    :where(input:is([type="checkbox"], [type="radio"])):disabled:checked {
-      background: GrayText;
-      border-color: GrayText;
-    }
-
     :where(input:is([type="checkbox"], [type="radio"])):focus-visible {
       outline-color: Highlight;
     }

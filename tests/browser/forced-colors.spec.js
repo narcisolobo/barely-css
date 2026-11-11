@@ -132,3 +132,29 @@ test.describe('form states', () => {
     expect(r.border).toBe(r.gray);
   });
 });
+
+test.describe('disabled choices', () => {
+  test('disabled choices use GrayText and Canvas', async ({ page }, testInfo) => {
+    test.skip(forcedMode(testInfo) !== 'active', 'WebKit only reports the media query');
+    await page.goto('/tests/pages/form-states.html');
+    const r = await page.evaluate(() => {
+      const resolve = (c) => {
+        const probe = document.createElement('i');
+        probe.style.color = c;
+        document.body.append(probe);
+        const v = getComputedStyle(probe).color;
+        probe.remove();
+        return v;
+      };
+      const paint = (id) => {
+        const s = getComputedStyle(document.getElementById(id));
+        return { bg: s.backgroundColor, border: s.borderTopColor };
+      };
+      return { gray: resolve('GrayText'), canvas: resolve('Canvas'), on: paint('dis-cb-on'), off: paint('dis-sw-off') };
+    });
+    expect(r.on.bg).toBe(r.gray);
+    expect(r.on.border).toBe(r.gray);
+    expect(r.off.bg).toBe(r.canvas);
+    expect(r.off.border).toBe(r.gray);
+  });
+});
