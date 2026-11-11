@@ -126,8 +126,7 @@ test.describe('form states', () => {
       const gray = getComputedStyle(probe).color;
       probe.remove();
       const s = getComputedStyle(document.getElementById('dis-select'));
-      const on = document.getElementById('dis-text');
-      return { gray, color: s.color, border: s.borderTopColor, textColor: getComputedStyle(on).color };
+      return { gray, color: s.color, border: s.borderTopColor };
     });
     expect(r.color).toBe(r.gray);
     expect(r.border).toBe(r.gray);

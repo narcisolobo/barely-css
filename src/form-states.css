@@ -29,12 +29,14 @@
     cursor: not-allowed;
   }
 
-  :where(input:is([type="checkbox"], [type="radio"]):disabled) {
+  /* The state pseudo-classes sit outside :where() so these rules are (0,1,0), the same as the checked rules in
+     choices.css, and win by source order. */
+  :where(input:is([type="checkbox"], [type="radio"])):disabled {
     background: var(--barely-color-surface);
     border-color: var(--barely-color-border);
   }
 
-  :where(input:is([type="checkbox"], [type="radio"]):disabled:checked) {
+  :where(input:is([type="checkbox"], [type="radio"])):disabled:checked {
     background: var(--barely-color-border-strong);
     border-color: var(--barely-color-border-strong);
   }
@@ -46,7 +48,8 @@
     cursor: not-allowed;
   }
 
-  /* Invalid: native :user-invalid (after the user interacts) or a server-rendered aria-invalid="true".
+  /* A focused invalid or valid field keeps its danger or success border on purpose; it does not switch to primary.
+     Invalid: native :user-invalid (after the user interacts) or a server-rendered aria-invalid="true".
      A thicker border and an icon on the following message, so it is not color alone. The inline-start padding
      gives back the extra border width, so the text does not move. */
   :where(:is(input, select, textarea):is(:user-invalid, [aria-invalid="true"]):not([type="checkbox"], [type="radio"])) {
@@ -55,7 +58,7 @@
     padding-inline-start: calc(var(--barely-control-padding-inline) - (var(--barely-control-border-width-invalid) - var(--barely-control-border-width)));
   }
 
-  :where(input:is([type="checkbox"], [type="radio"]):is(:user-invalid, [aria-invalid="true"])) {
+  :where(input:is([type="checkbox"], [type="radio"])):is(:user-invalid, [aria-invalid="true"]) {
     border-color: var(--barely-color-danger);
     border-width: var(--barely-control-border-width-invalid);
   }

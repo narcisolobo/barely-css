@@ -181,3 +181,21 @@ test.describe('validation', () => {
     }
   });
 });
+
+test('checked disabled and invalid choices keep their state colors', async ({ page }) => {
+  const strong = await token(page, '--barely-color-border-strong');
+  const surface = await token(page, '--barely-color-surface');
+  const border = await token(page, '--barely-color-border');
+  const danger = await token(page, '--barely-color-danger');
+  for (const id of ['dis-cb-on', 'dis-rd-on', 'dis-sw-on']) {
+    const el = page.locator(`#${id}`);
+    expect(await paintedRgba(el, 'backgroundColor'), id).toEqual(strong);
+    expect(await paintedRgba(el, 'borderTopColor'), id).toEqual(strong);
+  }
+  const off = page.locator('#dis-sw-off');
+  expect(await paintedRgba(off, 'backgroundColor')).toEqual(surface);
+  expect(await paintedRgba(off, 'borderTopColor')).toEqual(border);
+  const inv = page.locator('#cb-inv-on');
+  expect(await paintedRgba(inv, 'borderTopColor')).toEqual(danger);
+  expect(await borderWidth(inv)).toBe(2);
+});
