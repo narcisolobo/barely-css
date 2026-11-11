@@ -39,7 +39,7 @@ test('focus is visible and unobscured at every stop', async ({ page, browserName
     let r = await focusRingReport(page);
     if (r === null) break;
     // Engines scroll the focused element into view asynchronously; give the layout a moment to settle.
-    if (!r.inViewport || r.covered) {
+    if (r.tag !== 'iframe' && (!r.inViewport || r.covered)) {
       await expect.poll(async () => (await focusRingReport(page)).inViewport, { timeout: 2000 }).toBe(true);
       r = await focusRingReport(page);
     }
@@ -47,7 +47,12 @@ test('focus is visible and unobscured at every stop', async ({ page, browserName
     reports.push(r);
   }
   expect(reports.length).toBeGreaterThan(0);
+  expect(reports.some((r) => r.tag === 'iframe')).toBe(true);
   for (const r of reports) {
+    // An iframe stop is excused from the ring assertions: focus moves into the embedded document, which owns its
+    // own focus indicator, and in chromium, firefox and webkit no parent-side selector (:focus, :focus-visible,
+    // :focus-within) matches the iframe element, so parent CSS cannot paint a ring. It must still appear in the walk.
+    if (r.tag === 'iframe') continue;
     const label = `stop ${r.id} <${r.tag}> center/viewport ${r.center}`;
     expect(r.style, label).not.toBe('none');
     expect(r.width, label).toBeGreaterThanOrEqual(2);
