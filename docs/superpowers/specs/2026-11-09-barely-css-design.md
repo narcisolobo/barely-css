@@ -225,6 +225,7 @@ The approved preview is at https://claude.ai/artifact/UEC92afWaKez4QYLtMtGpV. Th
 - **Color** inputs are a swatch at control height.
 - **Fieldset** is borderless, and its `legend` is styled like a label.
 - **Buttons.** `button`, `input[type="submit"]`, and `input[type="button"]` are primary, matching Pico. `input[type="reset"]` is secondary, because reset destroys input and shouldn't look like the main action. A classless stylesheet can't tell which button is the main action, so this is the whole hierarchy in v1. Buttons share the control height and radius, so a button lines up beside an input.
+- **Toggle buttons.** `button[aria-pressed="true"]` gets the pressed look: secondary fill, strong border and an inset top edge, so it is not color alone. Hover does not switch it back to the primary fill. `aria-pressed="false"` and `"mixed"` look like a normal button, and a disabled pressed button gets the disabled look. In forced colors, which removes shadows, the pressed button uses `Highlight` and `HighlightText`.
 - **States:**
   - **Focus:** a `:focus-visible` outline of `--barely-focus-ring-width` in `primary` at `--barely-focus-ring-offset`. Text-like controls also change their border to `primary`. The outline is never removed.
   - **Disabled:** surface fill, muted text, `border` color, and a not-allowed cursor. The label text is muted too, using `label:has(> :disabled)`.
@@ -232,6 +233,7 @@ The approved preview is at https://claude.ai/artifact/UEC92afWaKez4QYLtMtGpV. Th
   - **Invalid:** `:user-invalid` (native, after interaction or a submit attempt) or `[aria-invalid="true"]` (errors rendered by the server, for example Flask or Django, visible on page load). The border turns `danger` and widens to `--barely-control-border-width-invalid`. A `small` right after the control turns `danger` and gets an icon. Color is never the only signal.
   - **Valid:** shown only for an explicit `[aria-invalid="false"]`, with a `success` border and a check icon on the following `small`. `:user-valid` is not styled, so fields don't turn green as people type.
   - **Required:** CSS adds no asterisk. Native `required` is already announced, and screen readers read a CSS-generated asterisk inconsistently. Authors who want one write it into the label.
+- **Disabled and invalid.** A control that is both disabled and `aria-invalid="true"` keeps the invalid styling (danger border at the invalid width). It matches what assistive technology announces.
 - **Validation** is native only. barely-css never needs script to show a state.
 
 ## Theming

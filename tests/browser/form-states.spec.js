@@ -199,3 +199,45 @@ test('checked disabled and invalid choices keep their state colors', async ({ pa
   expect(await paintedRgba(inv, 'borderTopColor')).toEqual(danger);
   expect(await borderWidth(inv)).toBe(2);
 });
+
+test.describe('toggle buttons', () => {
+  const boxShadow = (loc) => loc.evaluate((el) => getComputedStyle(el).boxShadow);
+
+  test('pressed differs from unpressed in fill and has an inset edge', async ({ page }) => {
+    const on = page.locator('#tg-on');
+    const off = page.locator('#tg-off');
+    const surface = await token(page, '--barely-color-surface');
+    const strong = await token(page, '--barely-color-border-strong');
+    expect(await paintedRgba(on, 'backgroundColor')).toEqual(surface);
+    expect(await paintedRgba(on, 'backgroundColor')).not.toEqual(await paintedRgba(off, 'backgroundColor'));
+    expect(await paintedRgba(on, 'borderTopColor')).toEqual(strong);
+    expect(await boxShadow(on)).toContain('inset');
+    expect(await boxShadow(off)).toBe('none');
+  });
+
+  test('false and mixed look like a normal button', async ({ page }) => {
+    const off = await paintedRgba(page.locator('#tg-off'), 'backgroundColor');
+    expect(await paintedRgba(page.locator('#tg-mixed'), 'backgroundColor')).toEqual(off);
+    expect(await boxShadow(page.locator('#tg-mixed'))).toBe('none');
+  });
+
+  test('hover keeps the pressed fill', async ({ page }) => {
+    const on = page.locator('#tg-on');
+    const before = await paintedRgba(on, 'backgroundColor');
+    await on.hover();
+    expect(await paintedRgba(on, 'backgroundColor')).toEqual(before);
+    expect(await paintedRgba(on, 'borderTopColor')).toEqual(await token(page, '--barely-color-border-strong'));
+  });
+
+  test('disabled pressed button gets the disabled look', async ({ page }) => {
+    const dis = page.locator('#tg-dis');
+    expect(await paintedRgba(dis, 'color')).toEqual(await token(page, '--barely-color-text-muted'));
+    expect(await paintedRgba(dis, 'borderTopColor')).toEqual(await token(page, '--barely-color-border'));
+  });
+});
+
+test('disabled and aria-invalid keeps the danger border at the invalid width', async ({ page }) => {
+  const el = page.locator('#dis-inv');
+  expect(await paintedRgba(el, 'borderTopColor')).toEqual(await token(page, '--barely-color-danger'));
+  expect(await borderWidth(el)).toBe(2);
+});

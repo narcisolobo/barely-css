@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { DEMO, forcedMode, tabKey } from '../helpers/env.js';
+import { paintedRgba } from '../helpers/page-color.js';
 import { distinctColorCount, dominantColor, near } from '../helpers/pixels.js';
 
 test('forced-colors media query applies', async ({ page }) => {
@@ -114,6 +115,14 @@ test.describe('form states', () => {
     await page.goto(PAGE);
     const w = await page.locator('#inv').evaluate((el) => parseFloat(getComputedStyle(el).borderTopWidth));
     expect(w).toBe(2);
+  });
+
+  test('pressed toggle button is distinguishable from unpressed', async ({ page }, testInfo) => {
+    test.skip(forcedMode(testInfo) !== 'active', 'WebKit only reports the media query');
+    await page.goto(PAGE);
+    const on = await paintedRgba(page.locator('#tg-on'), 'backgroundColor');
+    const off = await paintedRgba(page.locator('#tg-off'), 'backgroundColor');
+    expect(on).not.toEqual(off);
   });
 
   test('disabled select uses GrayText', async ({ page }, testInfo) => {

@@ -159,7 +159,6 @@ Style native browser functionality well:
 - Native form validation.
 - `<progress>` and `<meter>`.
 - Native focus, open, disabled, and other interaction states.
-- Style button[aria-pressed] (toggle buttons) in the library — deferred from v1; owner to decide.
 
 CSS should not imply behavior it cannot provide. Complex menus, tabs, and other widgets may still need JavaScript; the framework can style their native or authored behavior without pretending otherwise.
 

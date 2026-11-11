@@ -225,8 +225,25 @@
     border-color: var(--barely-color-text-muted);
   }
 
+  /* Toggle buttons: aria-pressed="true" takes the secondary look, a strong border and an inset top edge (the
+     cue that is not color). The attribute and :not(:disabled) sit outside :where() so this (0,2,0) rule beats the
+     (0,0,0) base and hover rules, and a disabled pressed button falls through to the disabled look. */
+  :where(button)[aria-pressed="true"]:not(:disabled) {
+    background: var(--barely-color-surface);
+    color: var(--barely-color-text);
+    border-color: var(--barely-color-border-strong);
+    box-shadow: inset 0 2px 0 var(--barely-color-border-strong);
+  }
+
   @media (forced-colors: active) {
     /* Forced colors removes the gradient chevron; paint it with system colors instead. */
+    /* Forced colors removes box-shadow, so mark the pressed button with the selection colors. */
+    :where(button)[aria-pressed="true"]:not(:disabled) {
+      background-color: Highlight;
+      color: HighlightText;
+      border-color: Highlight;
+    }
+
     :where(select) {
       forced-color-adjust: none;
       color: CanvasText;

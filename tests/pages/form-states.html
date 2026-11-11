@@ -21,8 +21,13 @@
       <p>
         <button id="dis-btn" type="button" disabled>Disabled button</button>
         <button id="on-btn" type="button">Enabled button</button>
+        <button id="tg-on" type="button" aria-pressed="true">Pressed</button>
+        <button id="tg-off" type="button" aria-pressed="false">Unpressed</button>
+        <button id="tg-mixed" type="button" aria-pressed="mixed">Mixed</button>
+        <button id="tg-dis" type="button" aria-pressed="true" disabled>Pressed disabled</button>
         <input id="dis-reset" type="reset" value="Disabled reset" disabled>
       </p>
+      <label for="dis-inv">Disabled invalid <input id="dis-inv" type="text" value="bad" disabled aria-invalid="true"></label>
       <label for="ro">Read-only <input id="ro" type="text" value="fixed" readonly></label>
       <label for="ro-ta">Read-only area <textarea id="ro-ta" readonly>fixed</textarea></label>
       <label for="cb"><input id="cb" type="checkbox" checked> A checkbox</label>
