@@ -230,6 +230,23 @@
         <label for="f-textarea">Question for the instructor
           <textarea id="f-textarea" name="question" placeholder="What are you stuck on?"></textarea>
         </label>
+        <fieldset>
+          <legend>Notifications</legend>
+          <label for="f-cb1"><input id="f-cb1" type="checkbox" name="notify" value="grades" checked> New grades</label>
+          <label for="f-cb2"><input id="f-cb2" type="checkbox" name="notify" value="announcements"> Announcements</label>
+          <label for="f-cb3"><input id="f-cb3" type="checkbox" name="notify" value="all"> All course activity (indeterminate)</label>
+          <label for="f-cb4"><input id="f-cb4" type="checkbox" name="notify" value="sms" disabled> Text messages (disabled)</label>
+        </fieldset>
+        <fieldset>
+          <legend>Submission format</legend>
+          <label for="f-r1"><input id="f-r1" type="radio" name="format" value="pdf" checked> PDF</label>
+          <label for="f-r2"><input id="f-r2" type="radio" name="format" value="docx"> Word document</label>
+          <label for="f-r3"><input id="f-r3" type="radio" name="format" value="link"> Link to a shared file</label>
+        </fieldset>
+        <fieldset>
+          <legend>Calendar</legend>
+          <label for="f-switch"><input id="f-switch" type="checkbox" role="switch" name="dates" checked> Show due dates in calendar</label>
+        </fieldset>
         <p>
           <input type="submit" value="Submit assignment">
           <input type="reset" value="Reset form">
@@ -256,6 +273,8 @@
     <a href="https://github.com/narcisolobo/barely-css">Source on GitHub</a>
   </footer>
   <script>
+    // indeterminate can only be set from script.
+    document.getElementById('f-cb3').indeterminate = true;
     document.getElementById('demo-form').addEventListener('submit', (event) => event.preventDefault());
     const buttons = document.querySelectorAll('[data-set-theme]');
     buttons.forEach((button) => button.addEventListener('click', () => {

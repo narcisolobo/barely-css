@@ -50,3 +50,28 @@ test('text control border differs from background', async ({ page }, testInfo) =
   });
   expect(border).not.toBe(bg);
 });
+
+test.describe('choices', () => {
+  const PAGE = '/tests/pages/choices.html';
+
+  test('checked states render in forced colors', async ({ page }, testInfo) => {
+    test.skip(forcedMode(testInfo) !== 'active', 'WebKit only reports the media query');
+    await page.goto(PAGE);
+    for (const id of ['cb-on', 'cb-indet', 'rd-on', 'sw-on', 'cb-dis']) {
+      const png = await page.locator(`#${id}`).screenshot();
+      expect(distinctColorCount(png), id).toBeGreaterThanOrEqual(2);
+    }
+  });
+
+  test('unchecked border differs from background', async ({ page }, testInfo) => {
+    test.skip(forcedMode(testInfo) !== 'active', 'WebKit only reports the media query');
+    await page.goto(PAGE);
+    for (const id of ['cb-off', 'rd-off', 'sw-off']) {
+      const [border, bg] = await page.locator(`#${id}`).evaluate((el) => {
+        const c = getComputedStyle(el);
+        return [c.borderTopColor, c.backgroundColor];
+      });
+      expect(border, id).not.toBe(bg);
+    }
+  });
+});

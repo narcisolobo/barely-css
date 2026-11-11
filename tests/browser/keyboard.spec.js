@@ -88,3 +88,14 @@ test('range steps with arrow keys', async ({ page }) => {
   await page.keyboard.press('ArrowRight');
   expect((await read())[0]).toBe(before + step);
 });
+
+test('radio buttons move with arrow keys', async ({ page }) => {
+  const first = page.locator('#f-r1');
+  await first.focus();
+  await expect(first).toBeChecked();
+  await page.keyboard.press('ArrowDown');
+  const second = page.locator('#f-r2');
+  await expect(second).toBeChecked();
+  await expect(second).toBeFocused();
+  await expect(first).not.toBeChecked();
+});

@@ -1,0 +1,157 @@
+@layer base {
+  /* Checkbox, radio, switch: the label sits beside the control instead of above it. The label is a block with a
+     hanging indent (never grid or flex): wrapped lines align with the text, not under the box, and inline content
+     in the label flows normally. Line height 1.6 keeps each row above the 24px target size (WCAG 2.5.8). */
+  :where(label:has(> input:is([type="checkbox"], [type="radio"]))) {
+    display: block;
+    inline-size: fit-content;
+    max-inline-size: 100%;
+    padding-inline-start: calc(var(--barely-check-size) + 0.625rem);
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.6;
+    cursor: pointer;
+  }
+
+  :where(label:has(> input[type="checkbox"][role="switch"])) {
+    padding-inline-start: calc(var(--barely-check-size) * 1.9 + 0.625rem);
+  }
+
+  :where(input:is([type="checkbox"], [type="radio"])) {
+    appearance: none;
+    flex: none;
+    margin-block: 0;
+    margin-inline: calc(-1 * (var(--barely-check-size) + 0.625rem)) 0.625rem;
+    /* Aligns on the box itself, so the checked mark can't shift the baseline. */
+    vertical-align: middle;
+    inline-size: var(--barely-check-size);
+    block-size: var(--barely-check-size);
+    display: inline-grid;
+    place-content: center;
+    background: var(--barely-control-background, var(--barely-color-background));
+    border: var(--barely-control-border-width) solid var(--barely-color-border-strong);
+    border-radius: 0.25rem;
+    cursor: pointer;
+  }
+
+  :where(input[type="radio"]) {
+    border-radius: 50%;
+  }
+
+  :where(input:is([type="checkbox"], [type="radio"])):is(:checked, :indeterminate) {
+    background: var(--barely-color-primary);
+    border-color: var(--barely-color-primary);
+  }
+
+  :where(input[type="checkbox"]):checked::before {
+    content: "";
+    inline-size: 0.875rem;
+    block-size: 0.875rem;
+    background: var(--barely-color-on-primary);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.5l3 3 7-7' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.5l3 3 7-7' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+  }
+
+  :where(input[type="checkbox"]):indeterminate::before {
+    content: "";
+    inline-size: 0.625rem;
+    block-size: 2px;
+    border-radius: 1px;
+    background: var(--barely-color-on-primary);
+  }
+
+  :where(input[type="radio"]):checked::before {
+    content: "";
+    inline-size: 0.5rem;
+    block-size: 0.5rem;
+    border-radius: 50%;
+    background: var(--barely-color-on-primary);
+  }
+
+  /* Switch: input[type="checkbox"][role="switch"], Pico's convention. */
+  :where(input[type="checkbox"][role="switch"]) {
+    inline-size: calc(var(--barely-check-size) * 1.9);
+    border-radius: 999px;
+    margin-inline-start: calc(-1 * (var(--barely-check-size) * 1.9 + 0.625rem));
+    place-content: center start;
+    padding-inline: 2px;
+    background: var(--barely-color-surface);
+  }
+
+  :where(input[type="checkbox"][role="switch"])::before {
+    content: "";
+    inline-size: calc(var(--barely-check-size) - 6px);
+    block-size: calc(var(--barely-check-size) - 6px);
+    border-radius: 50%;
+    background: var(--barely-color-border-strong);
+    -webkit-mask: none;
+    mask: none;
+  }
+
+  :where(input[type="checkbox"][role="switch"]):checked {
+    background: var(--barely-color-primary);
+  }
+
+  /* After the checkbox mark rule, which has the same specificity, so the knob replaces the check. */
+  :where(input[type="checkbox"][role="switch"]):checked::before {
+    inline-size: calc(var(--barely-check-size) - 6px);
+    block-size: calc(var(--barely-check-size) - 6px);
+    border-radius: 50%;
+    background: var(--barely-color-on-primary);
+    -webkit-mask: none;
+    mask: none;
+    translate: calc(var(--barely-check-size) * 1.9 - var(--barely-check-size)) 0;
+  }
+
+  :where(input[type="checkbox"][role="switch"]):checked:dir(rtl)::before {
+    translate: calc((var(--barely-check-size) * 1.9 - var(--barely-check-size)) * -1) 0;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :where(input[type="checkbox"][role="switch"])::before {
+      transition: translate 140ms ease;
+    }
+  }
+
+  /* Spacing. A choice label placed directly in a form is a plain form field, so the form rule gives it
+     --barely-form-gap below, the same as a text field. Inside a fieldset the grid gap is 0.5rem and choice rows
+     add nothing, so a text field or nested fieldset that FOLLOWS a choice row adds the difference above itself. */
+  :where(
+    fieldset > label:has(> input:is([type="checkbox"], [type="radio"]))
+      + :is(label:not(:has(> input:is([type="checkbox"], [type="radio"]))), fieldset)
+  ) {
+    margin-block-start: calc(var(--barely-form-gap) - 0.5rem);
+  }
+
+  /* Forced colors: keep the custom drawing, but paint it with system colors.
+     forced-color-adjust: none stops the browser from blanking the mask-drawn parts. */
+  @media (forced-colors: active) {
+    :where(input:is([type="checkbox"], [type="radio"])) {
+      forced-color-adjust: none;
+      background: Canvas;
+      border-color: ButtonText;
+    }
+
+    :where(input:is([type="checkbox"], [type="radio"])):is(:checked, :indeterminate) {
+      background: Highlight;
+      border-color: Highlight;
+    }
+
+    :where(input[type="checkbox"]):is(:checked, :indeterminate)::before,
+    :where(input[type="radio"]):checked::before {
+      background: HighlightText;
+    }
+
+    :where(input[type="checkbox"][role="switch"])::before {
+      background: ButtonText;
+    }
+
+    :where(input[type="checkbox"][role="switch"]):checked::before {
+      background: HighlightText;
+    }
+
+    :where(input:is([type="checkbox"], [type="radio"])):focus-visible {
+      outline-color: Highlight;
+    }
+  }
+}

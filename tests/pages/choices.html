@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Choices</title>
+  <link rel="stylesheet" href="../../dist/barely.css">
+</head>
+<body>
+  <main>
+    <h1>Choices</h1>
+    <form>
+      <label id="loose-a"><input type="checkbox"> Loose choice A</label>
+      <label id="loose-b"><input type="checkbox"> Loose choice B</label>
+      <label id="loose-text">Loose text <input type="text"></label>
+      <fieldset id="mixed">
+        <legend>Mixed</legend>
+        <label id="mx-a"><input type="checkbox"> Choice A</label>
+        <label id="mx-b"><input type="checkbox"> Choice B</label>
+        <label id="mx-text">Text after choices <input type="text"></label>
+        <label id="mx-text2">Second text <input type="text"></label>
+      </fieldset>
+      <fieldset id="only-choices">
+        <legend>Only choices</legend>
+        <label id="oc-a"><input type="checkbox"> One</label>
+        <label id="oc-b"><input type="checkbox"> Two</label>
+      </fieldset>
+      <fieldset style="max-inline-size: 16rem;">
+        <legend>Narrow</legend>
+        <label id="wrap"><input id="wrap-input" type="checkbox"> A label whose text is long enough to wrap onto a second and third line at this width</label>
+        <label id="plain-row"><input id="row-input" type="checkbox"> Short</label>
+      </fieldset>
+      <fieldset>
+        <legend>States</legend>
+        <label id="cb-unchecked"><input id="cb-off" type="checkbox"> Unchecked</label>
+        <label id="cb-checked"><input id="cb-on" type="checkbox" checked> Checked</label>
+        <label><input id="cb-indet" type="checkbox"> Indeterminate</label>
+        <label><input id="cb-dis" type="checkbox" checked disabled> Disabled checked</label>
+        <label><input id="rd-on" type="radio" name="r" value="a" checked> Radio A</label>
+        <label><input id="rd-off" type="radio" name="r" value="b"> Radio B</label>
+        <label id="sw-label"><input id="sw-on" type="checkbox" role="switch" checked> Switch on</label>
+        <label><input id="sw-off" type="checkbox" role="switch"> Switch off</label>
+      </fieldset>
+      <div dir="rtl">
+        <label id="rtl-label"><input id="rtl-sw" type="checkbox" role="switch" checked> RTL switch</label>
+      </div>
+    </form>
+  </main>
+  <script>document.getElementById('cb-indet').indeterminate = true;</script>
+</body>
+</html>
