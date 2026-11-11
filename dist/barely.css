@@ -640,9 +640,16 @@
     font-size: 0.9375rem;
   }
 
-  /* Space between fields in a form. Placed after the fieldset reset so it wins on fieldset. Not after the last field, and not between the rows inside a fieldset. */
-  :where(form :is(label, fieldset):not(:last-child, fieldset > label)) {
+  /* Space between fields in a form: --barely-form-gap after each field except the last. Written after the
+     fieldset reset so it wins on fieldset. */
+  :where(form :is(label, fieldset):not(:last-child, fieldset > *)) {
     margin-block-end: var(--barely-form-gap);
+  }
+
+  /* Fields inside a fieldset get the same total gap. The fieldset's own 0.5rem grid gap already counts, and it
+     stays for rows of checkboxes and radios, so text fields add only the difference. Choice rows add nothing. */
+  :where(fieldset > :is(label, fieldset):not(:last-child, label:has(> input:is([type="checkbox"], [type="radio"])))) {
+    margin-block-end: calc(var(--barely-form-gap) - 0.5rem);
   }
 
   /* Range: native control tinted with accent-color; keeps platform keyboard and assistive technology behavior. */

@@ -28,7 +28,8 @@ test('focus outline is visible in forced colors', async ({ page, browserName }, 
   }
 });
 
-test('select chevron is visible', async ({ page }) => {
+test('select chevron is visible', async ({ page }, testInfo) => {
+  test.skip(forcedMode(testInfo) !== 'active', 'WebKit only reports the media query');
   await page.goto('/tests/pages/forms.html');
   const box = await page.locator('#ltr-select').boundingBox();
   // The chevron sits one padding inline from the end edge; a strip there must hold more than the fill alone.

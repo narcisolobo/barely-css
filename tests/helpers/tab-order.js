@@ -12,8 +12,8 @@ export async function tagElements(page) {
  * required: always a stop (an unchecked radio group is one slot, keyed by its first member;
  * `alternates[firstId]` lists every member, since engines enter such a group at different members). optional: engines differ (media controls, scroll containers, and color inputs in WebKit).
  */
-export async function expectedStops(page) {
-  return page.evaluate(() => {
+export async function expectedStops(page, browserName) {
+  return page.evaluate((engine) => {
     const FOCUSABLE =
       'a[href], button, input:not([type=hidden]), select, textarea, summary, [tabindex]:not([tabindex="-1"])';
     const id = (el) => el.getAttribute('data-kb-id');
@@ -64,7 +64,7 @@ export async function expectedStops(page) {
       if (!blocked(el) && rendered(el)) optional.push(el);
     }
     // WebKit (the Playwright build) leaves input[type=color] out of the Tab order; Chromium and Firefox keep it.
-    if (!/Chrome|Firefox/.test(navigator.userAgent)) {
+    if (engine === 'webkit') {
       for (const el of [...stops]) {
         if (!el.matches('input[type=color]')) continue;
         stops.splice(stops.indexOf(el), 1);
@@ -84,7 +84,7 @@ export async function expectedStops(page) {
 
     const order = (list) => list.map(id).sort((a, b) => Number(a) - Number(b));
     return { required: order(stops), optional: order(optional), alternates };
-  });
+  }, browserName);
 }
 
 const SETTLE_MS = 500;

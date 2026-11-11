@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { DEMO, forcedMode } from '../helpers/env.js';
+import { DEMO } from '../helpers/env.js';
 import { paintedRgba } from '../helpers/page-color.js';
 
 const PAGE = '/tests/pages/forms.html';
@@ -140,7 +140,7 @@ test.describe('controls', () => {
     expect(custom[0]).toBeGreaterThan(custom[2]);
   });
 
-  test('file selector button and placeholder take the library styles', async ({ page, browserName }) => {
+  test('file selector button and placeholder take the library styles', async ({ page }) => {
     await page.goto('/demo/');
     const file = await page.locator('#f-file').evaluate((el) => getComputedStyle(el, '::file-selector-button').borderTopLeftRadius);
     const plain = await page.locator('#f-file').evaluate((el) => getComputedStyle(el).borderTopLeftRadius);
@@ -148,6 +148,16 @@ test.describe('controls', () => {
     expect(parseFloat(file)).toBeLessThan(parseFloat(plain));
     const opacity = await page.locator('#f-email').evaluate((el) => getComputedStyle(el, '::placeholder').opacity);
     expect(opacity).toBe('1');
+  });
+
+  test('text labels in a fieldset are spaced like text labels outside one', async ({ page }) => {
+    await page.goto(PAGE);
+    const gaps = await page.evaluate(() => {
+      const box = (id) => document.querySelector(id).getBoundingClientRect();
+      return { outside: box('#out-b').top - box('#out-a').bottom, inside: box('#in-b').top - box('#in-a').bottom };
+    });
+    expect(gaps.outside).toBeGreaterThan(1);
+    expect(gaps.inside).toBeCloseTo(gaps.outside, 1);
   });
 
   test('select chevron flips in RTL', async ({ page }) => {

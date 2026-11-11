@@ -9,13 +9,13 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('every interactive element is reachable in source order', async ({ page, browserName }) => {
-  assertOrder(await walkTabStops(page, tabKey(browserName)), await expectedStops(page));
+  assertOrder(await walkTabStops(page, tabKey(browserName)), await expectedStops(page, browserName));
 });
 
 test('shift+tab visits the same stops in reverse', async ({ page, browserName }) => {
   const key = `Shift+${tabKey(browserName)}`;
   const actual = await walkTabStops(page, key);
-  const expected = await expectedStops(page);
+  const expected = await expectedStops(page, browserName);
   assertOrder(actual, { ...expected, required: [...expected.required].reverse() });
 });
 
