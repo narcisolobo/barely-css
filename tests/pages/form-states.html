@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Form states</title>
+  <link rel="stylesheet" href="../../dist/barely.css">
+</head>
+<body>
+  <main>
+    <h1>Form states</h1>
+    <form>
+      <label for="text">Plain text <input id="text" type="text"></label>
+      <label for="date">Date <input id="date" type="date"></label>
+      <label for="ta">Notes <textarea id="ta"></textarea></label>
+      <label id="dis-label" for="dis-text">Disabled text <input id="dis-text" type="text" value="locked" disabled></label>
+      <label for="dis-select">Disabled select
+        <select id="dis-select" disabled><option>One</option></select>
+      </label>
+      <label id="dis-cb-label" for="dis-cb"><input id="dis-cb" type="checkbox" disabled> Disabled choice</label>
+      <p>
+        <button id="dis-btn" type="button" disabled>Disabled button</button>
+        <button id="on-btn" type="button">Enabled button</button>
+        <input id="dis-reset" type="reset" value="Disabled reset" disabled>
+      </p>
+      <label for="ro">Read-only <input id="ro" type="text" value="fixed" readonly></label>
+      <label for="ro-ta">Read-only area <textarea id="ro-ta" readonly>fixed</textarea></label>
+      <label for="cb"><input id="cb" type="checkbox" checked> A checkbox</label>
+      <label for="req">Required name <input id="req" type="text" required></label>
+      <label for="em">Email
+        <input id="em" type="email" required aria-describedby="em-msg">
+        <small id="em-msg">Required.</small>
+      </label>
+      <label for="em-ok">Typed email
+        <input id="em-ok" type="email" required aria-describedby="em-ok-msg">
+        <small id="em-ok-msg">Required.</small>
+      </label>
+      <label for="inv">Server error
+        <input id="inv" type="text" value="bad" aria-invalid="true" aria-describedby="inv-msg">
+        <small id="inv-msg">Enter a valid value.</small>
+      </label>
+      <label for="plain-inv">Plain, no state
+        <input id="plain-inv" type="text" value="same text" aria-describedby="plain-msg">
+        <small id="plain-msg">Neutral help.</small>
+      </label>
+      <label for="val">Server ok
+        <input id="val" type="text" value="good" aria-invalid="false" aria-describedby="val-msg">
+        <small id="val-msg">Looks good.</small>
+      </label>
+      <label for="sel-inv">Select error
+        <select id="sel-inv" aria-invalid="true"><option>One</option></select>
+        <small>Pick another.</small>
+      </label>
+      <label for="cb-inv"><input id="cb-inv" type="checkbox" aria-invalid="true"> Accept terms</label>
+    </form>
+  </main>
+</body>
+</html>

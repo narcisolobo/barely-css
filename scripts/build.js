@@ -17,6 +17,7 @@ export const SOURCES = [
   'src/media.css',
   'src/forms.css',
   'src/choices.css',
+  'src/form-states.css',
 ];
 
 const GROUPING_AT_RULES = /^@(layer|media|supports|container|scope|starting-style)\b/;

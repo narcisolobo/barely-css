@@ -87,3 +87,49 @@ test.describe('choices', () => {
     }
   });
 });
+
+test.describe('form states', () => {
+  const PAGE = '/tests/pages/form-states.html';
+
+  test('status icons are visible', async ({ page }, testInfo) => {
+    test.skip(forcedMode(testInfo) !== 'active', 'WebKit only reports the media query');
+    await page.goto(PAGE);
+    for (const id of ['inv-msg', 'val-msg']) {
+      const box = await page.locator(`#${id}`).evaluate((el) => {
+        const r = el.getBoundingClientRect();
+        const s = getComputedStyle(el, '::before');
+        const size = parseFloat(s.width);
+        return { x: r.left + scrollX, y: r.top + scrollY + parseFloat(s.marginTop), size };
+      });
+      const png = await page.screenshot({
+        fullPage: true,
+        clip: { x: box.x, y: box.y, width: box.size, height: box.size },
+      });
+      expect(distinctColorCount(png, { inset: 3 }), id).toBeGreaterThanOrEqual(2);
+    }
+  });
+
+  test('invalid border is 2px', async ({ page }, testInfo) => {
+    test.skip(forcedMode(testInfo) !== 'active', 'WebKit only reports the media query');
+    await page.goto(PAGE);
+    const w = await page.locator('#inv').evaluate((el) => parseFloat(getComputedStyle(el).borderTopWidth));
+    expect(w).toBe(2);
+  });
+
+  test('disabled select uses GrayText', async ({ page }, testInfo) => {
+    test.skip(forcedMode(testInfo) !== 'active', 'WebKit only reports the media query');
+    await page.goto(PAGE);
+    const r = await page.evaluate(() => {
+      const probe = document.createElement('i');
+      probe.style.color = 'GrayText';
+      document.body.append(probe);
+      const gray = getComputedStyle(probe).color;
+      probe.remove();
+      const s = getComputedStyle(document.getElementById('dis-select'));
+      const on = document.getElementById('dis-text');
+      return { gray, color: s.color, border: s.borderTopColor, textColor: getComputedStyle(on).color };
+    });
+    expect(r.color).toBe(r.gray);
+    expect(r.border).toBe(r.gray);
+  });
+});

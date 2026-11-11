@@ -247,11 +247,29 @@
           <legend>Calendar</legend>
           <label for="f-switch"><input id="f-switch" type="checkbox" role="switch" name="dates" checked> Show due dates in calendar</label>
         </fieldset>
+        <fieldset>
+          <legend>Server-rendered errors</legend>
+          <label for="f-sv-bad">Student ID
+            <input id="f-sv-bad" type="text" name="student_id" value="12-AB" aria-invalid="true" aria-describedby="f-sv-bad-msg">
+            <small id="f-sv-bad-msg">Student IDs are eight digits.</small>
+          </label>
+          <label for="f-sv-ok">Course code
+            <input id="f-sv-ok" type="text" name="course_code" value="CS-101" aria-invalid="false" aria-describedby="f-sv-ok-msg">
+            <small id="f-sv-ok-msg">Course found.</small>
+          </label>
+          <label for="f-ro">Enrollment status
+            <input id="f-ro" type="text" name="status" value="Enrolled" readonly>
+          </label>
+          <label for="f-dis">Advisor
+            <input id="f-dis" type="text" name="advisor" value="Assigned in week 3" disabled>
+          </label>
+        </fieldset>
         <p>
           <input type="submit" value="Submit assignment">
           <input type="reset" value="Reset form">
           <input type="button" value="Preview">
           <button type="button">Button element</button>
+          <button type="button" disabled>Disabled button</button>
         </p>
       </form>
     </section>
