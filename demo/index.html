@@ -136,8 +136,31 @@
         </tbody>
       </table>
     </section>
-    <section id="code"><h2>Code</h2><p>Code blocks and keyboard input will appear here.</p></section>
-    <section id="media"><h2>Media</h2><p>Images, figures, and embedded media will appear here.</p></section>
+    <section id="code">
+      <h2>Code</h2>
+      <p>Inline code such as <code>display: grid</code> sits in the text, <kbd>Ctrl</kbd> + <kbd>K</kbd> shows a key, and <samp>Build finished</samp> shows program output.</p>
+      <pre tabindex="0"><code>function greet(name) {
+	const message = `Hello, ${name}. This line is long enough to need sideways scrolling on a narrow screen, so it scrolls inside the block.`;
+	return message;
+}</code></pre>
+    </section>
+    <section id="media">
+      <h2>Media</h2>
+      <figure>
+        <img src="assets/sample.png" alt="A colored test pattern with a gray ramp" width="640" height="360">
+        <figcaption>A generated test pattern, scaled to the column.</figcaption>
+      </figure>
+      <video controls muted preload="metadata" width="160" height="90">
+        <source src="assets/sample.mp4" type="video/mp4">
+        <source src="assets/sample.webm" type="video/webm">
+        <track kind="captions" src="assets/sample.vtt" srclang="en" label="English" default>
+      </video>
+      <audio controls preload="metadata">
+        <source src="assets/sample.ogg" type="audio/ogg; codecs=opus">
+        <source src="assets/sample.m4a" type="audio/mp4">
+      </audio>
+      <iframe title="Embedded plain text" tabindex="-1" srcdoc="Plain text inside a frame."></iframe>
+    </section>
     <section id="forms"><h2>Forms</h2><p>Form controls will appear here.</p></section>
     <section id="interactive"><h2>Interactive</h2><p>Disclosure, dialog, progress, and meter elements will appear here.</p></section>
     <section id="nested-theme" data-theme="dark">

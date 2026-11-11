@@ -1,0 +1,32 @@
+@layer base {
+  :where(img, video) {
+    max-inline-size: 100%;
+    block-size: auto;
+  }
+
+  :where(audio) {
+    display: block;
+    inline-size: 100%;
+  }
+
+  :where(iframe) {
+    max-inline-size: 100%;
+    border: var(--barely-border-width) solid var(--barely-color-border);
+  }
+
+  :where(iframe:not([height])) {
+    inline-size: 100%;
+    aspect-ratio: 16 / 9;
+    block-size: auto;
+  }
+
+  :where(figure) {
+    margin-inline: 0;
+  }
+
+  :where(figcaption) {
+    color: var(--barely-color-text-muted);
+    font-size: 0.875rem;
+    margin-block-start: 0.5rem;
+  }
+}

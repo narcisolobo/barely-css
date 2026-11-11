@@ -14,3 +14,4 @@ Any change to a default value (a token, a spacing step, a color) is listed under
 - Page layout without classes: full-width page regions, centered content, masthead header and footer, reading width, and article, section, and aside structure.
 - Masthead navigation (one or two lists, wrapping) and breadcrumbs, with no classes.
 - Table styles and an optional scroll wrapper (`div[role="region"][tabindex]` around a `table`), with no classes.
+- Code and media styles: `code`, `kbd`, `samp`, scrolling `pre`, responsive `img`, `video`, `audio`, `iframe` (16:9 when it has no height), and `figure` with `figcaption`.

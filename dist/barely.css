@@ -448,3 +448,73 @@
     margin-block-end: 0;
   }
 }
+
+/* ==== code.css ==== */
+@layer base {
+  :where(code, kbd, samp, pre) {
+    font-family: var(--barely-font-mono);
+    font-size: 0.875em;
+  }
+
+  :where(code, samp, kbd) {
+    background-color: var(--barely-color-surface);
+    padding: 0.1em 0.3em;
+    border-radius: calc(var(--barely-radius) * 0.66);
+  }
+
+  :where(kbd) {
+    border: var(--barely-border-width) solid var(--barely-color-border-strong);
+    border-block-end-width: 2px;
+  }
+
+  /* An overflowing pre is a scroll container; Chromium and Firefox make it a tab stop, and the global focus ring covers it. */
+  :where(pre) {
+    background-color: var(--barely-color-surface);
+    padding: var(--barely-spacing);
+    border-radius: var(--barely-radius);
+    overflow-x: auto;
+    line-height: 1.5;
+    tab-size: 4;
+  }
+
+  :where(pre code) {
+    background-color: transparent;
+    padding: 0;
+    border-radius: 0;
+    font-size: inherit;
+  }
+}
+
+/* ==== media.css ==== */
+@layer base {
+  :where(img, video) {
+    max-inline-size: 100%;
+    block-size: auto;
+  }
+
+  :where(audio) {
+    display: block;
+    inline-size: 100%;
+  }
+
+  :where(iframe) {
+    max-inline-size: 100%;
+    border: var(--barely-border-width) solid var(--barely-color-border);
+  }
+
+  :where(iframe:not([height])) {
+    inline-size: 100%;
+    aspect-ratio: 16 / 9;
+    block-size: auto;
+  }
+
+  :where(figure) {
+    margin-inline: 0;
+  }
+
+  :where(figcaption) {
+    color: var(--barely-color-text-muted);
+    font-size: 0.875rem;
+    margin-block-start: 0.5rem;
+  }
+}

@@ -13,6 +13,8 @@ export const SOURCES = [
   'src/layout.css',
   'src/navigation.css',
   'src/tables.css',
+  'src/code.css',
+  'src/media.css',
 ];
 
 const GROUPING_AT_RULES = /^@(layer|media|supports|container|scope|starting-style)\b/;
