@@ -258,9 +258,10 @@
 
 /* ==== layout.css ==== */
 @layer base {
-  /* Page regions: every direct child of body except non-rendered and top-layer elements.
+  /* Page regions: every direct child of body except non-rendered elements (script, style, template) and
+     top-layer ones (dialog, [popover]), which style their own padding in interactive.css.
      Regions span the viewport; padding keeps their content centered at the content width. */
-  body > :where(:not(script, style, template, dialog)) {
+  body > :where(:not(script, style, template, dialog, [popover])) {
     --_barely-region-inline: max(
       var(--barely-page-padding-inline),
       (100% - var(--barely-content-width)) / 2
@@ -1088,15 +1089,21 @@
   }
 
   /* progress and meter: a pill track. The track is the element itself (appearance: none). */
-  :where(progress, meter) {
+  :where(progress:not(:indeterminate), meter) {
     appearance: none;
     inline-size: 100%;
     block-size: 0.75rem;
     border-radius: 999px;
     overflow: hidden;
-    background-color: var(--barely-color-surface);
+    background: var(--barely-color-surface);
     border: var(--barely-border-width) solid var(--barely-color-border-strong);
     vertical-align: middle;
+  }
+
+  /* Indeterminate progress is left to the browser: appearance: none would remove its native animation.
+     accent-color tints it with the primary color. */
+  :where(progress:indeterminate) {
+    accent-color: var(--barely-color-primary);
   }
 
   /* Each engine's pseudo-elements get their own rule: one unknown pseudo-element invalidates a whole list. */
@@ -1112,10 +1119,17 @@
     background-color: var(--barely-color-primary);
   }
 
+  :where(meter)::-webkit-meter-inner-element {
+    /* Chromium sizes the fill from this box and leaves it about half the track high; stretching it in a flex row fills the interior. */
+    display: flex;
+    align-items: stretch;
+  }
+
   :where(meter)::-webkit-meter-bar {
     background: transparent;
     border: 0;
     block-size: 100%;
+    flex: 1;
   }
 
   :where(meter)::-webkit-meter-optimum-value {
@@ -1143,9 +1157,9 @@
   }
 
   @media (forced-colors: active) {
-    :where(progress, meter) {
+    :where(progress:not(:indeterminate), meter) {
       forced-color-adjust: none;
-      background-color: Canvas;
+      background: Canvas;
       border-color: ButtonText;
     }
 

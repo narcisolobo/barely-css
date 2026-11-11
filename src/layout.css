@@ -1,7 +1,8 @@
 @layer base {
-  /* Page regions: every direct child of body except non-rendered and top-layer elements.
+  /* Page regions: every direct child of body except non-rendered elements (script, style, template) and
+     top-layer ones (dialog, [popover]), which style their own padding in interactive.css.
      Regions span the viewport; padding keeps their content centered at the content width. */
-  body > :where(:not(script, style, template, dialog)) {
+  body > :where(:not(script, style, template, dialog, [popover])) {
     --_barely-region-inline: max(
       var(--barely-page-padding-inline),
       (100% - var(--barely-content-width)) / 2

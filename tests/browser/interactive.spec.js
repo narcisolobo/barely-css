@@ -1,7 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { DEMO } from '../helpers/env.js';
-import { PNG } from 'pngjs';
-import { distinctColorCount } from '../helpers/pixels.js';
+import { dominantColor, columnMatch, near } from '../helpers/pixels.js';
 
 test.beforeEach(async ({ page }) => {
   await page.goto(DEMO);
@@ -41,21 +40,9 @@ test('meter shows optimum, suboptimum and even-less-good in the status colors', 
       ctx.fillRect(0, 0, 1, 1);
       return [...ctx.getImageData(0, 0, 1, 1).data].slice(0, 3);
     }, name);
-  // Dominant color in the left fifth of the meter, inside the border: that strip is always filled.
-  const dominant = async (id) => {
-    const { width, height, data } = PNG.sync.read(await page.locator(`#${id}`).screenshot());
-    const counts = new Map();
-    const inset = 3;
-    for (let y = inset; y < height - inset; y++) {
-      for (let x = inset; x < Math.floor(width * 0.05); x++) {
-        const i = (y * width + x) * 4;
-        const key = `${data[i]},${data[i + 1]},${data[i + 2]}`;
-        counts.set(key, (counts.get(key) ?? 0) + 1);
-      }
-    }
-    return [...counts.entries()].sort((a, b) => b[1] - a[1])[0][0].split(',').map(Number);
-  };
-  const near = (got, want) => got.every((v, i) => Math.abs(v - want[i]) <= 8);
+  // Dominant color in a strip (3% to 8% across) that is filled for all three meters.
+  const dominant = async (id) =>
+    dominantColor(await page.locator(`#${id}`).screenshot(), { from: 0.03, to: 0.08, inset: 3 });
   const cases = [
     ['meter-optimum', '--barely-color-success'],
     ['meter-suboptimum', '--barely-color-warning'],
@@ -71,17 +58,74 @@ test('meter shows optimum, suboptimum and even-less-good in the status colors', 
   expect(new Set(seen).size).toBe(3);
 });
 
-test('progress paints a fill and a track', async ({ page }) => {
+const cssColor = (page, value) =>
+  page.evaluate((v) => {
+    const ctx = document.createElement('canvas').getContext('2d', { willReadFrequently: true });
+    const probe = document.createElement('span');
+    probe.style.color = v;
+    document.body.append(probe);
+    ctx.fillStyle = getComputedStyle(probe).color;
+    probe.remove();
+    ctx.fillRect(0, 0, 1, 1);
+    return [...ctx.getImageData(0, 0, 1, 1).data].slice(0, 3);
+  }, value);
+
+test('determinate progress fills with primary and leaves the rest as track', async ({ page }) => {
   const png = await page.locator('#demo-progress').screenshot();
-  expect(distinctColorCount(png, { inset: 3 })).toBeGreaterThanOrEqual(2);
+  const filled = dominantColor(png, { from: 0.1, to: 0.4, inset: 3 });
+  const empty = dominantColor(png, { from: 0.9, to: 0.95, inset: 3 });
+  expect(near(filled, await cssColor(page, 'var(--barely-color-primary)')), `fill ${filled}`).toBe(true);
+  expect(near(empty, await cssColor(page, 'var(--barely-color-surface)')), `track ${empty}`).toBe(true);
+});
+
+test('meter track is the flat surface color', async ({ page }) => {
+  const png = await page.locator('#meter-even-less-good').screenshot();
+  const empty = dominantColor(png, { from: 0.9, to: 0.95, inset: 3 });
+  expect(near(empty, await cssColor(page, 'var(--barely-color-surface)')), `track ${empty}`).toBe(true);
+});
+
+test('meter fill spans the track interior', async ({ page }) => {
+  const png = await page.locator('#meter-optimum').screenshot();
+  const fill = dominantColor(png, { from: 0.1, to: 0.4, inset: 3 });
+  // Rows of the column at 20% that hold the fill: the interior, minus the 1px border at each edge.
+  const share = columnMatch(png, { x: 0.2, rgb: fill });
+  const { height } = await page.locator('#meter-optimum').evaluate((el) => ({ height: el.getBoundingClientRect().height }));
+  expect(share * height).toBeGreaterThanOrEqual(height - 4);
+});
+
+test('indeterminate progress keeps its native animation', async ({ page }) => {
+  const bar = page.locator('#demo-progress-indeterminate');
+  await bar.scrollIntoViewIfNeeded();
+  const shots = [];
+  for (let i = 0; i < 4; i++) {
+    shots.push((await bar.screenshot()).toString('base64'));
+    await page.waitForTimeout(300);
+  }
+  expect(new Set(shots).size).toBeGreaterThan(1);
 });
 
 test('dialog and popover use the surface tokens', async ({ page }) => {
   await page.locator('[popovertarget="demo-popover"]').click();
-  const s = await page.locator('#demo-popover').evaluate((el) => {
-    const c = getComputedStyle(el);
-    return { radius: c.borderStartStartRadius, border: c.borderBlockStartWidth };
+  await page.locator('[commandfor="demo-dialog"][command="show-modal"]').click({ trial: true }).catch(() => {});
+  const bg = await cssColor(page, 'var(--barely-color-background)');
+  const pad = await page.evaluate(() => {
+    const probe = document.createElement('div');
+    probe.style.cssText = 'padding:0;inline-size:calc(var(--barely-spacing) * 1.5)';
+    document.body.append(probe);
+    const w = probe.getBoundingClientRect().width;
+    probe.remove();
+    return w;
   });
-  expect(parseFloat(s.radius)).toBeGreaterThan(0);
-  expect(parseFloat(s.border)).toBeGreaterThan(0);
+  for (const id of ['demo-popover', 'demo-dialog']) {
+    const r = await page.locator(`#${id}`).evaluate((el) => {
+      const c = getComputedStyle(el);
+      const ctx = document.createElement('canvas').getContext('2d', { willReadFrequently: true });
+      ctx.fillStyle = c.backgroundColor;
+      ctx.fillRect(0, 0, 1, 1);
+      return { bg: [...ctx.getImageData(0, 0, 1, 1).data].slice(0, 3), pad: parseFloat(c.paddingInlineStart), radius: parseFloat(c.borderStartStartRadius) };
+    });
+    expect(near(r.bg, bg), `${id} background ${r.bg}`).toBe(true);
+    expect(r.pad, id).toBeCloseTo(pad, 1);
+    expect(r.radius, id).toBeGreaterThan(0);
+  }
 });

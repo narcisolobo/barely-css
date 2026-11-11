@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { DEMO, forcedMode, tabKey } from '../helpers/env.js';
-import { distinctColorCount } from '../helpers/pixels.js';
+import { distinctColorCount, dominantColor, near } from '../helpers/pixels.js';
 
 test('forced-colors media query applies', async ({ page }) => {
   await page.goto(DEMO);
@@ -163,10 +163,23 @@ test.describe('progress and meter', () => {
   test('progress and meter fills are visible', async ({ page }, testInfo) => {
     test.skip(forcedMode(testInfo) !== 'active', 'WebKit only reports the media query');
     await page.goto(DEMO);
+    // Highlight computes with alpha in Chromium, so paint a swatch over Canvas and read the pixels instead of the computed value.
+    await page.evaluate(() => {
+      const swatch = document.createElement('div');
+      swatch.id = 'highlight-swatch';
+      swatch.style.cssText = 'block-size:20px;inline-size:20px;forced-color-adjust:none;background:Highlight';
+      document.body.append(swatch);
+    });
+    const highlight = dominantColor(await page.locator('#highlight-swatch').screenshot(), { from: 0, to: 1 });
+    await page.evaluate(() => document.getElementById('highlight-swatch').remove());
     for (const id of ['demo-progress', 'meter-optimum', 'meter-suboptimum', 'meter-even-less-good']) {
       const png = await page.locator(`#${id}`).screenshot();
-      // inset 3 skips the rounded track edge; the interior holds the fill and the track, so two colors.
-      expect(distinctColorCount(png, { inset: 3 }), id).toBeGreaterThanOrEqual(2);
+      // Strips that are always filled (10-40% across; the even-less-good meter is only 10% full, so 3-8%) and never filled (90-95%).
+      const [from, to] = id === 'meter-even-less-good' ? [0.03, 0.08] : [0.1, 0.4];
+      const filled = dominantColor(png, { from, to, inset: 3 });
+      const empty = dominantColor(png, { from: 0.9, to: 0.95, inset: 3 });
+      expect(near(filled, highlight), `${id} fill ${filled} vs Highlight ${highlight}`).toBe(true);
+      expect(near(empty, highlight), `${id} track ${empty} must differ from Highlight`).toBe(false);
     }
   });
 });

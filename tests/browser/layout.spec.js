@@ -165,6 +165,7 @@ test.describe('wide', () => {
         ['template', document.querySelector('body > template')],
         ['style', style],
         ['dialog', document.querySelector('body > dialog')],
+        ['popover', document.querySelector('body > [popover]')],
       ]) {
         const s = getComputedStyle(el);
         out[name] = { left: parseFloat(s.paddingLeft), right: parseFloat(s.paddingRight) };
@@ -173,7 +174,7 @@ test.describe('wide', () => {
       const probe = document.createElement('div');
       probe.style.cssText = 'padding:0;inline-size:calc(var(--barely-spacing) * 1.5)';
       document.body.append(probe);
-      out.dialog.expected = probe.getBoundingClientRect().width;
+      out.dialog.expected = out.popover.expected = probe.getBoundingClientRect().width;
       probe.remove();
       return out;
     });
@@ -181,6 +182,8 @@ test.describe('wide', () => {
     // dialog takes its own padding (interactive.css) rather than the region formula
     expect(r.dialog.left).toBeCloseTo(r.dialog.expected, 1);
     expect(r.dialog.right).toBeCloseTo(r.dialog.expected, 1);
+    expect(r.popover.left).toBeCloseTo(r.popover.expected, 1);
+    expect(r.popover.right).toBeCloseTo(r.popover.expected, 1);
   });
 
   test('nested header and footer are not mastheads', async ({ page }) => {
