@@ -167,14 +167,20 @@ test.describe('wide', () => {
         ['dialog', document.querySelector('body > dialog')],
       ]) {
         const s = getComputedStyle(el);
-        out[name] = { left: parseFloat(s.paddingLeft), right: parseFloat(s.paddingRight), font: parseFloat(s.fontSize) };
+        out[name] = { left: parseFloat(s.paddingLeft), right: parseFloat(s.paddingRight) };
       }
+      // Task 13 styles dialog padding as 1.5 * --barely-spacing; the point here is only that the region formula is not used.
+      const probe = document.createElement('div');
+      probe.style.cssText = 'padding:0;inline-size:calc(var(--barely-spacing) * 1.5)';
+      document.body.append(probe);
+      out.dialog.expected = probe.getBoundingClientRect().width;
+      probe.remove();
       return out;
     });
     for (const n of ['script', 'template', 'style']) expect([n, r[n].left, r[n].right]).toEqual([n, 0, 0]);
-    // dialog keeps its UA padding (1em) rather than the region formula
-    expect(r.dialog.left).toBeCloseTo(r.dialog.font, 1);
-    expect(r.dialog.right).toBeCloseTo(r.dialog.font, 1);
+    // dialog takes its own padding (interactive.css) rather than the region formula
+    expect(r.dialog.left).toBeCloseTo(r.dialog.expected, 1);
+    expect(r.dialog.right).toBeCloseTo(r.dialog.expected, 1);
   });
 
   test('nested header and footer are not mastheads', async ({ page }) => {

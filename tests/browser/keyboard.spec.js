@@ -99,3 +99,59 @@ test('radio buttons move with arrow keys', async ({ page }) => {
   await expect(second).toBeFocused();
   await expect(first).not.toBeChecked();
 });
+
+test.describe('interactive elements', () => {
+  test('details opens and closes with Enter and Space', async ({ page }) => {
+    const details = page.locator('#demo-details-1');
+    const summary = details.locator('summary');
+    await summary.focus();
+    await page.keyboard.press('Enter');
+    await expect(details).toHaveJSProperty('open', true);
+    await page.keyboard.press('Enter');
+    await expect(details).toHaveJSProperty('open', false);
+    await page.keyboard.press('Space');
+    await expect(details).toHaveJSProperty('open', true);
+    await page.keyboard.press('Space');
+    await expect(details).toHaveJSProperty('open', false);
+  });
+
+  test('content inside closed details cannot receive focus', async ({ page, browserName }) => {
+    const link = page.locator('#demo-details-1 a');
+    await expect(page.locator('#demo-details-1')).toHaveJSProperty('open', false);
+    const stops = await walkTabStops(page, tabKey(browserName));
+    const linkId = await link.evaluate((el) => el.getAttribute('data-kb-id'));
+    expect(stops).not.toContain(linkId);
+    const expected = await expectedStops(page, browserName);
+    expect(expected.required).not.toContain(linkId);
+    // Opened, the same link becomes a stop.
+    await page.locator('#demo-details-1 summary').click();
+    expect((await expectedStops(page, browserName)).required).toContain(linkId);
+  });
+
+  test('popover opens from its button and closes with Esc', async ({ page }) => {
+    const button = page.locator('[popovertarget="demo-popover"]');
+    const popover = page.locator('#demo-popover');
+    await button.focus();
+    await page.keyboard.press('Enter');
+    await expect(popover).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(popover).toBeHidden();
+  });
+
+  test('dialog closes with Esc and returns focus to the opener', async ({ page }) => {
+    const opener = page.locator('[commandfor="demo-dialog"][command="show-modal"]');
+    const dialog = page.locator('#demo-dialog');
+    await opener.focus();
+    await page.keyboard.press('Enter');
+    await expect(dialog).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(dialog).toBeHidden();
+    await expect(opener).toBeFocused();
+    // The close button works too.
+    await opener.focus();
+    await page.keyboard.press('Enter');
+    await dialog.locator('[command="close"]').click();
+    await expect(dialog).toBeHidden();
+    await expect(opener).toBeFocused();
+  });
+});

@@ -1050,3 +1050,123 @@
     }
   }
 }
+
+/* ==== interactive.css ==== */
+@layer base {
+  /* details: a ruled disclosure. Adjacent ones share a rule. The native marker stays. */
+  :where(details) {
+    border-block: var(--barely-border-width) solid var(--barely-color-border);
+  }
+
+  :where(details + details) {
+    border-block-start: 0;
+  }
+
+  :where(summary) {
+    cursor: pointer;
+    padding-block: 0.5rem;
+    font-weight: 600;
+  }
+
+  :where(details[open]) {
+    padding-block-end: var(--barely-spacing);
+  }
+
+  /* dialog and popover: a raised surface. */
+  :where(dialog, [popover]) {
+    background-color: var(--barely-color-background);
+    color: var(--barely-color-text);
+    border: var(--barely-border-width) solid var(--barely-color-border);
+    border-radius: var(--barely-radius);
+    box-shadow: var(--barely-shadow);
+    padding: calc(var(--barely-spacing) * 1.5);
+    max-inline-size: min(var(--barely-reading-width), 100% - 2 * var(--barely-page-padding-inline));
+  }
+
+  dialog::backdrop {
+    background-color: oklch(from var(--barely-color-text) l c h / 0.45);
+  }
+
+  /* progress and meter: a pill track. The track is the element itself (appearance: none). */
+  :where(progress, meter) {
+    appearance: none;
+    inline-size: 100%;
+    block-size: 0.75rem;
+    border-radius: 999px;
+    overflow: hidden;
+    background-color: var(--barely-color-surface);
+    border: var(--barely-border-width) solid var(--barely-color-border-strong);
+    vertical-align: middle;
+  }
+
+  /* Each engine's pseudo-elements get their own rule: one unknown pseudo-element invalidates a whole list. */
+  :where(progress)::-webkit-progress-bar {
+    background-color: transparent;
+  }
+
+  :where(progress)::-webkit-progress-value {
+    background-color: var(--barely-color-primary);
+  }
+
+  :where(progress)::-moz-progress-bar {
+    background-color: var(--barely-color-primary);
+  }
+
+  :where(meter)::-webkit-meter-bar {
+    background: transparent;
+    border: 0;
+    block-size: 100%;
+  }
+
+  :where(meter)::-webkit-meter-optimum-value {
+    background: var(--barely-color-success);
+  }
+
+  :where(meter)::-webkit-meter-suboptimum-value {
+    background: var(--barely-color-warning);
+  }
+
+  :where(meter)::-webkit-meter-even-less-good-value {
+    background: var(--barely-color-danger);
+  }
+
+  :where(meter):-moz-meter-optimum::-moz-meter-bar {
+    background: var(--barely-color-success);
+  }
+
+  :where(meter):-moz-meter-sub-optimum::-moz-meter-bar {
+    background: var(--barely-color-warning);
+  }
+
+  :where(meter):-moz-meter-sub-sub-optimum::-moz-meter-bar {
+    background: var(--barely-color-danger);
+  }
+
+  @media (forced-colors: active) {
+    :where(progress, meter) {
+      forced-color-adjust: none;
+      background-color: Canvas;
+      border-color: ButtonText;
+    }
+
+    :where(progress)::-webkit-progress-value {
+      background-color: Highlight;
+    }
+
+    :where(progress)::-moz-progress-bar {
+      background-color: Highlight;
+    }
+
+    :where(meter)::-webkit-meter-optimum-value,
+    :where(meter)::-webkit-meter-suboptimum-value,
+    :where(meter)::-webkit-meter-even-less-good-value {
+      background: Highlight;
+    }
+
+    :where(meter):-moz-meter-optimum::-moz-meter-bar,
+    :where(meter):-moz-meter-sub-optimum::-moz-meter-bar,
+    :where(meter):-moz-meter-sub-sub-optimum::-moz-meter-bar {
+      background: Highlight;
+    }
+  }
+}

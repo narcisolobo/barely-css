@@ -273,7 +273,40 @@
         </p>
       </form>
     </section>
-    <section id="interactive"><h2>Interactive</h2><p>Disclosure, dialog, progress, and meter elements will appear here.</p></section>
+    <section id="interactive">
+      <h2>Interactive</h2>
+      <details id="demo-details-1">
+        <summary>What does classless mean?</summary>
+        <p>The stylesheet targets HTML elements, so plain semantic markup looks designed with no class names. <a href="#interactive">A link inside the disclosure</a>.</p>
+      </details>
+      <details id="demo-details-2">
+        <summary>Can I change the colors?</summary>
+        <p>Yes. Override the tokens on <code>:root</code> or on any element to rescope them.</p>
+      </details>
+      <!-- The dialog opener and close button use invoker commands (commandfor/command). Playwright 1.65 chromium,
+           firefox and webkit all support them, so no inline script is needed. -->
+      <p>
+        <button type="button" commandfor="demo-dialog" command="show-modal">Open dialog</button>
+        <button type="button" popovertarget="demo-popover">Toggle popover</button>
+      </p>
+      <dialog id="demo-dialog" aria-labelledby="demo-dialog-title">
+        <h3 id="demo-dialog-title">Confirm submission</h3>
+        <p>This dialog is modal. Press Escape or use the button to close it.</p>
+        <button type="button" commandfor="demo-dialog" command="close">Close dialog</button>
+      </dialog>
+      <div id="demo-popover" popover>
+        <p>A popover. Press Escape or click outside to dismiss it.</p>
+      </div>
+      <p>
+        <label>Upload progress <progress id="demo-progress" value="60" max="100">60%</progress></label>
+        <label>Working <progress id="demo-progress-indeterminate" aria-label="Working">Working</progress></label>
+      </p>
+      <p>
+        <label>Disk space, good <meter id="meter-optimum" min="0" max="100" low="30" high="70" optimum="90" value="85">85</meter></label>
+        <label>Disk space, fair <meter id="meter-suboptimum" min="0" max="100" low="30" high="70" optimum="90" value="50">50</meter></label>
+        <label>Disk space, poor <meter id="meter-even-less-good" min="0" max="100" low="30" high="70" optimum="90" value="10">10</meter></label>
+      </p>
+    </section>
     <section id="nested-theme" data-theme="dark">
       <h2>Nested theme</h2>
       <p>This section is always dark. <input type="text" aria-label="Dark scope input"></p>

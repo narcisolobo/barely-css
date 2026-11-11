@@ -158,3 +158,15 @@ test.describe('disabled choices', () => {
     expect(r.off.border).toBe(r.gray);
   });
 });
+
+test.describe('progress and meter', () => {
+  test('progress and meter fills are visible', async ({ page }, testInfo) => {
+    test.skip(forcedMode(testInfo) !== 'active', 'WebKit only reports the media query');
+    await page.goto(DEMO);
+    for (const id of ['demo-progress', 'meter-optimum', 'meter-suboptimum', 'meter-even-less-good']) {
+      const png = await page.locator(`#${id}`).screenshot();
+      // inset 3 skips the rounded track edge; the interior holds the fill and the track, so two colors.
+      expect(distinctColorCount(png, { inset: 3 }), id).toBeGreaterThanOrEqual(2);
+    }
+  });
+});
