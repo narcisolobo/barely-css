@@ -13,29 +13,61 @@ test('table keeps display: table', async ({ page }) => {
 test.describe('narrow', () => {
   test.use({ viewport: { width: 375, height: 800 } });
 
-  test('table with a long URL fits at 375', async ({ page }) => {
+  test('no cell word breaks mid-word at 375', async ({ page }) => {
+    await page.goto('/tests/pages/tables.html');
+    const broken = await page.evaluate(() => {
+      // A word is a run between natural break opportunities (spaces, and the / - ? & = : . inside URLs),
+      // so a URL may wrap at its slashes and hyphens but no run may be split.
+      const out = [];
+      const walker = document.createTreeWalker(document.querySelector('main'), NodeFilter.SHOW_TEXT);
+      for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+        if (!n.parentElement.closest('th, td')) continue;
+        for (const m of n.data.matchAll(/[^\s/\-?&=:.]+/g)) {
+          const r = document.createRange();
+          r.setStart(n, m.index);
+          r.setEnd(n, m.index + m[0].length);
+          const tops = new Set([...r.getClientRects()].map((q) => Math.round(q.top)));
+          if (tops.size > 1) out.push(m[0]);
+        }
+      }
+      return out;
+    });
+    expect(broken).toEqual([]);
+  });
+
+  test('a long URL makes its table wider than its container at 375', async ({ page }) => {
     await page.goto('/tests/pages/tables.html');
     const r = await page.evaluate(() => {
-      const root = document.documentElement;
-      const table = document.querySelector('#url-table').getBoundingClientRect();
-      const cells = [...document.querySelectorAll('#url-table td')].map((c) => c.getBoundingClientRect());
-      return {
-        scroll: root.scrollWidth,
-        client: root.clientWidth,
-        table: { left: table.left, right: table.right },
-        cells: cells.map((c) => ({ left: c.left, right: c.right })),
-      };
+      const t = document.querySelector('#url-table');
+      const cs = getComputedStyle(t.parentElement);
+      const content = t.parentElement.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+      return { table: t.getBoundingClientRect().width, content, display: getComputedStyle(t).display };
     });
-    expect(r.scroll).toBeLessThanOrEqual(r.client);
-    for (const c of r.cells) {
-      expect(c.left).toBeGreaterThanOrEqual(r.table.left - 0.5);
-      expect(c.right).toBeLessThanOrEqual(r.table.right + 0.5);
-    }
+    expect(r.display).toBe('table');
+    expect(r.table).toBeGreaterThan(r.content);
+  });
+
+  test('the scroll wrapper contains a long-URL table; the page does not scroll', async ({ page }) => {
+    await page.goto('/tests/pages/tables.html');
+    const r = await page.evaluate(() => {
+      const t = document.querySelector('#url-table');
+      const w = document.createElement('div');
+      w.setAttribute('role', 'region');
+      w.setAttribute('tabindex', '0');
+      w.setAttribute('aria-label', 'Reading list, scrolls sideways');
+      t.replaceWith(w);
+      w.append(t);
+      const root = document.documentElement;
+      return { page: root.scrollWidth <= root.clientWidth, wrapper: w.scrollWidth > w.clientWidth };
+    });
+    expect(r.page).toBe(true);
+    expect(r.wrapper).toBe(true);
   });
 
   test('wrapped wide table scrolls inside its wrapper, not the page', async ({ page }) => {
     await page.goto('/tests/pages/tables.html');
     const r = await page.evaluate(() => {
+      document.querySelector('#url-table').remove(); // unwrapped, it is allowed to scroll the page
       const root = document.documentElement;
       const w = document.querySelector('#wrapper');
       return {

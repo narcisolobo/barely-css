@@ -408,12 +408,12 @@
     color: var(--barely-color-text-muted);
   }
 
-  /* anywhere (not break-word) lets a long URL shrink the cell's min-content width, so the table fits. */
+  /* Cells wrap at natural word boundaries only. A table may grow wider than its container when its content
+     needs it; the optional scroll wrapper below contains that overflow without breaking words. */
   :where(th, td) {
     padding: 0.5rem 0.75rem;
     text-align: start;
     vertical-align: top;
-    overflow-wrap: anywhere;
   }
 
   :where(th) {

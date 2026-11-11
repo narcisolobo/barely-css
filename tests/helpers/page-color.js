@@ -59,7 +59,7 @@ export async function focusRingReport(page) {
     const r = el.getBoundingClientRect();
     const cx = r.left + r.width / 2;
     const cy = r.top + r.height / 2;
-    const hit = document.elementFromPoint(cx, cy);
+    const hit = document.elementFromPoint(cx, Math.min(Math.max(cy, r.top + 1), innerHeight - 1, r.bottom - 1));
     return {
       id: el.closest('[data-kb-id]')?.getAttribute('data-kb-id') ?? null,
       tag: el.localName,
@@ -67,7 +67,11 @@ export async function focusRingReport(page) {
       style: s.outlineStyle,
       width: parseFloat(s.outlineWidth),
       offset: parseFloat(s.outlineOffset),
-      inViewport: cx >= 0 && cy >= 0 && cx <= innerWidth && cy <= innerHeight,
+      // A scroll container taller than the leftover viewport (a table's scroll wrapper) may be only partly in
+      // view: Firefox scrolls a partly visible focus target no further. Its ring's near edge is then on screen.
+      inViewport:
+        (cx >= 0 && cy >= 0 && cx <= innerWidth && cy <= innerHeight) ||
+        (/auto|scroll/.test(s.overflowX) && r.top < innerHeight && r.bottom > 0 && cx >= 0 && cx <= innerWidth),
       covered: !(hit && (hit === el || el.contains(hit))),
     };
   });

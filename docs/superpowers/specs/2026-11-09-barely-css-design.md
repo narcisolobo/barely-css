@@ -125,7 +125,7 @@ Behavior rules:
   - Breadcrumbs are the one exception. `nav[aria-label="breadcrumb" i]` gets breadcrumb styling wherever it appears. The `i` flag makes the match case-insensitive.
 - **Tables.** Basic content tables are in v1. Dense data views are deferred (see Non-goals).
   - **Semantics come first.** The `table` element keeps its native `display: table`. It is never set to `display: block` to make it scroll, because some browser and screen reader pairs, notably Safari with VoiceOver, have dropped table semantics when that is done.
-  - **Most tables fit by wrapping.** Cells wrap long content, including long words and URLs (`overflow-wrap: break-word`), so most tables fit the content width with no help.
+  - **Readability over containment.** Table readability takes precedence over viewport containment. Cells keep natural word boundaries and the table keeps native sizing, so words and URLs are never broken mid-word. A table may overflow horizontally when its content requires it. Authors can use the optional accessible scroll wrapper to contain that overflow without compromising readability.
   - **Optional scroll wrapper.** For a table that is truly too wide, the README documents an optional wrapper that barely-css styles if it is present:
     ```html
     <div role="region" tabindex="0" aria-label="Grades by week">
@@ -133,7 +133,7 @@ Behavior rules:
     </div>
     ```
     The selector is `div[role="region"][tabindex]:has(> table)`. The wrapper gets `overflow-x: auto` and a visible `:focus-visible` outline, so keyboard users can scroll it. The wrapper is never required, so the no-wrappers rule for the baseline still holds, and the markup still reads cleanly under another stylesheet.
-  - **Accepted exception.** A wide table without the wrapper may make the page scroll horizontally. This is the only place the baseline allows that, and the README says so next to the wrapper example.
+  - **Accepted exception.** A table whose content is wider than the page, without the wrapper, may make the page scroll horizontally. This is the only place the baseline allows that, and the README says so next to the wrapper example.
   - **Smaller defaults (builder's call):**
     - `caption` sits above the table, start-aligned.
     - `th` is start-aligned and bold.

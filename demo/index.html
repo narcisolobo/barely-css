@@ -93,22 +93,24 @@
     <section id="lists"><h2>Lists</h2><p>Ordered, unordered, and description lists will appear here.</p></section>
     <section id="tables">
       <h2>Tables</h2>
-      <p>Cells wrap long content, so most tables fit the page without help. Digits line up in every column.</p>
-      <table id="grades">
-        <caption>Course grades, Introduction to Typography</caption>
-        <thead>
-          <tr><th scope="col">Student</th><th scope="col">Assignments</th><th scope="col">Midterm</th><th scope="col">Final project</th><th scope="col">Overall</th></tr>
-        </thead>
-        <tbody>
-          <tr><th scope="row">Amara Okafor</th><td>92.5</td><td>88</td><td>95</td><td>91.8</td></tr>
-          <tr><th scope="row">Daniel Reyes</th><td>78</td><td>81.5</td><td>84</td><td>80.6</td></tr>
-          <tr><th scope="row">Mei Tanaka</th><td>96</td><td>94</td><td>98.5</td><td>96.2</td></tr>
-          <tr><th scope="row">Jonas Lindqvist</th><td>85.5</td><td>72</td><td>79</td><td>78.6</td></tr>
-        </tbody>
-        <tfoot>
-          <tr><th scope="row">Class average</th><td>88</td><td>83.9</td><td>89.1</td><td>86.8</td></tr>
-        </tfoot>
-      </table>
+      <p>Cells wrap at natural word boundaries and never break a word. Digits line up in every column.</p>
+      <div role="region" tabindex="0" aria-label="Course grades, scrolls sideways">
+        <table id="grades">
+          <caption>Course grades, Introduction to Typography</caption>
+          <thead>
+            <tr><th scope="col">Student</th><th scope="col">Assignments</th><th scope="col">Midterm</th><th scope="col">Final project</th><th scope="col">Overall</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Amara Okafor</th><td>92.5</td><td>88</td><td>95</td><td>91.8</td></tr>
+            <tr><th scope="row">Daniel Reyes</th><td>78</td><td>81.5</td><td>84</td><td>80.6</td></tr>
+            <tr><th scope="row">Mei Tanaka</th><td>96</td><td>94</td><td>98.5</td><td>96.2</td></tr>
+            <tr><th scope="row">Jonas Lindqvist</th><td>85.5</td><td>72</td><td>79</td><td>78.6</td></tr>
+          </tbody>
+          <tfoot>
+            <tr><th scope="row">Class average</th><td>88</td><td>83.9</td><td>89.1</td><td>86.8</td></tr>
+          </tfoot>
+        </table>
+      </div>
       <p>A table that is truly too wide can sit in an optional wrapper. The wrapper scrolls sideways and takes keyboard focus, so arrow keys work.</p>
       <div role="region" tabindex="0" aria-label="Weekly schedule, scrolls sideways" id="schedule-region">
         <table>
