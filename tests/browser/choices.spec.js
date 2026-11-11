@@ -71,7 +71,8 @@ test('switch knob mirrors in RTL', async ({ page }) => {
 test('check mark, dash and dot render', async ({ page }) => {
   for (const id of ['cb-on', 'cb-indet', 'rd-on', 'sw-on']) {
     const png = await page.locator(`#${id}`).screenshot();
-    expect(distinctColorCount(png), id).toBeGreaterThanOrEqual(2);
+    // inset 5 samples only the interior: the corners and antialiased edge show the page behind the control.
+    expect(distinctColorCount(png, { inset: 5 }), id).toBeGreaterThanOrEqual(2);
   }
 });
 

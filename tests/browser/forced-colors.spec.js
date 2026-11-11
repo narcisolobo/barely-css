@@ -59,8 +59,20 @@ test.describe('choices', () => {
     await page.goto(PAGE);
     for (const id of ['cb-on', 'cb-indet', 'rd-on', 'sw-on', 'cb-dis']) {
       const png = await page.locator(`#${id}`).screenshot();
-      expect(distinctColorCount(png), id).toBeGreaterThanOrEqual(2);
+      // inset 5 samples only the interior, not the corners and antialiased edge.
+      expect(distinctColorCount(png, { inset: 5 }), id).toBeGreaterThanOrEqual(2);
     }
+  });
+
+  test('disabled checked differs from enabled checked', async ({ page }, testInfo) => {
+    test.skip(forcedMode(testInfo) !== 'active', 'WebKit only reports the media query');
+    await page.goto(PAGE);
+    const paint = (id) =>
+      page.locator(`#${id}`).evaluate((el) => {
+        const c = getComputedStyle(el);
+        return [c.backgroundColor, c.borderTopColor];
+      });
+    expect(await paint('cb-dis')).not.toEqual(await paint('cb-on'));
   });
 
   test('unchecked border differs from background', async ({ page }, testInfo) => {

@@ -829,7 +829,7 @@
     background: var(--barely-color-on-primary);
   }
 
-  /* Switch: input[type="checkbox"][role="switch"], Pico's convention. */
+  /* Switch: input[type="checkbox"][role="switch"], Pico's convention. An indeterminate switch is not a supported state. */
   :where(input[type="checkbox"][role="switch"]) {
     inline-size: calc(var(--barely-check-size) * 1.9);
     border-radius: 999px;
@@ -909,6 +909,17 @@
 
     :where(input[type="checkbox"][role="switch"]):checked::before {
       background: HighlightText;
+    }
+
+    /* forced-color-adjust: none would make a disabled choice look enabled, so mark it with GrayText. */
+    :where(input:is([type="checkbox"], [type="radio"])):disabled {
+      background: Canvas;
+      border-color: GrayText;
+    }
+
+    :where(input:is([type="checkbox"], [type="radio"])):disabled:checked {
+      background: GrayText;
+      border-color: GrayText;
     }
 
     :where(input:is([type="checkbox"], [type="radio"])):focus-visible {
