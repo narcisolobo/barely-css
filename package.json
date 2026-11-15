@@ -1,8 +1,28 @@
 {
   "name": "barely-css",
   "version": "0.0.0",
-  "private": true,
   "description": "A classless, token-driven CSS baseline for semantic HTML.",
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "style": "dist/barely.css",
+  "exports": {
+    ".": "./dist/barely.css",
+    "./barely.css": "./dist/barely.css",
+    "./barely.min.css": "./dist/barely.min.css",
+    "./package.json": "./package.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/narcisolobo/barely-css.git"
+  },
+  "homepage": "https://github.com/narcisolobo/barely-css#readme",
+  "bugs": {
+    "url": "https://github.com/narcisolobo/barely-css/issues"
+  },
   "scripts": {
     "build": "node scripts/build.js",
     "check:dist": "node scripts/build.js --check",
@@ -15,7 +35,7 @@
     "semantic-html",
     "design-tokens"
   ],
-  "author": "",
+  "author": "Narciso Lobo",
   "license": "MIT",
   "devEngines": {
     "packageManager": {
