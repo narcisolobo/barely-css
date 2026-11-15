@@ -666,6 +666,31 @@
     margin-block-end: calc(var(--barely-form-gap) - 0.5rem);
   }
 
+  /* A label linked with for, placed right before its control (Flask-WTF, Django). It is spaced like a wrapping
+     label. A wrapped control sits directly under its text, because the text-like rule's margin: 0 wins over the
+     label > control margin-block-start, so no gap goes below this label. The control carries the form gap to the
+     next field. In a fieldset the grid's 0.5rem gap is already between the two, so the label gives it back.
+     These come after the two gap rules above, so they win by source order. */
+  :where(label + :is(input:not([type="checkbox"], [type="radio"]), select, textarea)) {
+    display: block;
+  }
+
+  :where(label:has(+ :is(input:not([type="checkbox"], [type="radio"]), select, textarea))) {
+    margin-block-end: 0;
+  }
+
+  :where(fieldset > label:has(+ :is(input:not([type="checkbox"], [type="radio"]), select, textarea))) {
+    margin-block-end: -0.5rem;
+  }
+
+  :where(form label + :is(input:not([type="checkbox"], [type="radio"]), select, textarea):not(:last-child)) {
+    margin-block-end: var(--barely-form-gap);
+  }
+
+  :where(fieldset > label + :is(input:not([type="checkbox"], [type="radio"]), select, textarea):not(:last-child)) {
+    margin-block-end: calc(var(--barely-form-gap) - 0.5rem);
+  }
+
   /* Range: native control tinted with accent-color; keeps platform keyboard and assistive technology behavior. */
   :where(input[type="range"]) {
     inline-size: 100%;
@@ -813,7 +838,7 @@
     appearance: none;
     flex: none;
     margin-block: 0;
-    margin-inline: calc(-1 * (var(--barely-check-size) + 0.625rem)) 0.625rem;
+    margin-inline: 0 0.5rem;
     /* Aligns on the box itself, so the checked mark can't shift the baseline. */
     vertical-align: middle;
     inline-size: var(--barely-check-size);
@@ -823,6 +848,22 @@
     background: var(--barely-control-background, var(--barely-color-background));
     border: var(--barely-control-border-width) solid var(--barely-color-border-strong);
     border-radius: 0.25rem;
+    cursor: pointer;
+  }
+
+  /* Inside its label the control is pulled back into the label's start padding, which is what builds the
+     hanging indent. An unwrapped control (a sibling of its label) has no padding to sit in, so it keeps the
+     plain margin above. */
+  :where(label > input:is([type="checkbox"], [type="radio"])) {
+    margin-inline: calc(-1 * (var(--barely-check-size) + 0.625rem)) 0.625rem;
+  }
+
+  /* The label of an unwrapped control (<input id> then <label for>) sits on the same line, like a wrapped one. */
+  :where(input:is([type="checkbox"], [type="radio"]) + label) {
+    display: inline;
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.6;
     cursor: pointer;
   }
 
@@ -864,10 +905,13 @@
   :where(input[type="checkbox"][role="switch"]) {
     inline-size: calc(var(--barely-check-size) * 1.9);
     border-radius: 999px;
-    margin-inline-start: calc(-1 * (var(--barely-check-size) * 1.9 + 0.625rem));
     place-content: center start;
     padding-inline: 2px;
     background: var(--barely-color-surface);
+  }
+
+  :where(label > input[type="checkbox"][role="switch"]) {
+    margin-inline-start: calc(-1 * (var(--barely-check-size) * 1.9 + 0.625rem));
   }
 
   :where(input[type="checkbox"][role="switch"])::before {

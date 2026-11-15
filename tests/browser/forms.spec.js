@@ -160,6 +160,55 @@ test.describe('controls', () => {
     expect(gaps.inside).toBeCloseTo(gaps.outside, 1);
   });
 
+  test('a label linked with for is spaced like a wrapping label, in a form and in a fieldset', async ({ page }) => {
+    await page.goto(PAGE);
+    const r = await page.evaluate(() => {
+      const mk = (id, inner) => {
+        const f = document.createElement('form');
+        f.id = id;
+        f.innerHTML = inner;
+        document.querySelector('main').append(f);
+        return f;
+      };
+      const wrapped = '<label>One<input type="text"></label><label>Two<input type="text"></label><label>Three<input type="text"></label>';
+      const id0 = 'sib';
+      const sibling = ['a', 'b', 'c'].map((k, i) => `<label for="${id0}-${k}">${['One', 'Two', 'Three'][i]}</label><input id="${id0}-${k}" type="text">`).join('');
+      const measure = (form, sel) => {
+        const labels = [...form.querySelectorAll(sel.label)];
+        const inputs = [...form.querySelectorAll('input')];
+        const lt = labels.map((l) => l.getBoundingClientRect().top);
+        const it = inputs.map((i) => i.getBoundingClientRect());
+        return {
+          labelToField: it[0].top - lt[0],
+          fieldToNext: lt[1] - it[0].bottom,
+          fieldToNext2: lt[2] - it[1].bottom,
+        };
+      };
+      const w = measure(mk('t-wrapped', wrapped), { label: 'label' });
+      const sb = measure(mk('t-sibling', sibling), { label: 'label' });
+      const wf = measure(mk('t-wrapped-fs', `<fieldset>${wrapped}</fieldset>`), { label: 'label' });
+      const sf = measure(mk('t-sibling-fs', `<fieldset>${sibling.replaceAll('sib-', 'sibfs-')}</fieldset>`), { label: 'label' });
+      // Django as_p: each label and control pair sits in its own paragraph.
+      const dj = (k, wrap) => (wrap ? `<p><label>${k}<input type="text"></label></p>` : `<p><label for="dj-${k}">${k}</label><input id="dj-${k}" type="text"></p>`);
+      const pm = (form) => {
+        const ps = [...form.querySelectorAll('p')];
+        const label = ps.map((p) => p.querySelector('label').getBoundingClientRect().top);
+        const input = ps.map((p) => p.querySelector('input').getBoundingClientRect());
+        return { labelToField: input[0].top - label[0], fieldToNext: label[1] - input[0].bottom };
+      };
+      const pw = pm(mk('t-p-wrapped', dj('One', true) + dj('Two', true)));
+      const ps = pm(mk('t-p-sibling', dj('One', false) + dj('Two', false)));
+      return { w, sb, wf, sf, pw, ps };
+    });
+    for (const k of ['labelToField', 'fieldToNext', 'fieldToNext2']) {
+      expect(r.sb[k], `form ${k}`).toBeCloseTo(r.w[k], 0);
+      expect(r.sf[k], `fieldset ${k}`).toBeCloseTo(r.wf[k], 0);
+    }
+    for (const k of ['labelToField', 'fieldToNext']) expect(r.ps[k], `p ${k}`).toBeCloseTo(r.pw[k], 0);
+    expect(r.w.labelToField).toBeGreaterThan(10);
+    expect(r.w.fieldToNext).toBeGreaterThan(1);
+  });
+
   test('select chevron flips in RTL', async ({ page }) => {
     await page.goto(PAGE);
     const pos = (s) => page.locator(s).evaluate((el) => getComputedStyle(el).backgroundPositionX);

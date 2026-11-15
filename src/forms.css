@@ -130,6 +130,31 @@
     margin-block-end: calc(var(--barely-form-gap) - 0.5rem);
   }
 
+  /* A label linked with for, placed right before its control (Flask-WTF, Django). It is spaced like a wrapping
+     label. A wrapped control sits directly under its text, because the text-like rule's margin: 0 wins over the
+     label > control margin-block-start, so no gap goes below this label. The control carries the form gap to the
+     next field. In a fieldset the grid's 0.5rem gap is already between the two, so the label gives it back.
+     These come after the two gap rules above, so they win by source order. */
+  :where(label + :is(input:not([type="checkbox"], [type="radio"]), select, textarea)) {
+    display: block;
+  }
+
+  :where(label:has(+ :is(input:not([type="checkbox"], [type="radio"]), select, textarea))) {
+    margin-block-end: 0;
+  }
+
+  :where(fieldset > label:has(+ :is(input:not([type="checkbox"], [type="radio"]), select, textarea))) {
+    margin-block-end: -0.5rem;
+  }
+
+  :where(form label + :is(input:not([type="checkbox"], [type="radio"]), select, textarea):not(:last-child)) {
+    margin-block-end: var(--barely-form-gap);
+  }
+
+  :where(fieldset > label + :is(input:not([type="checkbox"], [type="radio"]), select, textarea):not(:last-child)) {
+    margin-block-end: calc(var(--barely-form-gap) - 0.5rem);
+  }
+
   /* Range: native control tinted with accent-color; keeps platform keyboard and assistive technology behavior. */
   :where(input[type="range"]) {
     inline-size: 100%;

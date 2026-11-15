@@ -20,6 +20,7 @@ Any change to a default value (a token, a spacing step, a color) is listed under
 - Long inline `code`, `kbd` and `samp` break at the edge of the line instead of widening the page; `pre` still scrolls inside itself.
 - Form controls and buttons: block labels that wrap their controls, text-like inputs (including unknown types), `select`, `textarea`, range, file, color, `fieldset` and `legend`, and primary and reset buttons, with no classes.
 - Checkboxes, radios and switches (`input[type="checkbox"][role="switch"]`) drawn with tokens, with the label beside the control, a 24px minimum row, and a mirrored switch in right-to-left text.
+- A checkbox, radio or switch placed before its `label for` (not wrapped by it) stays inside the page edge, and a `label for` placed before its text field, `select` or `textarea` is spaced like a wrapping label.
 - Form states and native validation styling: focus border, read-only, disabled controls and buttons, `:user-invalid` and `aria-invalid` with an icon and a thicker border, and forced-colors support.
 - Toggle button pressed state: `button[aria-pressed="true"]` gets the secondary fill, a strong border and an inset top edge.
 - Native interactive elements: `details` and `summary`, `dialog` with its backdrop, `[popover]`, `progress` and `meter` (with optimum, suboptimum and even-less-good colors), with forced-colors support.

@@ -21,7 +21,7 @@
     appearance: none;
     flex: none;
     margin-block: 0;
-    margin-inline: calc(-1 * (var(--barely-check-size) + 0.625rem)) 0.625rem;
+    margin-inline: 0 0.5rem;
     /* Aligns on the box itself, so the checked mark can't shift the baseline. */
     vertical-align: middle;
     inline-size: var(--barely-check-size);
@@ -31,6 +31,22 @@
     background: var(--barely-control-background, var(--barely-color-background));
     border: var(--barely-control-border-width) solid var(--barely-color-border-strong);
     border-radius: 0.25rem;
+    cursor: pointer;
+  }
+
+  /* Inside its label the control is pulled back into the label's start padding, which is what builds the
+     hanging indent. An unwrapped control (a sibling of its label) has no padding to sit in, so it keeps the
+     plain margin above. */
+  :where(label > input:is([type="checkbox"], [type="radio"])) {
+    margin-inline: calc(-1 * (var(--barely-check-size) + 0.625rem)) 0.625rem;
+  }
+
+  /* The label of an unwrapped control (<input id> then <label for>) sits on the same line, like a wrapped one. */
+  :where(input:is([type="checkbox"], [type="radio"]) + label) {
+    display: inline;
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.6;
     cursor: pointer;
   }
 
@@ -72,10 +88,13 @@
   :where(input[type="checkbox"][role="switch"]) {
     inline-size: calc(var(--barely-check-size) * 1.9);
     border-radius: 999px;
-    margin-inline-start: calc(-1 * (var(--barely-check-size) * 1.9 + 0.625rem));
     place-content: center start;
     padding-inline: 2px;
     background: var(--barely-color-surface);
+  }
+
+  :where(label > input[type="checkbox"][role="switch"]) {
+    margin-inline-start: calc(-1 * (var(--barely-check-size) * 1.9 + 0.625rem));
   }
 
   :where(input[type="checkbox"][role="switch"])::before {

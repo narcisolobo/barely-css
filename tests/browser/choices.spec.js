@@ -110,3 +110,36 @@ test.describe('spacing', () => {
     expect(t2.y - (t1.y + t1.height)).toBeCloseTo(gap, 0);
   });
 });
+
+test.describe('unwrapped choices', () => {
+  test.use({ viewport: { width: 375, height: 800 } });
+
+  for (const dir of ['ltr', 'rtl']) {
+    test(`checkbox, radio and switch sit inside the content edge with their label on the same line (${dir})`, async ({ page }) => {
+      const r = await page.evaluate((d) => {
+        document.documentElement.dir = d;
+        const host = document.createElement('div');
+        host.id = 'unwrapped-host';
+        host.innerHTML =
+          '<input type="checkbox" id="u-cb"><label for="u-cb" id="u-cb-l">Checkbox</label>' +
+          '<input type="radio" id="u-rd" name="u"><label for="u-rd" id="u-rd-l">Radio</label>' +
+          '<input type="checkbox" role="switch" id="u-sw"><label for="u-sw" id="u-sw-l">Switch</label>';
+        document.querySelector('main').append(host);
+        const hostBox = host.getBoundingClientRect();
+        const out = { start: d === 'ltr' ? hostBox.left : hostBox.right, items: [] };
+        for (const id of ['u-cb', 'u-rd', 'u-sw']) {
+          const i = document.getElementById(id).getBoundingClientRect();
+          const l = document.getElementById(`${id}-l`).getBoundingClientRect();
+          out.items.push({ id, inputStart: d === 'ltr' ? i.left : i.right, inputTop: i.top, inputBottom: i.bottom, labelTop: l.top, labelBottom: l.bottom });
+        }
+        return out;
+      }, dir);
+      for (const it of r.items) {
+        if (dir === 'ltr') expect(it.inputStart, it.id).toBeGreaterThanOrEqual(r.start - 0.5);
+        else expect(it.inputStart, it.id).toBeLessThanOrEqual(r.start + 0.5);
+        // Same line: the label's box overlaps the control's box vertically.
+        expect(Math.min(it.inputBottom, it.labelBottom) - Math.max(it.inputTop, it.labelTop), it.id).toBeGreaterThan(0);
+      }
+    });
+  }
+});
