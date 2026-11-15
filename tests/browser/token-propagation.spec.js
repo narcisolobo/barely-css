@@ -224,7 +224,8 @@ async function runPropagation(page, browserName, nested) {
   // default: every element in the scope
   const defaults = await page.evaluate((sel) => {
     const root = document.querySelector(sel);
-    const els = [root, ...root.querySelectorAll('*')].filter(
+    // The :root run also measures <html>, which paints the page background (base.css); head stays out.
+    const els = [...(root === document.body ? [document.documentElement] : []), root, ...root.querySelectorAll('*')].filter(
       (el) => !el.hasAttribute('data-tp-probe') && !el.closest('head') && !el.matches('script, style, template'),
     );
     const out = [];
