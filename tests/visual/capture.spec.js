@@ -19,19 +19,29 @@ const baselineLabel = JSON.parse(readFileSync(`${OUT}/baseline.json`, 'utf8')).l
 
 const cases = [
   ...FIXTURES.flatMap((fixture) =>
-    WIDTHS.map((width) => ({ fixture, width, state: 'default', run: null })),
+    WIDTHS.map((width) => ({ fixture, width, state: 'default', run: null, check: null })),
   ),
-  ...STATES.map((s) => ({ fixture: s.fixture, width: STATE_WIDTH, state: s.name, run: s.run })),
+  ...STATES.map((s) => ({ fixture: s.fixture, width: STATE_WIDTH, state: s.name, run: s.run, check: s.check })),
 ];
 
-async function render(page, fixture, run) {
+async function render(page, fixture, run, check, state) {
   await page.goto(`/tests/fixtures/${fixture}`);
   await page.addStyleTag({ content: FREEZE });
   await page.evaluate(() => document.fonts.ready);
-  if (run) await run(page);
   await page.evaluate(() => window.scrollTo(0, 0));
+  // A fullPage capture resizes the viewport in Chromium, which drops :hover. Size the viewport to the whole
+  // page first so the pointer position holds and nothing needs to scroll.
+  const viewport = page.viewportSize();
+  if (run) {
+    const height = await page.evaluate(() => document.documentElement.scrollHeight);
+    await page.setViewportSize({ width: viewport.width, height });
+    await run(page);
+  }
   await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
-  return page.screenshot({ fullPage: true, animations: 'disabled', caret: 'hide' });
+  if (check && !(await check(page))) throw new Error(`state "${state}" was lost before the screenshot`);
+  const shot = await page.screenshot({ fullPage: true, animations: 'disabled', caret: 'hide' });
+  if (run) await page.setViewportSize(viewport);
+  return shot;
 }
 
 function pad(png, width, height) {
@@ -69,9 +79,9 @@ for (const c of cases) {
       await page.route('**/dist/barely.css', (route) =>
         route.fulfill({ status: 200, contentType: 'text/css', body: baselineCss }),
       );
-      const baseBuf = await render(page, c.fixture, c.run);
+      const baseBuf = await render(page, c.fixture, c.run, c.check, c.state);
       await page.unroute('**/dist/barely.css');
-      const curBuf = await render(page, c.fixture, c.run);
+      const curBuf = await render(page, c.fixture, c.run, c.check, c.state);
       result = { baseBuf, curBuf, ...compare(baseBuf, curBuf) };
       if (!result.changed) break;
     }

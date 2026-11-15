@@ -12,7 +12,7 @@ const noFetch = async () => {
 
 function makeRepo() {
   const dir = mkdtempSync(join(tmpdir(), 'barely-baseline-'));
-  git(dir, 'init', '-q');
+  git(dir, 'init', '-q', '-b', 'main');
   git(dir, 'config', 'user.email', 't@example.com');
   git(dir, 'config', 'user.name', 'Test');
   git(dir, 'config', 'commit.gpgsign', 'false');
@@ -92,4 +92,20 @@ test('newest v* tag fetches the npm tarball through the injected fetcher', async
   } finally {
     rmSync(pack, { recursive: true, force: true });
   }
+});
+
+test('on a branch, diffs against the merge-base with main', async () => {
+  repo = makeRepo();
+  git(repo.dir, 'checkout', '-q', '-b', 'feature');
+  repo.commit('/* feature one */', 'f1');
+  repo.commit('/* feature two */', 'f2');
+  const base = git(repo.dir, 'rev-parse', 'main').trim();
+  const r = await resolveBaseline({ cwd: repo.dir, env: {}, fetchTarball: noFetch });
+  expect(r).toEqual({ label: `git merge-base main (${base.slice(0, 7)})`, css: '/* two */' });
+});
+
+test('on main, keeps the HEAD or HEAD~1 rule', async () => {
+  repo = makeRepo();
+  const r = await resolveBaseline({ cwd: repo.dir, env: {}, fetchTarball: noFetch });
+  expect(r.label).toBe('git HEAD~1');
 });

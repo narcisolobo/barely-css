@@ -34,13 +34,25 @@ function distDiffersFromHead(cwd) {
   }
 }
 
+/** On a branch other than main (or detached) with a local main, the merge-base with main; otherwise null. */
+function branchPointFromMain(cwd) {
+  const branch = git(cwd, ['rev-parse', '--abbrev-ref', 'HEAD']).trim();
+  if (branch === 'main') return null;
+  try {
+    git(cwd, ['rev-parse', '--verify', '--quiet', 'refs/heads/main']);
+    return git(cwd, ['merge-base', 'HEAD', 'main']).trim();
+  } catch {
+    return null;
+  }
+}
+
 function fromGit(cwd, ref) {
   return { label: `git ${ref}`, css: git(cwd, ['show', `${ref}:dist/barely.css`]) };
 }
 
 /**
  * Finds the CSS to compare against. An explicit ref (BARELY_BASELINE_REF, then opts.ref) wins; otherwise the newest
- * `v*` tag's published npm tarball; otherwise git history (HEAD when dist has uncommitted changes, else HEAD~1).
+ * `v*` tag's published npm tarball; otherwise, on a branch with a local main, the merge-base with main; otherwise git history (HEAD when dist has uncommitted changes, else HEAD~1).
  * `cwd`, `env` and `fetchTarball` can be injected so tests never touch the network or the real repository.
  */
 export async function resolveBaseline({
@@ -69,6 +81,9 @@ export async function resolveBaseline({
       rmSync(dir, { recursive: true, force: true });
     }
   }
+
+  const base = branchPointFromMain(cwd);
+  if (base) return { label: `git merge-base main (${base.slice(0, 7)})`, css: git(cwd, ['show', `${base}:dist/barely.css`]) };
 
   return fromGit(cwd, distDiffersFromHead(cwd) ? 'HEAD' : 'HEAD~1');
 }
