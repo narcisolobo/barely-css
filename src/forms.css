@@ -8,12 +8,11 @@
   }
 
   /* Helper text after a control: inside a wrapping label, directly in a fieldset, or right after the control of a
-     label linked with for (in a div or p field, a span there is help text too, as in Django's as_p). Link it with aria-describedby. */
+     label linked with for (a span there counts as help text too, as Django's as_p renders it). Link it with aria-describedby. */
   :where(
     label > small,
     fieldset > small,
-    label + :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]), select, textarea) + small,
-    :is(div, p) > label + :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]), select, textarea) + span
+    label + :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]), select, textarea) + :is(small, span)
   ) {
     display: block;
     margin-block-start: 0.375rem;
@@ -241,8 +240,8 @@
     margin-block-end: -0.5rem;
   }
 
-  /* The control carries the gap unless a small follows it, in which case the small carries it (next rules). */
-  :where(form label + :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]), select, textarea):has(~ :not(input[type="hidden"])):not(:has(+ small))) {
+  /* The control carries the gap unless a small or span follows it, in which case that help text carries it (next rules). */
+  :where(form label + :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]), select, textarea):has(~ :not(input[type="hidden"])):not(:has(+ :is(small, span)))) {
     margin-block-end: var(--barely-form-gap);
   }
 
@@ -250,28 +249,18 @@
     margin-block-end: calc(var(--barely-form-gap) - 0.5rem);
   }
 
-  /* In a fieldset a control followed by its small gives back the grid gap, like the label above it does, so the
+  /* In a fieldset a control followed by its help text gives back the grid gap, like the label above it does, so the
      small sits 0.375rem below the control. */
-  :where(fieldset > label + :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]), select, textarea):has(+ small)) {
+  :where(fieldset > label + :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]), select, textarea):has(+ :is(small, span))) {
     margin-block-end: -0.5rem;
   }
 
-  :where(form label + :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]), select, textarea) + small:has(~ :not(input[type="hidden"]))) {
+  :where(form label + :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]), select, textarea) + :is(small, span):has(~ :not(input[type="hidden"]))) {
     margin-block-end: var(--barely-form-gap);
   }
 
-  :where(fieldset > label + :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]), select, textarea) + small:has(~ :not(input[type="hidden"]))) {
+  :where(fieldset > label + :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]), select, textarea) + :is(small, span):has(~ :not(input[type="hidden"]))) {
     margin-block-end: calc(var(--barely-form-gap) - 0.5rem);
-  }
-
-  /* Inside a div or p field the wrapper carries the form gap (see above), so the control and its help text add
-     none: the help text sits directly under the control. These come last among the gap rules to win by order. */
-  :where(:is(div, p) > label + :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]), select, textarea)) {
-    margin-block-end: 0;
-  }
-
-  :where(:is(div, p) > label + :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]), select, textarea) + :is(small, span)) {
-    margin-block-end: 0;
   }
 
   /* Bare choices placed directly in a fieldset (an input, then its label for it): two columns, so each control

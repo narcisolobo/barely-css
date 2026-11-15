@@ -56,6 +56,30 @@
       </div>
     </form>
 
+    <!-- (g) One div wrapping several sibling-label fields and the submit, a common hand-written container. -->
+    <form id="div-container" method="post">
+      <div>
+        <label for="g-a">First</label>
+        <input type="text" id="g-a" name="a">
+        <label for="g-b">Second</label>
+        <input type="text" id="g-b" name="b">
+        <label for="g-c">Third</label>
+        <input type="text" id="g-c" name="c">
+        <button type="submit">Send</button>
+      </div>
+    </form>
+
+    <!-- (g2) The same fields and button with no div. -->
+    <form id="no-container" method="post">
+      <label for="h-a">First</label>
+      <input type="text" id="h-a" name="a">
+      <label for="h-b">Second</label>
+      <input type="text" id="h-b" name="b">
+      <label for="h-c">Third</label>
+      <input type="text" id="h-c" name="c">
+      <button type="submit">Send</button>
+    </form>
+
     <!-- (c) Flask-WTF login: hidden CSRF first, sibling labels, a wrapped checkbox label, then the submit. -->
     <form id="flask-login" method="post">
       <input type="hidden" name="csrf_token" value="abc123">

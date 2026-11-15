@@ -206,6 +206,28 @@ for (const width of WIDTHS) {
       expect(r.trailing).toBeLessThanOrEqual(1);
     });
 
+    test('a div that wraps several fields and the button spaces them like no div', async ({ page }) => {
+      await page.goto(PAGE);
+      const r = await page.evaluate(() => {
+        const probe = document.createElement('div');
+        probe.style.blockSize = 'var(--barely-form-gap)';
+        document.body.append(probe);
+        const gap = probe.getBoundingClientRect().height;
+        probe.remove();
+        const measure = (id, prefix) => {
+          const q = (sel) => document.querySelector(`#${id} ${sel}`).getBoundingClientRect();
+          return [
+            q(`label[for="${prefix}-b"]`).top - q(`#${prefix}-a`).bottom,
+            q(`label[for="${prefix}-c"]`).top - q(`#${prefix}-b`).bottom,
+            q('button').top - q(`#${prefix}-c`).bottom,
+          ];
+        };
+        return { gap, div: measure('div-container', 'g'), plain: measure('no-container', 'h') };
+      });
+      for (const g of r.plain) expect(Math.abs(g - r.gap)).toBeLessThanOrEqual(1);
+      for (const g of r.div) expect(Math.abs(g - r.gap)).toBeLessThanOrEqual(1);
+    });
+
     test('the page never scrolls sideways', async ({ page }) => {
       await page.goto(PAGE);
       const r = await page.evaluate(() => ({ s: document.documentElement.scrollWidth, w: window.innerWidth }));
