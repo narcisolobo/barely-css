@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Complex form</title>
+  <link rel="stylesheet" href="../../dist/barely.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <ul><li><a href="04-form.html">Northside Code School</a></li></ul>
+      <ul><li><a href="04-form.html">Courses</a></li><li><a href="04-form.html">Apply</a></li></ul>
+    </nav>
+  </header>
+  <main>
+    <h1>Apply for the autumn web development course</h1>
+    <p>The course runs for twelve weeks from 7 September 2026. Fill in this form to reserve a place. We reply within three working days. Fields marked required must be completed.</p>
+    <form action="04-form.html" method="post">
+      <fieldset>
+        <legend>About you</legend>
+        <label for="name">Full name
+          <input id="name" type="text" name="name" autocomplete="name" value="Marisol Vega" required>
+        </label>
+        <label for="email">Email address
+          <input id="email" type="email" name="email" autocomplete="email" value="marisol.vega@example.org" required aria-describedby="email-help">
+          <small id="email-help">We only use this to send you course information.</small>
+        </label>
+        <label for="phone">Phone
+          <input id="phone" type="tel" name="phone" autocomplete="tel" placeholder="555 0142">
+        </label>
+        <label for="site">Portfolio address
+          <input id="site" type="url" name="site" placeholder="Where we can see your work">
+        </label>
+        <label for="password">Choose a password
+          <input id="password" type="password" name="password" autocomplete="new-password" value="a-long-passphrase" minlength="12" aria-describedby="password-help">
+          <small id="password-help">At least twelve characters.</small>
+        </label>
+      </fieldset>
+      <fieldset>
+        <legend>Your schedule</legend>
+        <label for="start">Preferred start date
+          <input id="start" type="date" name="start" value="2026-09-07">
+        </label>
+        <label for="time">Evening session time
+          <input id="time" type="time" name="time" value="18:30">
+        </label>
+        <label for="intake">Intake month
+          <input id="intake" type="month" name="intake" value="2026-09">
+        </label>
+        <label for="hours">Hours you can study each week
+          <input id="hours" type="number" name="hours" min="2" max="40" value="10">
+        </label>
+        <label for="confidence">How confident are you with HTML?
+          <input id="confidence" type="range" name="confidence" min="0" max="10" value="4">
+        </label>
+      </fieldset>
+      <fieldset>
+        <legend>Your goals</legend>
+        <label for="track">Track
+          <select id="track" name="track">
+            <option>Front-end development</option>
+            <option selected>Full-stack development</option>
+            <option>Accessibility and design systems</option>
+          </select>
+        </label>
+        <label for="goals">What do you want to build?
+          <textarea id="goals" name="goals">I run a small bakery and want to build and maintain our own ordering site.</textarea>
+        </label>
+        <label for="cv">Attach a CV (PDF)
+          <input id="cv" type="file" name="cv" accept=".pdf">
+        </label>
+        <label for="color">Pick a color for your badge
+          <input id="color" type="color" name="badge" value="#2f6fd6">
+        </label>
+        <label for="search">Search the course catalogue
+          <input id="search" type="search" name="q" placeholder="Search modules and projects">
+        </label>
+      </fieldset>
+      <fieldset>
+        <legend>Delivery</legend>
+        <label for="mode-1"><input id="mode-1" type="radio" name="mode" value="evening" checked> Evening classes, in person</label>
+        <label for="mode-2"><input id="mode-2" type="radio" name="mode" value="online"> Online, live</label>
+        <label for="mode-3"><input id="mode-3" type="radio" name="mode" value="self"> Online, self-paced</label>
+      </fieldset>
+      <fieldset>
+        <legend>Keep me informed</legend>
+        <label for="n-1"><input id="n-1" type="checkbox" name="notify" value="course" checked> Course announcements</label>
+        <label for="n-2"><input id="n-2" type="checkbox" name="notify" value="events"> Meetups and events</label>
+        <label for="n-3"><input id="n-3" type="checkbox" name="notify" value="jobs" disabled> Job board (opens after enrolment)</label>
+        <label for="reminders"><input id="reminders" type="checkbox" role="switch" name="reminders" checked> Send me weekly study reminders</label>
+      </fieldset>
+      <fieldset>
+        <legend>Payment details, checked on the server</legend>
+        <label for="student-id">Student ID from an earlier course
+          <input id="student-id" type="text" name="student_id" value="12-AB" aria-invalid="true" aria-describedby="student-id-error">
+          <small id="student-id-error">Student IDs have eight digits. Check the number on your certificate.</small>
+        </label>
+        <label for="coupon">Discount code
+          <input id="coupon" type="text" name="coupon" value="EARLYBIRD" aria-invalid="false" aria-describedby="coupon-ok">
+          <small id="coupon-ok">Code accepted. A fifteen percent discount applies.</small>
+        </label>
+        <label for="postcode">Postcode
+          <input id="postcode" type="text" name="postcode" value="K1A" aria-invalid="true" aria-describedby="postcode-error">
+          <small id="postcode-error">Enter the full postcode, for example K1A 0B1.</small>
+        </label>
+        <label for="status">Application status
+          <input id="status" type="text" name="status" value="Draft" readonly>
+        </label>
+        <label for="advisor">Advisor
+          <input id="advisor" type="text" name="advisor" value="Assigned after review" disabled>
+        </label>
+      </fieldset>
+      <p>
+        <button type="submit">Send application</button>
+        <button type="reset">Clear the form</button>
+        <button type="button" aria-pressed="true">Save as draft</button>
+        <button type="button" disabled>Withdraw</button>
+      </p>
+    </form>
+  </main>
+  <footer>
+    <p>Northside Code School, 40 Mill Street. Questions? <a href="04-form.html">Contact admissions</a>.</p>
+  </footer>
+</body>
+</html>

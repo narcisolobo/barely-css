@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nested light and dark themes</title>
+  <link rel="stylesheet" href="../../dist/barely.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <ul><li><a href="08-nested-themes.html">Night Shift</a></li></ul>
+      <ul><li><a href="08-nested-themes.html">Features</a></li><li><a href="08-nested-themes.html">Pricing</a></li></ul>
+    </nav>
+  </header>
+  <main>
+    <h1>A dark page with a light panel</h1>
+    <p>The whole page is dark, set once on the root element. Inside it sits a panel that switches back to light, with its own form, its own link and its own button.</p>
+    <section data-theme="light">
+      <h2>Light panel</h2>
+      <p>Colors here come from the light tokens, even though the page around it is dark. A <a href="08-nested-themes.html">link in the panel</a> and some <code>inline code</code> should read clearly against this background.</p>
+      <form action="08-nested-themes.html" method="post">
+        <label for="light-email">Email
+          <input id="light-email" type="email" name="email" value="reader@example.org">
+        </label>
+        <label for="light-plan">Plan
+          <select id="light-plan" name="plan"><option>Monthly</option><option selected>Yearly</option></select>
+        </label>
+        <label for="light-check"><input id="light-check" type="checkbox" name="news" checked> Send me the newsletter</label>
+        <p><button type="submit">Subscribe</button></p>
+      </form>
+      <blockquote><p>The panel should still feel like part of one page.</p></blockquote>
+      <section data-theme="dark">
+        <h3>Dark inside light inside dark</h3>
+        <p>A third level goes back to dark. Scopes should nest as deep as the markup does.</p>
+        <p><button type="button">Dark button</button></p>
+      </section>
+    </section>
+    <h2>Back in the dark page</h2>
+    <p>Content after the panel returns to the page theme. <a href="08-nested-themes.html">A link in the dark page</a> and a <mark>highlighted phrase</mark> sit here.</p>
+    <table>
+      <caption>Plans</caption>
+      <thead><tr><th scope="col">Plan</th><th scope="col">Seats</th><th scope="col">Price</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Solo</th><td>1</td><td>9.00</td></tr>
+        <tr><th scope="row">Team</th><td>10</td><td>49.00</td></tr>
+      </tbody>
+    </table>
+  </main>
+  <footer data-theme="light">
+    <p>A light footer under a dark page. <a href="08-nested-themes.html">Back to the top</a>.</p>
+  </footer>
+</body>
+</html>

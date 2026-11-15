@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="320" viewBox="0 0 640 320" role="img" aria-label="Three boxes joined by arrows">
+  <rect width="640" height="320" fill="#f3f1ec"/>
+  <g fill="#fff" stroke="#3b4a6b" stroke-width="3">
+    <rect x="30" y="110" width="150" height="100" rx="8"/>
+    <rect x="245" y="110" width="150" height="100" rx="8"/>
+    <rect x="460" y="110" width="150" height="100" rx="8"/>
+  </g>
+  <g stroke="#3b4a6b" stroke-width="3" fill="none">
+    <path d="M180 160 H245 M395 160 H460"/>
+  </g>
+  <g fill="#3b4a6b"><path d="M245 160 l-12 -8 v16 z M460 160 l-12 -8 v16 z"/></g>
+</svg>

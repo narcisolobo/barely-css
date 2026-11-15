@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Documentation page</title>
+  <link rel="stylesheet" href="../../dist/barely.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <ul><li><a href="03-docs.html">tinyqueue</a></li></ul>
+      <ul><li><a href="03-docs.html">Guide</a></li><li><a href="03-docs.html">API</a></li><li><a href="03-docs.html">Changelog</a></li></ul>
+    </nav>
+  </header>
+  <main>
+    <nav aria-label="breadcrumb">
+      <ol>
+        <li><a href="03-docs.html">Docs</a></li>
+        <li><a href="03-docs.html">Guide</a></li>
+        <li aria-current="page">Retries and backoff</li>
+      </ol>
+    </nav>
+    <h1>Retries and backoff</h1>
+    <p>tinyqueue is a small job queue for Node.js. This page explains how a failed job is retried, and how to change the delay between attempts.</p>
+    <aside>
+      <h2>On this page</h2>
+      <nav aria-label="On this page">
+        <ul>
+          <li><a href="#defaults">Default behavior</a></li>
+          <li><a href="#configure">Configuring retries</a></li>
+          <li><a href="#errors">Errors that skip retries</a></li>
+          <li><a href="#faq">Questions</a></li>
+        </ul>
+      </nav>
+    </aside>
+    <section id="defaults">
+      <h2>Default behavior</h2>
+      <p>A job that throws is retried up to <code>3</code> times. The wait before each attempt doubles, starting at <code>500</code> milliseconds. After the final failure the job moves to the <code>failed</code> list, where you can inspect it with <kbd>tinyqueue inspect</kbd>.</p>
+      <pre tabindex="0"><code>import { Queue } from 'tinyqueue';
+
+const queue = new Queue('emails');
+
+queue.process(async (job) => {
+  await sendEmail(job.data.to, job.data.subject);
+});</code></pre>
+    </section>
+    <section id="configure">
+      <h2>Configuring retries</h2>
+      <p>Pass a <code>retry</code> object when you add a job. Every field is optional, and a field you leave out keeps its default.</p>
+      <pre tabindex="0"><code>await queue.add(
+  { to: 'ada@example.org', subject: 'Welcome to the course' },
+  { retry: { attempts: 5, delay: 1000, factor: 2, maxDelay: 60000, jitter: true } },
+);</code></pre>
+      <p>With these values the waits are one, two, four, eight and sixteen seconds, each shifted slightly at random so that many failing jobs do not retry at the same moment.</p>
+      <h3>Reading the job's history</h3>
+      <p>Each attempt is recorded. Print the log with:</p>
+      <pre tabindex="0"><code>$ tinyqueue history 4821
+attempt 1  failed  ECONNRESET  after 12 ms
+attempt 2  failed  ECONNRESET  after 9 ms
+attempt 3  done    ok          after 41 ms</code></pre>
+    </section>
+    <section id="errors">
+      <h2>Errors that skip retries</h2>
+      <p>Some failures will never succeed on a second try. Throw an <code>UnrecoverableError</code> and tinyqueue moves the job to <code>failed</code> straight away.</p>
+      <details>
+        <summary>Which built-in errors are unrecoverable?</summary>
+        <p>Validation errors, missing handlers and malformed payloads. Network errors and timeouts are always retried.</p>
+      </details>
+      <details open>
+        <summary>Can I retry a failed job by hand?</summary>
+        <p>Yes. Run <kbd>tinyqueue retry 4821</kbd>, or call <code>job.retry()</code> from your own code. The attempt counter starts again from one.</p>
+      </details>
+    </section>
+    <section id="faq">
+      <h2>Questions</h2>
+      <details>
+        <summary>Does a retry keep the original job id?</summary>
+        <p>Yes. Retries reuse the id, so anything that tracks the job by id keeps working.</p>
+      </details>
+      <details>
+        <summary>Is there a limit on the delay?</summary>
+        <p>Set <code>maxDelay</code> to cap it. Without a cap the delay keeps growing with each attempt.</p>
+      </details>
+    </section>
+  </main>
+  <footer>
+    <p>tinyqueue 2.4.0, MIT licence. <a href="03-docs.html">Edit this page</a> or <a href="03-docs.html">report a mistake</a>.</p>
+  </footer>
+</body>
+</html>
