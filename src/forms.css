@@ -81,8 +81,9 @@
     }
   }
 
-  /* Select: chevron drawn with gradients in currentColor, so it follows the text token in both themes. */
-  :where(select) {
+  /* Select: chevron drawn with gradients in currentColor, so it follows the text token in both themes.
+     A list box (multiple, or size above 1) has no drop-down arrow, so it gets no chevron. */
+  :where(select:not([multiple], [size]:not([size="1"]))) {
     padding-inline-end: calc(var(--barely-control-padding-inline) + 1.25rem);
     background-image:
       linear-gradient(45deg, transparent 50%, currentColor 50%),
@@ -92,10 +93,13 @@
       calc(100% - var(--barely-control-padding-inline)) 52%;
     background-size: 5px 5px, 5px 5px;
     background-repeat: no-repeat;
+  }
+
+  :where(select) {
     cursor: pointer;
   }
 
-  :where(select:dir(rtl)) {
+  :where(select:not([multiple], [size]:not([size="1"])):dir(rtl)) {
     background-position:
       var(--barely-control-padding-inline) 52%,
       calc(var(--barely-control-padding-inline) + 5px) 52%;

@@ -200,6 +200,14 @@ test('checked disabled and invalid choices keep their state colors', async ({ pa
   expect(await borderWidth(inv)).toBe(2);
 });
 
+test('a disabled indeterminate checkbox is filled like a disabled checked one', async ({ page }) => {
+  const strong = await token(page, '--barely-color-border-strong');
+  const el = page.locator('#dis-cb-ind');
+  expect(await el.evaluate((e) => e.indeterminate)).toBe(true);
+  expect(await paintedRgba(el, 'backgroundColor')).toEqual(strong);
+  expect(await paintedRgba(el, 'borderTopColor')).toEqual(strong);
+});
+
 test.describe('toggle buttons', () => {
   const boxShadow = (loc) => loc.evaluate((el) => getComputedStyle(el).boxShadow);
 

@@ -23,6 +23,7 @@ Any change to a default value (a token, a spacing step, a color) is listed under
 - Checkboxes, radios and switches (`input[type="checkbox"][role="switch"]`) drawn with tokens, with the label beside the control, a 24px minimum row, and a mirrored switch in right-to-left text.
 - A checkbox, radio or switch placed before its `label for` (not wrapped by it) stays inside the page edge, and a `label for` placed before its text field, `select` or `textarea` is spaced like a wrapping label.
 - Form states and native validation styling: focus border, read-only, disabled controls and buttons, `:user-invalid` and `aria-invalid` with an icon and a thicker border, and forced-colors support.
+- A disabled indeterminate checkbox is filled and visible, like a disabled checked one; an invalid checkbox or radio keeps the system border color in forced-colors mode; and a `select` with `multiple` or a `size` above 1 no longer gets the drop-down chevron.
 - Toggle button pressed state: `button[aria-pressed="true"]` gets the secondary fill, a strong border and an inset top edge.
 - Native interactive elements: `details` and `summary`, `dialog` with its backdrop, `[popover]`, `progress` and `meter` (with optimum, suboptimum and even-less-good colors), with forced-colors support.
 - A "Coming from Pico" guide with a variable mapping, linked from the README.

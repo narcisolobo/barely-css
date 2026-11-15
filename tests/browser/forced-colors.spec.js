@@ -142,6 +142,55 @@ test.describe('form states', () => {
   });
 });
 
+test.describe('indeterminate and invalid choices', () => {
+  test('disabled indeterminate matches disabled checked', async ({ page }, testInfo) => {
+    test.skip(forcedMode(testInfo) !== 'active', 'WebKit only reports the media query');
+    await page.goto('/tests/pages/form-states.html');
+    const paint = (id) =>
+      page.locator(`#${id}`).evaluate((el) => {
+        const c = getComputedStyle(el);
+        return [c.backgroundColor, c.borderTopColor];
+      });
+    expect(await paint('dis-cb-ind')).toEqual(await paint('dis-cb-on'));
+  });
+
+  test('invalid checkbox and radio keep the ButtonText border', async ({ page }, testInfo) => {
+    test.skip(forcedMode(testInfo) !== 'active', 'WebKit only reports the media query');
+    await page.goto('/tests/pages/form-states.html');
+    const r = await page.evaluate(() => {
+      const resolve = (c) => {
+        const probe = document.createElement('i');
+        probe.style.color = c;
+        document.body.append(probe);
+        const v = getComputedStyle(probe).color;
+        probe.remove();
+        return v;
+      };
+      const border = (id) => getComputedStyle(document.getElementById(id)).borderTopColor;
+      return { want: resolve('ButtonText'), cb: border('cb-inv'), rd: border('rd-inv') };
+    });
+    expect(r.cb).toBe(r.want);
+    expect(r.rd).toBe(r.want);
+  });
+});
+
+test('list-box selects have no chevron', async ({ page }, testInfo) => {
+  test.skip(forcedMode(testInfo) !== 'active', 'WebKit only reports the media query');
+  await page.goto('/tests/pages/forms.html');
+  const r = await page.evaluate(() => {
+    const host = document.createElement('div');
+    host.innerHTML =
+      '<select id="lb-multi" multiple><option>A</option><option>B</option></select>' +
+      '<select id="lb-size" size="3"><option>A</option><option>B</option></select>';
+    document.querySelector('main').append(host);
+    const bg = (s) => getComputedStyle(document.querySelector(s)).backgroundImage;
+    return { multi: bg('#lb-multi'), size: bg('#lb-size'), drop: bg('#ltr-select') };
+  });
+  expect(r.multi).toBe('none');
+  expect(r.size).toBe('none');
+  expect(r.drop).not.toBe('none');
+});
+
 test.describe('disabled choices', () => {
   test('disabled choices use GrayText and Canvas', async ({ page }, testInfo) => {
     test.skip(forcedMode(testInfo) !== 'active', 'WebKit only reports the media query');

@@ -209,6 +209,32 @@ test.describe('controls', () => {
     expect(r.w.fieldToNext).toBeGreaterThan(1);
   });
 
+  test('select chevron is drawn only on drop-down selects', async ({ page }) => {
+    await page.goto(PAGE);
+    const r = await page.evaluate(() => {
+      const host = document.createElement('div');
+      host.innerHTML =
+        '<select id="lb-multi" multiple><option>A</option><option>B</option></select>' +
+        '<select id="lb-size" size="3"><option>A</option><option>B</option></select>' +
+        '<select id="lb-size1" size="1"><option>A</option></select>';
+      document.querySelector('main').append(host);
+      const s = (sel) => getComputedStyle(document.querySelector(sel));
+      return {
+        multi: [s('#lb-multi').backgroundImage, s('#lb-multi').paddingInlineEnd],
+        size: [s('#lb-size').backgroundImage, s('#lb-size').paddingInlineEnd],
+        size1: s('#lb-size1').backgroundImage,
+        drop: s('#ltr-select').backgroundImage,
+        base: s('#ltr-select').paddingInlineStart,
+      };
+    });
+    expect(r.multi[0]).toBe('none');
+    expect(r.size[0]).toBe('none');
+    expect(r.multi[1]).toBe(r.base);
+    expect(r.size[1]).toBe(r.base);
+    expect(r.size1).not.toBe('none');
+    expect(r.drop).not.toBe('none');
+  });
+
   test('select chevron flips in RTL', async ({ page }) => {
     await page.goto(PAGE);
     const pos = (s) => page.locator(s).evaluate((el) => getComputedStyle(el).backgroundPositionX);

@@ -36,7 +36,7 @@
     border-color: var(--barely-color-border);
   }
 
-  :where(input:is([type="checkbox"], [type="radio"])):disabled:checked {
+  :where(input:is([type="checkbox"], [type="radio"])):disabled:is(:checked, :indeterminate) {
     background: var(--barely-color-border-strong);
     border-color: var(--barely-color-border-strong);
   }
@@ -118,9 +118,15 @@
       border-color: GrayText;
     }
 
-    :where(input:is([type="checkbox"], [type="radio"])):disabled:checked {
+    :where(input:is([type="checkbox"], [type="radio"])):disabled:is(:checked, :indeterminate) {
       background: GrayText;
       border-color: GrayText;
+    }
+
+    /* Forced-color-adjust: none (choices.css) also keeps the author's danger border, which beats the forced
+       ButtonText border at equal specificity. Paint it with ButtonText; the 2px width still marks the state. */
+    :where(input:is([type="checkbox"], [type="radio"])):is(:user-invalid, [aria-invalid="true"]) {
+      border-color: ButtonText;
     }
 
     /* The select sets forced-color-adjust: none in forms.css, so the browser's own disabled treatment is off. */
