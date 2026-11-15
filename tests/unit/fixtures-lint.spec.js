@@ -15,10 +15,7 @@ const ALL_FIXTURES = [
   '09-rtl.html',
   '10-course-page.html',
 ];
-// Fixture 10 is a sanitized owner page that has not been supplied yet. Remove this
-// filter, and the fixme below, when the file lands.
-const PENDING = ['10-course-page.html'];
-const EXPECTED = ALL_FIXTURES.filter((name) => !PENDING.includes(name));
+const EXPECTED = ALL_FIXTURES;
 const OPENS_ON_LOAD = '07-dialog-popover.html';
 
 const files = readdirSync(DIR)
@@ -29,10 +26,6 @@ const files = readdirSync(DIR)
 
 test('fixture list is complete', () => {
   expect(files.map((f) => f.name)).toEqual(EXPECTED);
-});
-
-test.fixme('fixture 10 (owner course page) exists', () => {
-  expect(existsSync(`${DIR}/10-course-page.html`)).toBe(true);
 });
 
 test('fixtures link the stylesheet the runner intercepts', () => {
