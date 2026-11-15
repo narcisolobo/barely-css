@@ -7,13 +7,13 @@
     font-size: 0.9375rem;
   }
 
-  :where(label > :is(input:not([type="checkbox"], [type="radio"]), select, textarea)) {
-    display: block;
-    margin-block-start: 0.375rem;
-  }
-
-  /* Helper text after a control. Link it with aria-describedby. */
-  :where(label > small, fieldset > small) {
+  /* Helper text after a control: inside a wrapping label, directly in a fieldset, or right after the control of a
+     label linked with for. Link it with aria-describedby. */
+  :where(
+    label > small,
+    fieldset > small,
+    label + :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]), select, textarea) + small
+  ) {
     display: block;
     margin-block-start: 0.375rem;
     font-weight: 400;
@@ -122,43 +122,6 @@
     font-size: 0.9375rem;
   }
 
-  /* Space between fields in a form: --barely-form-gap after each field except the last. Written after the
-     fieldset reset so it wins on fieldset. */
-  :where(form :is(label, fieldset):not(:last-child, fieldset > *)) {
-    margin-block-end: var(--barely-form-gap);
-  }
-
-  /* Fields inside a fieldset get the same total gap. The fieldset's own 0.5rem grid gap already counts, and it
-     stays for rows of checkboxes and radios, so text fields add only the difference. Choice rows add nothing. */
-  :where(fieldset > :is(label, fieldset):not(:last-child, label:has(> input:is([type="checkbox"], [type="radio"])))) {
-    margin-block-end: calc(var(--barely-form-gap) - 0.5rem);
-  }
-
-  /* A label linked with for, placed right before its control (Flask-WTF, Django). It is spaced like a wrapping
-     label. A wrapped control sits directly under its text, because the text-like rule's margin: 0 wins over the
-     label > control margin-block-start, so no gap goes below this label. The control carries the form gap to the
-     next field. In a fieldset the grid's 0.5rem gap is already between the two, so the label gives it back.
-     These come after the two gap rules above, so they win by source order. */
-  :where(label + :is(input:not([type="checkbox"], [type="radio"]), select, textarea)) {
-    display: block;
-  }
-
-  :where(label:has(+ :is(input:not([type="checkbox"], [type="radio"]), select, textarea))) {
-    margin-block-end: 0;
-  }
-
-  :where(fieldset > label:has(+ :is(input:not([type="checkbox"], [type="radio"]), select, textarea))) {
-    margin-block-end: -0.5rem;
-  }
-
-  :where(form label + :is(input:not([type="checkbox"], [type="radio"]), select, textarea):not(:last-child)) {
-    margin-block-end: var(--barely-form-gap);
-  }
-
-  :where(fieldset > label + :is(input:not([type="checkbox"], [type="radio"]), select, textarea):not(:last-child)) {
-    margin-block-end: calc(var(--barely-form-gap) - 0.5rem);
-  }
-
   /* Range: native control tinted with accent-color; keeps platform keyboard and assistive technology behavior. */
   :where(input[type="range"]) {
     inline-size: 100%;
@@ -220,6 +183,101 @@
   :where(input[type="color"])::-moz-color-swatch {
     border: 0;
     border-radius: calc(var(--barely-control-radius) - 0.1875rem);
+  }
+
+  /* Control placement: a control directly under its label text, wrapped or placed right after a label linked with
+     for (Flask-WTF, Django), is a block with a small top margin. This section comes after every control's own
+     rules (they all reset the margin) so the margin wins by source order, and it holds the spacing rules, which
+     depend on that order too. A hidden input never counts as a following sibling below, so Django's trailing
+     hidden fields and Flask-WTF's leading CSRF token leave every gap as it was. */
+  :where(
+    label > :is(input:not([type="checkbox"], [type="radio"]), select, textarea),
+    label + :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]), select, textarea)
+  ) {
+    display: block;
+    margin-block-start: 0.375rem;
+  }
+
+  /* Space between fields in a form: --barely-form-gap after each field except the last. Written after the
+     fieldset reset so it wins on fieldset. */
+  :where(form :is(label, fieldset):not(fieldset > *):has(~ :not(input[type="hidden"]))) {
+    margin-block-end: var(--barely-form-gap);
+  }
+
+  /* Fields inside a fieldset get the same total gap. The fieldset's own 0.5rem grid gap already counts, and it
+     stays for rows of checkboxes and radios, so text fields add only the difference. Choice rows add nothing. */
+  :where(fieldset > :is(label, fieldset):not(label:has(> input:is([type="checkbox"], [type="radio"]))):has(~ :not(input[type="hidden"]))) {
+    margin-block-end: calc(var(--barely-form-gap) - 0.5rem);
+  }
+
+  /* A div or p that holds a control is a field (Django as_p and as_div, Flask-WTF field wrappers). It has no
+     bottom margin of its own at the end of the form or fieldset, and the same gap as a label elsewhere. Its inner
+     label and control spacing is untouched, so nothing doubles. A div or p with no control keeps its normal
+     spacing. */
+  :where(:is(form, fieldset) > :is(div, p):has(:is(input:not([type="hidden"]), select, textarea))) {
+    margin-block-end: 0;
+  }
+
+  :where(form > :is(div, p):has(:is(input:not([type="hidden"]), select, textarea)):has(~ :not(input[type="hidden"]))) {
+    margin-block-end: var(--barely-form-gap);
+  }
+
+  :where(fieldset > :is(div, p):has(:is(input:not([type="hidden"]), select, textarea)):has(~ :not(input[type="hidden"]))) {
+    margin-block-end: calc(var(--barely-form-gap) - 0.5rem);
+  }
+
+  /* A label linked with for, placed right before its control (Flask-WTF, Django). It is spaced like a wrapping
+     label: the label sits right above the control, which carries the 0.375rem margin above, and the control
+     carries the form gap to the next field. In a fieldset the grid's 0.5rem gap is already between the two, so the
+     label gives it back. Only text-like and file, range and color controls count: a button, a hidden input or a
+     choice after a label is not this pattern. These come after the gap rules above, so they win by source order. */
+  :where(label:has(+ :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]), select, textarea))) {
+    margin-block-end: 0;
+  }
+
+  :where(fieldset > label:has(+ :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]), select, textarea))) {
+    margin-block-end: -0.5rem;
+  }
+
+  /* The control carries the gap unless a small follows it, in which case the small carries it (next rules). */
+  :where(form label + :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]), select, textarea):has(~ :not(input[type="hidden"])):not(:has(+ small))) {
+    margin-block-end: var(--barely-form-gap);
+  }
+
+  :where(fieldset > label + :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]), select, textarea):has(~ :not(input[type="hidden"]))) {
+    margin-block-end: calc(var(--barely-form-gap) - 0.5rem);
+  }
+
+  /* In a fieldset a control followed by its small gives back the grid gap, like the label above it does, so the
+     small sits 0.375rem below the control. */
+  :where(fieldset > label + :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]), select, textarea):has(+ small)) {
+    margin-block-end: -0.5rem;
+  }
+
+  :where(form label + :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]), select, textarea) + small:has(~ :not(input[type="hidden"]))) {
+    margin-block-end: var(--barely-form-gap);
+  }
+
+  :where(fieldset > label + :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]), select, textarea) + small:has(~ :not(input[type="hidden"]))) {
+    margin-block-end: calc(var(--barely-form-gap) - 0.5rem);
+  }
+
+  /* Bare choices placed directly in a fieldset (an input, then its label for it): two columns, so each control
+     shares a line with its label and the 0.5rem row gap separates the rows. Anything else in that fieldset spans
+     both columns. A fieldset of wrapped choice labels has no direct input, so it stays as it is. */
+  :where(fieldset:has(> input:is([type="checkbox"], [type="radio"]) + label)) {
+    grid-template-columns: max-content minmax(0, 1fr);
+    column-gap: 0;
+    align-items: start;
+  }
+
+  :where(fieldset:has(> input:is([type="checkbox"], [type="radio"]) + label) > :not(input:is([type="checkbox"], [type="radio"]), input:is([type="checkbox"], [type="radio"]) + label)) {
+    grid-column: 1 / -1;
+  }
+
+  /* Centers the box on the label's first line (1.6 line height at 1rem, set in choices.css). */
+  :where(fieldset:has(> input:is([type="checkbox"], [type="radio"]) + label) > input:is([type="checkbox"], [type="radio"])) {
+    margin-block-start: calc((1.6rem - var(--barely-check-size)) / 2);
   }
 
   /* Buttons: button, submit and button inputs are primary. Reset is secondary. */
