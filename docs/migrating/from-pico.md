@@ -110,7 +110,7 @@ Pico's commonly overridden `--pico-*` custom properties and the `--barely-*` tok
 | `--pico-mark-background-color` | `--barely-color-mark` | |
 | `--pico-code-background-color` | `--barely-color-surface` | Shared. Surface also fills the masthead and footer bands, disabled and read-only fields, the file button, checkbox and switch parts, table stripes and the reset button. To recolor only code, override it on code: `code, pre { --barely-color-surface: ... }`. |
 | `--pico-form-element-background-color` | `--barely-control-background` | Defaults to the page background. |
-| `--pico-form-element-border-color` | `--barely-color-border-strong` | Shared. Pico's variable only affects fields. This token also draws `pre` borders, the rules under the table head and above the table foot, the `dialog` and popover border, and the border of pressed and reset buttons. |
+| `--pico-form-element-border-color` | `--barely-color-border-strong` | Shared. Pico's variable only affects fields. This token also draws the borders of `kbd`, checkboxes, radios, color and file inputs, `progress` and `meter`, the rules under the table head and above the table foot, and the border of pressed and reset buttons. It also fills the switch thumb. |
 | `--pico-form-element-invalid-border-color` | `--barely-color-danger` | |
 | `--pico-form-element-valid-border-color` | `--barely-color-success` | |
 
