@@ -40,6 +40,40 @@ test.describe('narrow', () => {
     expect(r.overflowX).toBe('auto');
     expect(r.page).toBe(true);
   });
+
+  test('long inline code wraps instead of widening the page; pre still scrolls', async ({ page }) => {
+    await page.goto('/tests/pages/code-media.html');
+    const r = await page.evaluate(() => {
+      const token = 'a.b.c(x)'.repeat(15);
+      const host = document.createElement('div');
+      host.innerHTML =
+        `<p id="t17-p">See <code id="t17-pc">${token}</code> here.</p>` +
+        `<ul><li id="t17-li"><code id="t17-lc">${token}</code></li></ul>` +
+        `<pre id="t17-pre"><code id="t17-prec">${token}</code></pre>`;
+      document.querySelector('main').append(host);
+      const root = document.documentElement;
+      const within = (codeId, parentId) => {
+        const c = document.getElementById(codeId).getBoundingClientRect();
+        const p = document.getElementById(parentId);
+        const pr = p.getBoundingClientRect();
+        const cs = getComputedStyle(p);
+        return c.right <= pr.right - parseFloat(cs.paddingRight) - parseFloat(cs.borderRightWidth) + 0.5;
+      };
+      const pre = document.getElementById('t17-pre');
+      return {
+        page: root.scrollWidth <= window.innerWidth,
+        p: within('t17-pc', 't17-p'),
+        li: within('t17-lc', 't17-li'),
+        preScrolls: pre.scrollWidth > pre.clientWidth,
+        preWrap: getComputedStyle(document.getElementById('t17-prec')).overflowWrap,
+      };
+    });
+    expect(r.page).toBe(true);
+    expect(r.p).toBe(true);
+    expect(r.li).toBe(true);
+    expect(r.preScrolls).toBe(true);
+    expect(r.preWrap).toBe('normal');
+  });
 });
 
 test('iframe with a height attribute keeps it', async ({ page }) => {
