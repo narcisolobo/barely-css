@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Real-world forms</title>
+  <link rel="stylesheet" href="../../dist/barely.css">
+</head>
+<body>
+  <main>
+    <h1>Real-world forms</h1>
+
+    <!-- (a) Django as_p. Django puts a class on its help text (a span with class helptext); barely-css pages
+         have no classes, so a small stands in for it. The error list comes before its paragraph, as in Django 5. -->
+    <form id="django-p" method="post">
+      <p>
+        <label for="p-name">Name:</label> <input type="text" name="name" id="p-name" required>
+      </p>
+      <p>
+        <label for="p-email">Email:</label> <input type="email" name="email" id="p-email" required>
+        <small id="p-email-help">We never share your address.</small>
+      </p>
+      <ul>
+        <li>This field is required.</li>
+      </ul>
+      <p>
+        <label for="p-age">Age:</label> <input type="number" name="age" id="p-age" aria-invalid="true">
+      </p>
+    </form>
+
+    <!-- (b) Django as_div. The error list sits inside the div, before the label, as in Django 5. -->
+    <form id="django-div" method="post">
+      <div>
+        <label for="d-name">Name:</label> <input type="text" name="name" id="d-name" required>
+      </div>
+      <div>
+        <label for="d-email">Email:</label> <input type="email" name="email" id="d-email" required>
+        <small id="d-email-help">We never share your address.</small>
+      </div>
+      <div>
+        <ul>
+          <li>This field is required.</li>
+        </ul>
+        <label for="d-age">Age:</label> <input type="number" name="age" id="d-age" aria-invalid="true">
+      </div>
+    </form>
+
+    <!-- (c) Flask-WTF login: hidden CSRF first, sibling labels, a wrapped checkbox label, then the submit. -->
+    <form id="flask-login" method="post">
+      <input type="hidden" name="csrf_token" value="abc123">
+      <label for="f-user">Username</label>
+      <input type="text" id="f-user" name="username">
+      <label for="f-pass">Password</label>
+      <input type="password" id="f-pass" name="password">
+      <label><input type="checkbox" name="remember"> Remember me</label>
+      <input type="submit" value="Sign in">
+    </form>
+
+    <!-- (d) Plain wrapped labels with helper text inside the label. -->
+    <form id="plain" method="post">
+      <label>Full name
+        <input type="text" name="full">
+        <small>As on your passport.</small>
+      </label>
+      <label>Email
+        <input type="email" name="mail">
+      </label>
+      <label>Message
+        <textarea name="msg"></textarea>
+        <small>Plain text only.</small>
+      </label>
+    </form>
+
+    <!-- (e) Bare radio and checkbox pairs placed directly in fieldsets. -->
+    <form id="choices" method="post">
+      <fieldset id="bare-radios">
+        <legend>Plan</legend>
+        <input type="radio" name="plan" id="plan-a" value="a"><label for="plan-a">Free</label>
+        <input type="radio" name="plan" id="plan-b" value="b"><label for="plan-b">Team</label>
+        <input type="radio" name="plan" id="plan-c" value="c"><label for="plan-c">Company</label>
+      </fieldset>
+      <fieldset id="bare-checks">
+        <legend>Notify me about</legend>
+        <input type="checkbox" name="n" id="n-a" value="a"><label for="n-a">New releases</label>
+        <input type="checkbox" name="n" id="n-b" value="b"><label for="n-b">Security fixes</label>
+        <input type="checkbox" name="n" id="n-c" value="c"><label for="n-c">Newsletter</label>
+      </fieldset>
+    </form>
+
+    <!-- (f) Sibling labels with a small after the control. -->
+    <form id="sibling-small" method="post">
+      <label for="s-name">Name</label>
+      <input type="text" id="s-name" name="name" aria-invalid="true" aria-describedby="s-name-err">
+      <small id="s-name-err">Enter your name.</small>
+      <label for="s-mail">Email</label>
+      <input type="email" id="s-mail" name="mail" aria-describedby="s-mail-help">
+      <small id="s-mail-help">We never share your address.</small>
+      <label for="s-note">Note</label>
+      <textarea id="s-note" name="note"></textarea>
+      <small>Optional.</small>
+    </form>
+  </main>
+</body>
+</html>
