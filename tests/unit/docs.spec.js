@@ -65,7 +65,7 @@ test('README links the guide and the changelog', () => {
 
 test('README says plainly what scrolls sideways', () => {
   expect(readme).not.toMatch(/only place the page may scroll sideways/);
-  expect(readme).toMatch(/Nothing else makes the page scroll sideways/);
+  expect(readme).toMatch(/Only a wide table without the wrapper can make the page scroll sideways/);
   expect(readme).toMatch(/`pre` blocks and the table wrapper scroll inside themselves/);
   expect(readme).toContain('Table readability takes precedence over viewport containment.');
 });

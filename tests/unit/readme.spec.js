@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { parseColorTokens, deriveHover, oklchToLinearSrgb, contrast } from '../helpers/color.js';
 
 const readme = readFileSync('README.md', 'utf8');
@@ -88,9 +89,22 @@ test('warns against linking main', () => {
   expect(readme).not.toContain('cdn.jsdelivr.net/gh/');
 });
 
+test('exact-version integrity matches dist/barely.min.css once the version is released', () => {
+  const cdn = section('CDN versions and integrity');
+  const version = cdn.match(/barely-css@(\d+\.\d+\.\d+(?:-[\w.]+)?)\/dist\/barely\.min\.css"\n\s+integrity="sha384-([A-Za-z0-9+/=]+)"/);
+  expect(version, 'exact-version snippet with integrity').not.toBeNull();
+  const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
+  if (version[1] === pkg.version) {
+    const digest = createHash('sha384').update(readFileSync('dist/barely.min.css')).digest('base64');
+    expect(version[2]).toBe(digest);
+  } else {
+    expect(readme).toMatch(/The hash and version in the exact-version link above are placeholders until/);
+  }
+});
+
 test('covers the settled behaviors', () => {
   expect(readme).toContain('<div role="region" tabindex="0"');
-  expect(readme).toMatch(/Nothing else makes the page scroll sideways/);
+  expect(readme).toMatch(/Only a wide table without the wrapper can make the page scroll sideways/);
   expect(readme).toContain('aria-pressed="true"');
   expect(readme).toMatch(/iframe/);
   expect(readme).toContain('data-theme="custom"');

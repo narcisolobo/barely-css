@@ -33,7 +33,7 @@ barely-css is a single stylesheet with no classes, no JavaScript, and no build s
 
 - **Write semantic HTML.** Plain, portable markup is all a page needs. barely-css never requires a class, wrapper, or attribute for its baseline, so the same HTML reads cleanly under any other stylesheet.
 - **Get a thoughtfully designed website.** The result has to look deliberately designed, not like browser defaults with a new font. That includes the parts most frameworks treat as extras: contrast checked in both themes, layout that needs no wrappers, forms that survive forced colors, and every control usable from the keyboard.
-- **Keep control through CSS custom properties.** Nearly every visual decision reads from a documented token. Overriding a token on `:root` or on any element is enough to change the design, with no selector overrides, and derived values follow automatically.
+- **Keep control through CSS custom properties.** Nearly every visual decision reads from a documented token. Overriding a token on `:root` or on any element is enough to change the design, with no selector overrides, and derived values follow automatically. (Owner decision, 2026-11-15: controls, borders, links and hover follow an override on any element, but repainting that element's own inherited text and background requires `data-theme` on it.)
 
 The project started as a replacement for Pico CSS, which is no longer maintained, and it is still designed so Pico users can switch easily (see the "Coming from Pico" guide). But it is meant to grow beyond that into a project with its own identity. That is why it invests early in testing, versioning, changelog, and migration policies that a one-off stylesheet wouldn't need.
 
@@ -48,7 +48,7 @@ Other target uses: blogs, documentation, knowledge bases, educational projects, 
 
 These are the two problems that started the project. Both now feed the broader promise in [Intent](#intent).
 
-1. **Customization through custom properties.** Pico hard-codes many values, so you end up overriding selectors. In barely-css nearly every visual decision (color, font, size, spacing, radius, border, shadow, control dimensions) reads from a custom property. Overriding a token in `:root`, or on any element, must be enough.
+1. **Customization through custom properties.** Pico hard-codes many values, so you end up overriding selectors. In barely-css nearly every visual decision (color, font, size, spacing, radius, border, shadow, control dimensions) reads from a custom property. Overriding a token in `:root`, or on any element, must be enough. (Owner decision, 2026-11-15: controls, borders, links and hover follow an override on any element, but repainting that element's own inherited text and background requires `data-theme` on it.)
 2. **Page-level spacing.** With Pico the owner kept adding padding to the top of each page because the first element sat too close to the top edge. They also kept adding a custom container class to get side padding. barely-css gives the page's main regions generous block and inline spacing by default, with no class, controlled by two tokens (for example `--barely-page-padding-block` and `--barely-page-padding-inline`). Both are fluid: each defaults to a `clamp()` of the viewport width, so the spacing is tighter on phones and roomier on large screens. Overriding either token replaces the fluid default with a fixed value or a different `clamp()`.
 
 Pico's vertical rhythm inside the page was fine. Keep a similar density and don't loosen it.

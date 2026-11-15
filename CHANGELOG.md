@@ -27,3 +27,5 @@ Any change to a default value (a token, a spacing step, a color) is listed under
 - Toggle button pressed state: `button[aria-pressed="true"]` gets the secondary fill, a strong border and an inset top edge.
 - Native interactive elements: `details` and `summary`, `dialog` with its backdrop, `[popover]`, `progress` and `meter` (with optimum, suboptimum and even-less-good colors), with forced-colors support.
 - A "Coming from Pico" guide with a variable mapping, linked from the README.
+
+[Unreleased]: https://github.com/narcisolobo/barely-css/commits/main

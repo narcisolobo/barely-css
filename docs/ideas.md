@@ -223,6 +223,10 @@ Make the first use simple and the deeper customization understandable:
 - Accessibility checks that help prevent regressions.
 - A beautiful semantic HTML demo page that demonstrates the whole system.
 
+## Agent skill
+
+A future version could ship a downloadable agent skill that teaches coding agents the framework's conventions: classless markup, the token names, the optional table wrapper, and the `data-theme` rules. Write it once the conventions are stable enough to document accurately (owner, 2026-11-15).
+
 ## Things to avoid
 
 - A JavaScript dependency for baseline styling.

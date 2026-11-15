@@ -2,7 +2,7 @@
 
 This runbook is for the maintainer. It turns the release criteria and the "Cutting a release" steps in the [design spec](superpowers/specs/2026-11-09-barely-css-design.md) into checklists.
 
-Until every box under "Release criteria" is ticked, publish `1.0.0-beta.N` pre-releases instead of `1.0.0`. jsDelivr's `@1` link does not pick up pre-releases.
+Until every box under "Release criteria" is ticked, publish `1.0.0-beta.N` pre-releases instead of `1.0.0`. jsDelivr's `@1` link does not pick up pre-releases, so while only a beta exists, `@1` resolves to nothing. At a beta, the README's major-version snippet (`barely-css@1`) is replaced by the exact beta version (`barely-css@1.0.0-beta.N`) until `1.0.0` is published, and the download link uses the same version.
 
 ## Release criteria
 
@@ -42,9 +42,9 @@ Do these by hand. The automated suite can't.
    openssl dgst -sha384 -binary dist/barely.min.css | openssl base64 -A
    ```
 
-   In `README.md`, put the result after `sha384-` in the exact-version snippet, and change the version in that snippet's URL to `x.y.z`.
-7. [ ] Remove this sentence from `README.md`: "The hash and version in the exact-version link above are placeholders until `1.0.0` is published."
-8. [ ] Run `pnpm test` again. The README tests check the snippet and the hash.
+   In `README.md`, put the result after `sha384-` in the exact-version snippet, and change the version in that snippet's URL to `x.y.z`. Also change the version in the download link under Installation (`barely-css@x.y.z/dist/barely.css`). At a beta this applies too: use the beta version and its hash, so the README tests pass.
+7. [ ] Remove this sentence from `README.md`: "The hash and version in the exact-version link above are placeholders until `1.0.0` is published." Skip this at a beta: keep the sentence until `1.0.0`, and replace the major-version snippet as described above.
+8. [ ] Run `pnpm test` again. The README tests check the snippet. When the README's exact version equals the version in `package.json`, they also check that the hash is the sha384 of `dist/barely.min.css`; otherwise they require the placeholder sentence.
 9. [ ] Commit with the message `chore(release): x.y.z`.
 
 ## Publishing

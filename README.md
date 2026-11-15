@@ -13,7 +13,7 @@ Add this one line to the `<head>` of your page. It needs no npm, no build step a
 />
 ```
 
-Or download [`dist/barely.css`](dist/barely.css), save it next to your pages and link it from disk. It works over `file://`, so you can open the page straight from a folder:
+Or download [`barely.css`](https://cdn.jsdelivr.net/npm/barely-css@1.0.0/dist/barely.css) (the unminified file for version 1.0.0), save it next to your pages and link it from disk. It works over `file://`, so you can open the page straight from a folder:
 
 ```html
 <link rel="stylesheet" href="barely.css" />
@@ -80,10 +80,11 @@ Details worth knowing:
 
 - Only `body > header nav > ul` runs horizontally. Put one list there, or two for a brand at the start edge and links at the end edge. Rows wrap at narrow widths. Every other `nav` is an ordinary list.
 - `body > header` and `body > footer` are the page masthead and footer. A `header` or `footer` inside an `article` or `section` gets restrained styling instead.
+- A checkbox, radio or switch works with its label either way: wrapped by it (`<label><input> Text</label>`) or followed by a `label for` (`<input id="a"><label for="a">Text</label>`). A `label for` placed before a text field, `select` or `textarea` is spaced like a wrapping label too.
 - A switch is `input[type="checkbox"][role="switch"]`.
 - A toggle button is `button[aria-pressed="true"]`. It is drawn as pressed, with a different fill, a strong border and an inset top edge, so the state is not shown by color alone.
 - Invalid fields are styled from `:user-invalid` (after the person interacts) or `aria-invalid="true"` (for errors your server renders). A `small` right after the field becomes its error text.
-- Long inline `code` wraps at the edge of the line instead of widening the page. `pre` blocks scroll inside themselves.
+- Long words, URLs and inline `code` wrap at the edge of the line instead of widening the page. `pre` blocks scroll inside themselves.
 - An `iframe` is responsive and never overflows. The content inside it draws its own focus indicator, and barely-css can't style focus inside another document.
 - Focus is always visible, targets are at least 24 by 24 CSS pixels, motion is reduced when the system asks for it, and controls stay visible in forced-colors mode.
 
@@ -107,7 +108,7 @@ To contain a table that is too wide, wrap it in a scrollable region:
 
 barely-css styles the wrapper if it is there: it scrolls sideways and shows a focus outline, so keyboard users can scroll it. The `aria-label` names the region for screen readers. The wrapper is optional, and the markup still reads fine under any other stylesheet.
 
-Nothing else makes the page scroll sideways: long text and inline code wrap. `pre` blocks and the table wrapper scroll inside themselves. A wide table without the wrapper is the one exception.
+Only a wide table without the wrapper can make the page scroll sideways. Long text, URLs and inline code wrap at the edge of the line, and `pre` blocks and the table wrapper scroll inside themselves.
 
 ## Theming
 
