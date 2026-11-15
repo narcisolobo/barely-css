@@ -6,6 +6,9 @@ import { STATES } from './states.js';
 
 const OUT = 'reports/visual';
 const WIDTHS = [375, 768, 1280];
+// pixelmatch color-distance threshold. At the 0.1 default the +-0.07 OKLCH hover shift reads as 0 changed pixels,
+// so a token tweak of that size would be invisible in the report. 0.05 catches it.
+const PIXEL_THRESHOLD = 0.05;
 const STATE_WIDTH = 1280;
 const HEIGHT = 800;
 const FIXTURES = readdirSync('tests/fixtures').filter((n) => n.endsWith('.html')).sort();
@@ -59,7 +62,7 @@ function compare(baseBuf, curBuf) {
   const pa = pad(a, width, height);
   const pb = pad(b, width, height);
   const diff = new PNG({ width, height });
-  const count = pixelmatch(pa.data, pb.data, diff.data, width, height, { threshold: 0.1 });
+  const count = pixelmatch(pa.data, pb.data, diff.data, width, height, { threshold: PIXEL_THRESHOLD });
   const sameSize = a.width === b.width && a.height === b.height;
   const percent = sameSize ? (count / (width * height)) * 100 : 100;
   return { diff: PNG.sync.write(diff), changed: !sameSize || count > 0, percent, sameSize };
