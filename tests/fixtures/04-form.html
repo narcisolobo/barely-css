@@ -48,6 +48,12 @@
         <label for="intake">Intake month
           <input id="intake" type="month" name="intake" value="2026-09">
         </label>
+        <label for="exam">Entrance interview
+          <input id="exam" type="datetime-local" name="exam" value="2026-08-24T10:30">
+        </label>
+        <label for="week">Orientation week
+          <input id="week" type="week" name="week" value="2026-W35">
+        </label>
         <label for="hours">Hours you can study each week
           <input id="hours" type="number" name="hours" min="2" max="40" value="10">
         </label>
@@ -112,6 +118,9 @@
         </label>
       </fieldset>
       <p>
+        <input type="submit" value="Send application">
+        <input type="reset" value="Clear the form">
+        <input type="button" value="Preview">
         <button type="submit">Send application</button>
         <button type="reset">Clear the form</button>
         <button type="button" aria-pressed="true">Save as draft</button>

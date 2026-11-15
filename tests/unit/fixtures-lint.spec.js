@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { badInlineStyles, externalResources, parseTags, randomInScripts } from '../helpers/fixture-checks.js';
 
 const DIR = 'tests/fixtures';
 const ALL_FIXTURES = [
@@ -25,8 +26,6 @@ const files = readdirSync(DIR)
   .sort()
   .map((name) => ({ name, html: readFileSync(`${DIR}/${name}`, 'utf8') }));
 
-/** The text of every opening tag, so attribute checks ignore prose. */
-const tags = (html) => html.match(/<[a-zA-Z][^>]*>/g) ?? [];
 
 test('fixture list is complete', () => {
   expect(files.map((f) => f.name)).toEqual(EXPECTED);
@@ -46,37 +45,35 @@ test('fixtures use no class attributes', () => {
   // The scroll wrapper is div[role="region"][tabindex][aria-label]; it carries no class either,
   // so the rule has no exception.
   for (const { name, html } of files) {
-    const withClass = tags(html).filter((tag) => /\sclass\s*=/i.test(tag));
+    const withClass = parseTags(html).filter(({ attrs }) => 'class' in attrs).map((t) => t.tag);
     expect(withClass, name).toEqual([]);
   }
 });
 
 test('fixtures use no inline style except token overrides', () => {
-  for (const { name, html } of files) {
-    for (const tag of tags(html)) {
-      const style = tag.match(/\sstyle\s*=\s*"([^"]*)"/i);
-      if (!style) continue;
-      const declarations = style[1].split(';').map((d) => d.trim()).filter(Boolean);
-      for (const declaration of declarations) {
-        expect(declaration, `${name}: ${tag}`).toMatch(/^--barely-[\w-]+\s*:/);
-      }
-    }
-    expect(html, name).not.toMatch(/<style[\s>]/i);
-  }
+  for (const { name, html } of files) expect(badInlineStyles(html), name).toEqual([]);
 });
 
 test('fixtures load no external resources', () => {
-  for (const { name, html } of files) {
-    expect(html, name).not.toMatch(/https?:\/\//i);
-    expect(html, name).not.toMatch(/(?:src|href|srcset|poster)\s*=\s*["']?\s*\/\//i);
-    expect(html, name).not.toMatch(/url\(/i);
-    for (const tag of tags(html)) {
-      const ref = tag.match(/\s(?:src|href)\s*=\s*"([^"]*)"/i);
-      if (ref && /^<(link|script|img|iframe|source|video|audio|track)\b/i.test(tag)) {
-        expect(ref[1], `${name}: ${tag}`).toMatch(/^(\.\.\/\.\.\/dist\/|assets\/)/);
-      }
-    }
-  }
+  for (const { name, html } of files) expect(externalResources(html), name).toEqual([]);
+});
+
+test('external-resource check is scoped to loading attributes', () => {
+  // Text and links may mention URLs.
+  expect(externalResources('<p>Call <code>https://api.example.com/v1</code></p><pre>fetch("https://x.org")</pre>')).toEqual([]);
+  expect(externalResources('<a href="https://example.org">docs</a><form action="/local"></form>')).toEqual([]);
+  expect(externalResources('<img src="assets/a.svg" srcset="assets/a.svg 1x, assets/b.svg 2x">')).toEqual([]);
+  // Loading attributes may not, in any quoting.
+  expect(externalResources('<img srcset="https://x/y.png 2x">')).toHaveLength(1);
+  expect(externalResources('<img srcset="assets/a.png 1x, https://x/y.png 2x">')).toHaveLength(1);
+  expect(externalResources("<img src='https://x/y.png'>")).toHaveLength(1);
+  expect(externalResources('<img src=//x/y.png>')).toHaveLength(1);
+  expect(externalResources('<link rel="stylesheet" href="https://x/y.css">')).toHaveLength(1);
+  expect(externalResources('<video poster="https://x/p.png"></video>')).toHaveLength(1);
+  expect(externalResources('<iframe src="https://x"></iframe>')).toHaveLength(1);
+  expect(externalResources('<object data="https://x/y.pdf"></object>')).toHaveLength(1);
+  expect(externalResources('<div style="background:url(https://x/y.png)"></div>')).toHaveLength(1);
+  expect(externalResources('<style>p{background:url(a.png)}</style>')).toHaveLength(1);
 });
 
 test('local assets referenced by fixtures exist', () => {
@@ -89,7 +86,7 @@ test('local assets referenced by fixtures exist', () => {
 
 test('fixtures contain no dates or random values', () => {
   for (const { name, html } of files) {
-    expect(html, name).not.toMatch(/new Date|Date\.now|Math\.random|crypto\.|performance\.now/);
+    expect(randomInScripts(html), name).toEqual([]);
     const scripts = [...html.matchAll(/<script\b[^>]*>([^]*?)<\/script>/gi)];
     if (name !== OPENS_ON_LOAD) {
       expect(scripts.length, `${name} has a script`).toBe(0);
@@ -119,4 +116,9 @@ test('fixtures have a language, a title and a viewport', () => {
   }
   const rtl = files.find((f) => f.name === '09-rtl.html');
   if (rtl) expect(rtl.html).toMatch(/<html[^>]*\sdir="rtl"[^>]*\slang="ar"|<html[^>]*\slang="ar"[^>]*\sdir="rtl"/);
+});
+
+test('date and random check only looks inside scripts', () => {
+  expect(randomInScripts('<p>We use Date.now and Math.random in the examples, dated 3 May 2026.</p>')).toEqual([]);
+  expect(randomInScripts('<script>const t = Date.now();</script>')).toHaveLength(1);
 });
