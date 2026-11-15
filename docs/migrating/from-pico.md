@@ -74,6 +74,7 @@ Two other habits from older Pico pages can go, because barely-css doesn't use th
 - **Text and forms stop at a reading width.** Paragraphs, lists, headings, blockquotes and forms are capped at `--barely-reading-width` (`70ch`) and sit at the start edge. Pico stretches them across the container.
 - **Page spacing is built in.** The space above the first element and beside the content comes from `--barely-page-padding-block` and `--barely-page-padding-inline`, both fluid. You don't need extra padding or a custom container class.
 - **Colors take two values.** Pico declares a color once for light and once for dark under `data-theme`. barely-css sets both in one declaration with `light-dark()`. See [Customizing](../../README.md#customizing).
+- **Table stripes are always on.** Every second `tbody` row gets the surface color. Pico only does this with `.striped`, so a table that never used the class will now show stripes. To remove them, set `tbody tr { background-color: transparent; }` in your own CSS.
 - **Wide tables don't wrap words.** Cells keep natural word boundaries, so a table with a lot of content can be wider than the page. Wrap it in `<div role="region" tabindex="0" aria-label="...">` to make it scroll inside itself. See [Wide tables](../../README.md#wide-tables).
 - **Toggle buttons use `aria-pressed`.** `button[aria-pressed="true"]` is drawn as pressed.
 - **Buttons are primary by default.** A `button`, or an `input` of type submit or button, uses the primary color. `input[type="reset"]` is the secondary look.
@@ -87,7 +88,7 @@ Pico's commonly overridden `--pico-*` custom properties and the `--barely-*` tok
 | `--pico-font-family` | `--barely-font-sans` | Pico's default is its sans-serif stack. |
 | `--pico-font-family-sans-serif` | `--barely-font-sans` | |
 | `--pico-font-family-monospace` | `--barely-font-mono` | |
-| `--pico-font-size` | `--barely-font-size` | Pico uses `100%`. barely-css is fluid, from 1rem up to 1.0625rem. |
+| `--pico-font-size` | `--barely-font-size` | Pico starts at `100%` and grows at each breakpoint: 106.25% at 576px, 112.5% at 768px, 118.75% at 1024px, 125% at 1280px and 131.25% at 1536px. barely-css is fluid but stops at 1.0625rem, so body text on a desktop is smaller than it was in Pico. See the example below the table. |
 | `--pico-line-height` | `--barely-line-height` | Pico `1.5`, barely-css `1.6`. |
 | `--pico-font-weight` | no equivalent | Body text keeps the browser weight. Headings have `--barely-font-weight-heading`. |
 | `--pico-border-radius` | `--barely-radius` | Controls use `--barely-control-radius`. |
@@ -97,8 +98,8 @@ Pico's commonly overridden `--pico-*` custom properties and the `--barely-*` tok
 | `--pico-typography-spacing-vertical` | `--barely-spacing` | |
 | `--pico-block-spacing-vertical` | `--barely-page-padding-block` | Closest match. Top and bottom padding of the page regions. |
 | `--pico-block-spacing-horizontal` | `--barely-page-padding-inline` | Closest match. Pico uses it inside cards and dialogs. barely-css uses it for the side padding of the page regions. |
-| `--pico-form-element-spacing-vertical` | `--barely-control-padding-block` | |
-| `--pico-form-element-spacing-horizontal` | `--barely-control-padding-inline` | |
+| `--pico-form-element-spacing-vertical` | `--barely-control-padding-block` | Pads fields and buttons. Controls also have a minimum height, `--barely-control-height`, so lowering this alone won't make them shorter. Lower the height token too. |
+| `--pico-form-element-spacing-horizontal` | `--barely-control-padding-inline` | Pads fields only. Buttons keep a fixed 1.25rem of side padding, so this token doesn't change them. |
 | `--pico-background-color` | `--barely-color-background` | |
 | `--pico-color` | `--barely-color-text` | |
 | `--pico-muted-color` | `--barely-color-text-muted` | |
@@ -107,11 +108,21 @@ Pico's commonly overridden `--pico-*` custom properties and the `--barely-*` tok
 | `--pico-primary-hover` | `--barely-color-primary-hover` | Derived from the primary color unless you set it. |
 | `--pico-primary-inverse` | `--barely-color-on-primary` | Text on primary fills. |
 | `--pico-mark-background-color` | `--barely-color-mark` | |
-| `--pico-code-background-color` | `--barely-color-surface` | Shared with table stripes and secondary buttons. |
+| `--pico-code-background-color` | `--barely-color-surface` | Shared. Surface also fills the masthead and footer bands, disabled and read-only fields, the file button, checkbox and switch parts, table stripes and the reset button. To recolor only code, override it on code: `code, pre { --barely-color-surface: ... }`. |
 | `--pico-form-element-background-color` | `--barely-control-background` | Defaults to the page background. |
-| `--pico-form-element-border-color` | `--barely-color-border-strong` | |
+| `--pico-form-element-border-color` | `--barely-color-border-strong` | Shared. Pico's variable only affects fields. This token also draws `pre` borders, the rules under the table head and above the table foot, the `dialog` and popover border, and the border of pressed and reset buttons. |
 | `--pico-form-element-invalid-border-color` | `--barely-color-danger` | |
 | `--pico-form-element-valid-border-color` | `--barely-color-success` | |
+
+To get Pico's larger desktop text back, set a larger fluid size after the barely-css link:
+
+```css
+:root {
+  --barely-font-size: clamp(1rem, 0.9rem + 0.45vw, 1.25rem);
+}
+```
+
+The token sets the root font size, so everything sized in `rem` scales with it, including headings, spacing and controls.
 
 Every color token takes a light and a dark value. Write it as `light-dark(<light>, <dark>)`, and check the contrast of your own colors against the pairs listed in the README under [You are responsible for contrast](../../README.md#you-are-responsible-for-contrast).
 
@@ -120,7 +131,7 @@ Every color token takes a light and a dark value. Write it as `light-dark(<light
 barely-css v1 is classless. These parts of Pico have no counterpart yet:
 
 - **`.container` and `.container-fluid`**, and **`.grid`**. A class-light layer is planned for v2. Until then, delete `.container`, and build columns with your own CSS.
-- **Pico's classes and modifiers**, such as `.secondary`, `.contrast`, `.outline`, `.striped`, `.primary` and `[role="button"]` links styled as buttons.
+- **Pico's classes and modifiers**, such as `.secondary`, `.contrast`, `.outline`, `.primary` and `[role="button"]` links styled as buttons.
 - **Cards.** `article` is styled as plain page structure, not as a card.
 - **Dropdowns** (`details.dropdown`) and **button groups** (`[role="group"]`).
 - **Loading state** (`aria-busy="true"`) and **tooltips** (`data-tooltip`).
