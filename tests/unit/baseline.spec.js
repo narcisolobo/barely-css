@@ -109,3 +109,42 @@ test('on main, keeps the HEAD or HEAD~1 rule', async () => {
   const r = await resolveBaseline({ cwd: repo.dir, env: {}, fetchTarball: noFetch });
   expect(r.label).toBe('git HEAD~1');
 });
+
+test('when main has no dist, falls back to the first commit that added it', async () => {
+  repo = makeRepo();
+  // Rebuild history so main has no dist: a main commit with only a readme, then a branch that adds dist.
+  const dir = repo.dir;
+  git(dir, 'checkout', '-q', '--orphan', 'start');
+  git(dir, 'rm', '-rfq', '.');
+  writeFileSync(join(dir, 'README.md'), 'readme');
+  git(dir, 'add', '.');
+  git(dir, 'commit', '-q', '-m', 'readme');
+  git(dir, 'branch', '-q', '-M', 'main');
+  git(dir, 'checkout', '-q', '-b', 'feature');
+  mkdirSync(join(dir, 'dist'), { recursive: true });
+  repo.commit('/* first dist */', 'add dist');
+  const first = git(dir, 'rev-parse', 'HEAD').trim();
+  repo.commit('/* later dist */', 'change dist');
+  const r = await resolveBaseline({ cwd: dir, env: {}, fetchTarball: noFetch });
+  expect(r).toEqual({
+    label: `git first dist commit (${first.slice(0, 7)}; merge-base main has no dist)`,
+    css: '/* first dist */',
+  });
+});
+
+test('when main has no dist and no commit on the branch added one, keeps the HEAD or HEAD~1 rule', async () => {
+  repo = makeRepo();
+  const dir = repo.dir;
+  git(dir, 'checkout', '-q', '--orphan', 'start');
+  git(dir, 'rm', '-rfq', '.');
+  writeFileSync(join(dir, 'README.md'), 'readme');
+  git(dir, 'add', '.');
+  git(dir, 'commit', '-q', '-m', 'readme');
+  git(dir, 'branch', '-q', '-M', 'main');
+  git(dir, 'checkout', '-q', '-b', 'feature');
+  writeFileSync(join(dir, 'notes.txt'), 'x');
+  git(dir, 'add', '.');
+  git(dir, 'commit', '-q', '-m', 'notes');
+  // No dist anywhere: the old rule applies, and it throws because no ref has the file. The new fallback does not.
+  await expect(resolveBaseline({ cwd: dir, env: {}, fetchTarball: noFetch })).rejects.toThrow(/dist\/barely\.css/);
+});

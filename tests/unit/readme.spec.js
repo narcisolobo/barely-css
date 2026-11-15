@@ -23,15 +23,16 @@ function section(heading) {
 test('installation opens with the CDN link tag', () => {
   const block = section('Installation').match(/```html\n([\s\S]*?)```/);
   expect(block, 'first html block in Installation').not.toBeNull();
-  expect(block[1].trim()).toBe(SNIPPET);
+  // At a beta the @1 link is replaced by the exact beta version (docs/releasing.md), so accept that too.
+  expect(block[1].trim().replace(/barely-css@\d+\.\d+\.\d+-[\w.]+\//, 'barely-css@1/')).toBe(SNIPPET);
   // It is the first code block of any kind.
   expect(section('Installation').indexOf('```')).toBe(section('Installation').indexOf('```html'));
 });
 
 test('CDN section shows major and exact-version links', () => {
   const cdn = section('CDN versions and integrity');
-  expect(cdn).toContain('https://cdn.jsdelivr.net/npm/barely-css@1/dist/barely.min.css');
-  expect(cdn).toMatch(/https:\/\/cdn\.jsdelivr\.net\/npm\/barely-css@\d+\.\d+\.\d+\/dist\/barely\.min\.css/);
+  expect(cdn).toMatch(/https:\/\/cdn\.jsdelivr\.net\/npm\/barely-css@(?:1|\d+\.\d+\.\d+-[\w.]+)\/dist\/barely\.min\.css/);
+  expect(cdn).toMatch(/https:\/\/cdn\.jsdelivr\.net\/npm\/barely-css@\d+\.\d+\.\d+(?:-[\w.]+)?\/dist\/barely\.min\.css/);
 });
 
 test('exact-version link has an integrity attribute', () => {

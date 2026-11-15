@@ -2,7 +2,12 @@
 
 This runbook is for the maintainer. It turns the release criteria and the "Cutting a release" steps in the [design spec](superpowers/specs/2026-11-09-barely-css-design.md) into checklists.
 
-Until every box under "Release criteria" is ticked, publish `1.0.0-beta.N` pre-releases instead of `1.0.0`. jsDelivr's `@1` link does not pick up pre-releases, so while only a beta exists, `@1` resolves to nothing. At a beta, the README's major-version snippet (`barely-css@1`) is replaced by the exact beta version (`barely-css@1.0.0-beta.N`) until `1.0.0` is published, and the download link uses the same version.
+Until every box under "Release criteria" is ticked, publish `1.0.0-beta.N` pre-releases instead of `1.0.0`. jsDelivr's `@1` link does not pick up pre-releases, so while only a beta exists, `@1` resolves to nothing. At a beta, replace the two `@1` links in `README.md` with the exact beta version (`barely-css@1.0.0-beta.N`) until `1.0.0` is published:
+
+- the `<link>` snippet at the top of Installation (`href="https://cdn.jsdelivr.net/npm/barely-css@1/dist/barely.min.css"`, near line 12);
+- the major-version link in the "CDN versions and integrity" section (`https://cdn.jsdelivr.net/npm/barely-css@1/dist/barely.min.css`, near line 44).
+
+The download link (`barely-css@1.0.0/dist/barely.css`) and the exact-version snippet with its integrity hash also use the beta version. The README test accepts a pre-release suffix on the exact-version link.
 
 ## Release criteria
 
