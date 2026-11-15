@@ -8,11 +8,12 @@
   }
 
   /* Helper text after a control: inside a wrapping label, directly in a fieldset, or right after the control of a
-     label linked with for. Link it with aria-describedby. */
+     label linked with for (in a div or p field, a span there is help text too, as in Django's as_p). Link it with aria-describedby. */
   :where(
     label > small,
     fieldset > small,
-    label + :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]), select, textarea) + small
+    label + :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]), select, textarea) + small,
+    :is(div, p) > label + :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]), select, textarea) + span
   ) {
     display: block;
     margin-block-start: 0.375rem;
@@ -205,8 +206,9 @@
   }
 
   /* Fields inside a fieldset get the same total gap. The fieldset's own 0.5rem grid gap already counts, and it
-     stays for rows of checkboxes and radios, so text fields add only the difference. Choice rows add nothing. */
-  :where(fieldset > :is(label, fieldset):not(label:has(> input:is([type="checkbox"], [type="radio"]))):has(~ :not(input[type="hidden"]))) {
+     stays for rows of checkboxes and radios, so text fields add only the difference. Choice rows add nothing, wrapped
+     (label around the input) or bare (an input, then its label for it). */
+  :where(fieldset > :is(label, fieldset):not(label:has(> input:is([type="checkbox"], [type="radio"])), input:is([type="checkbox"], [type="radio"]) + label):has(~ :not(input[type="hidden"]))) {
     margin-block-end: calc(var(--barely-form-gap) - 0.5rem);
   }
 
@@ -262,6 +264,16 @@
     margin-block-end: calc(var(--barely-form-gap) - 0.5rem);
   }
 
+  /* Inside a div or p field the wrapper carries the form gap (see above), so the control and its help text add
+     none: the help text sits directly under the control. These come last among the gap rules to win by order. */
+  :where(:is(div, p) > label + :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]), select, textarea)) {
+    margin-block-end: 0;
+  }
+
+  :where(:is(div, p) > label + :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]), select, textarea) + :is(small, span)) {
+    margin-block-end: 0;
+  }
+
   /* Bare choices placed directly in a fieldset (an input, then its label for it): two columns, so each control
      shares a line with its label and the 0.5rem row gap separates the rows. Anything else in that fieldset spans
      both columns. A fieldset of wrapped choice labels has no direct input, so it stays as it is. */
@@ -273,11 +285,6 @@
 
   :where(fieldset:has(> input:is([type="checkbox"], [type="radio"]) + label) > :not(input:is([type="checkbox"], [type="radio"]), input:is([type="checkbox"], [type="radio"]) + label)) {
     grid-column: 1 / -1;
-  }
-
-  /* Centers the box on the label's first line (1.6 line height at 1rem, set in choices.css). */
-  :where(fieldset:has(> input:is([type="checkbox"], [type="radio"]) + label) > input:is([type="checkbox"], [type="radio"])) {
-    margin-block-start: calc((1.6rem - var(--barely-check-size)) / 2);
   }
 
   /* Buttons: button, submit and button inputs are primary. Reset is secondary. */

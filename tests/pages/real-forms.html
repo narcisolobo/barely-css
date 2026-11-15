@@ -11,7 +11,7 @@
     <h1>Real-world forms</h1>
 
     <!-- (a) Django as_p. Django puts a class on its help text (a span with class helptext); barely-css pages
-         have no classes, so a small stands in for it. The error list comes before its paragraph, as in Django 5. -->
+         have no classes, so a small stands in for it. The error list comes before its paragraph. -->
     <form id="django-p" method="post">
       <p>
         <label for="p-name">Name:</label> <input type="text" name="name" id="p-name" required>
@@ -28,19 +28,30 @@
       </p>
     </form>
 
-    <!-- (b) Django as_div. The error list sits inside the div, before the label, as in Django 5. -->
+    <!-- (a2) Django as_p as it really renders help text: a span after the input (Django gives it a class, which a
+         barely-css page cannot use). -->
+    <form id="django-p-span" method="post">
+      <p>
+        <label for="ps-email">Email:</label> <input type="email" name="email" id="ps-email" required>
+        <span id="ps-help">We never share your address.</span>
+      </p>
+      <p>
+        <label for="ps-name">Name:</label> <input type="text" name="name" id="ps-name" required>
+      </p>
+    </form>
+
+    <!-- (b) Django as_div, plain fields. Known limit: since Django 4.1 as_div renders label, then the help text
+         div, then the error list, then the input. A field with help text or errors therefore has something
+         between its label and its input, so the label is not next to the input and keeps the form gap below it.
+         Fields without help text or errors, as here, are spaced correctly. -->
     <form id="django-div" method="post">
       <div>
         <label for="d-name">Name:</label> <input type="text" name="name" id="d-name" required>
       </div>
       <div>
         <label for="d-email">Email:</label> <input type="email" name="email" id="d-email" required>
-        <small id="d-email-help">We never share your address.</small>
       </div>
       <div>
-        <ul>
-          <li>This field is required.</li>
-        </ul>
         <label for="d-age">Age:</label> <input type="number" name="age" id="d-age" aria-invalid="true">
       </div>
     </form>

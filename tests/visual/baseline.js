@@ -55,26 +55,13 @@ function hasDist(cwd, ref) {
   }
 }
 
-/** The oldest commit that added dist/barely.css, if it is an ancestor of HEAD; otherwise null. */
-function firstDistCommit(cwd) {
-  const added = git(cwd, ['log', '--diff-filter=A', '--format=%H', '--', 'dist/barely.css']).split('\n').filter(Boolean);
-  const first = added[added.length - 1];
-  if (!first) return null;
-  try {
-    git(cwd, ['merge-base', '--is-ancestor', first, 'HEAD']);
-    return first;
-  } catch {
-    return null;
-  }
-}
-
 function fromGit(cwd, ref) {
   return { label: `git ${ref}`, css: git(cwd, ['show', `${ref}:dist/barely.css`]) };
 }
 
 /**
  * Finds the CSS to compare against. An explicit ref (BARELY_BASELINE_REF, then opts.ref) wins; otherwise the newest
- * `v*` tag's published npm tarball; otherwise, on a branch with a local main, the merge-base with main (or, when main has no dist/barely.css yet, the first commit on this branch that added it); otherwise git history (HEAD when dist has uncommitted changes, else HEAD~1).
+ * `v*` tag's published npm tarball; otherwise, on a branch with a local main, the merge-base with main; when that commit has no dist/barely.css, it throws and asks for BARELY_BASELINE_REF; otherwise git history (HEAD when dist has uncommitted changes, else HEAD~1).
  * `cwd`, `env` and `fetchTarball` can be injected so tests never touch the network or the real repository.
  */
 export async function resolveBaseline({
@@ -109,12 +96,9 @@ export async function resolveBaseline({
     if (hasDist(cwd, base)) {
       return { label: `git merge-base main (${base.slice(0, 7)})`, css: git(cwd, ['show', `${base}:dist/barely.css`]) };
     }
-    // main has no dist yet (the first release is still being built on this branch): compare against the first
-    // commit that added it, when that commit is part of this branch.
-    const first = firstDistCommit(cwd);
-    if (first) {
-      return { label: `git first dist commit (${first.slice(0, 7)}; merge-base main has no dist)`, css: git(cwd, ['show', `${first}:dist/barely.css`]) };
-    }
+    throw new Error(
+      `merge-base with main (${base.slice(0, 7)}) has no dist/barely.css; set BARELY_BASELINE_REF=<ref> to choose a baseline.`,
+    );
   }
 
   return fromGit(cwd, distDiffersFromHead(cwd) ? 'HEAD' : 'HEAD~1');

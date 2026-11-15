@@ -52,6 +52,8 @@ function readForm(id) {
       first = box(pendingError ?? inner[0]);
       last = box(inner[inner.length - 1]);
       pair(el);
+      const help = el.querySelector(':scope > :is(input, select, textarea) + :is(small, span)');
+      if (help) textGaps.push({ small: help.getBoundingClientRect().top - help.previousElementSibling.getBoundingClientRect().bottom });
     } else if (tag === 'label' && el.hasAttribute('for')) {
       const control = kids[i + 1];
       const small = kids[i + 2]?.localName === 'small' ? kids[i + 2] : null;
@@ -80,7 +82,7 @@ for (const width of WIDTHS) {
   test.describe(`real-world form markup at ${width}`, () => {
     test.use({ viewport: { width, height: 900 } });
 
-    for (const id of ['django-p', 'django-div', 'flask-login', 'plain', 'sibling-small']) {
+    for (const id of ['django-p', 'django-p-span', 'django-div', 'flask-login', 'plain', 'sibling-small']) {
       test(`${id}: label-to-control gap is 0.375rem`, async ({ page }) => {
         await page.goto(PAGE);
         const r = await page.evaluate(readForm, id);
@@ -158,11 +160,22 @@ for (const width of WIDTHS) {
           });
         }, id);
         expect(rows).toHaveLength(3);
-        for (const row of rows) expect(Math.abs(row.centerA - row.centerB), id).toBeLessThanOrEqual(4);
+        for (const row of rows) expect(Math.abs(row.centerA - row.centerB), id).toBeLessThanOrEqual(1);
         const steps = [rows[1].top - rows[0].top, rows[2].top - rows[1].top];
         expect(Math.abs(steps[0] - steps[1]), id).toBeLessThanOrEqual(1);
-        // Rows are separate lines, not one run.
+        // Rows are separate lines, and the gap between them is the fieldset's 0.5rem, the same as wrapped choices.
         expect(steps[0]).toBeGreaterThan(rows[0].bottom - rows[0].top);
+        const bareGap = rows[1].top - rows[0].bottom;
+        expect(Math.abs(bareGap - 8), id).toBeLessThanOrEqual(1);
+        const wrappedGap = await page.evaluate(() => {
+          const fs = document.createElement('fieldset');
+          fs.innerHTML = '<label><input type="checkbox"> One</label><label><input type="checkbox"> Two</label>';
+          document.getElementById('choices').append(fs);
+          const [a, b] = [...fs.querySelectorAll('label')].map((l) => l.getBoundingClientRect());
+          fs.remove();
+          return b.top - a.bottom;
+        });
+        expect(Math.abs(bareGap - wrappedGap), id).toBeLessThanOrEqual(1);
       }
     });
 

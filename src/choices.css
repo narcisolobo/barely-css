@@ -34,6 +34,12 @@
     cursor: pointer;
   }
 
+  /* A bare choice in a fieldset (forms.css makes that fieldset a two-column grid) is centered on its label's first
+     line: 1.6 line height at 1rem. This sits after the base rule above, which sets margin-block: 0. */
+  :where(fieldset:has(> input:is([type="checkbox"], [type="radio"]) + label) > input:is([type="checkbox"], [type="radio"])) {
+    margin-block-start: calc((1.6rem - var(--barely-check-size)) / 2);
+  }
+
   /* Inside its label the control is pulled back into the label's start padding, which is what builds the
      hanging indent. An unwrapped control (a sibling of its label) has no padding to sit in, so it keeps the
      plain margin above. */
