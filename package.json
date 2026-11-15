@@ -6,7 +6,8 @@
   "scripts": {
     "build": "node scripts/build.js",
     "check:dist": "node scripts/build.js --check",
-    "test": "playwright test"
+    "test": "playwright test",
+    "visual": "playwright test -c tests/visual/visual.config.js"
   },
   "keywords": [
     "css",
