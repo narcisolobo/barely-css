@@ -20,6 +20,23 @@
     );
   }
 
+  /* A table, pre or details placed directly in body takes the region inset as margin, not padding. A
+     border-collapse table has no padding at all, and a pre or details would become a full-bleed band. This
+     matches the same elements inside main, which sit at the content edge. The table is sized to fit between
+     the margins; the pre keeps its own inner padding. */
+  body > :where(table, pre, details) {
+    padding-inline: 0;
+    margin-inline: var(--_barely-region-inline);
+  }
+
+  body > :where(table) {
+    inline-size: calc(100% - 2 * var(--_barely-region-inline));
+  }
+
+  body > :where(pre) {
+    padding-inline: var(--barely-spacing);
+  }
+
   /* An aside or blockquote in body keeps its start border at the content edge: margin takes the place
      of region padding, and the text sits one spacing step inside the border. */
   body > :where(aside, blockquote) {

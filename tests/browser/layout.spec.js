@@ -294,6 +294,28 @@ for (const width of [375, 1600]) {
       expect(Math.abs(content - Math.min(readingW, contentW, avail))).toBeLessThanOrEqual(2);
     });
 
+    test('table, pre and details in body start at the same edge as body prose and do not scroll the page', async ({ page }) => {
+      await page.goto('/tests/pages/no-main.html');
+      const r = await page.evaluate(() => {
+        const p = document.querySelector('body > p');
+        const range = document.createRange();
+        range.selectNodeContents(p);
+        const text = range.getBoundingClientRect().left;
+        const edge = (sel) => document.querySelector(sel).getBoundingClientRect();
+        const root = document.documentElement;
+        return {
+          text,
+          table: edge('#body-table'),
+          pre: edge('#body-pre'),
+          details: edge('#body-details'),
+          scrolls: root.scrollWidth > root.clientWidth,
+        };
+      });
+      for (const k of ['table', 'pre', 'details']) expect(r[k].left, k).toBeCloseTo(r.text, 0);
+      for (const k of ['table', 'pre', 'details']) expect(r[k].right, k).toBeLessThanOrEqual(width - r.text + 1);
+      expect(r.scrolls).toBe(false);
+    });
+
     test('aside in body keeps its start border and padding at the content edge', async ({ page }) => {
       await page.goto('/tests/pages/regions.html');
       const r = await page.evaluate(() => {
