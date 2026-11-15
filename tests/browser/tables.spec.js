@@ -1,0 +1,180 @@
+import { test, expect } from '@playwright/test';
+import { PNG } from 'pngjs';
+import { DEMO } from '../helpers/env.js';
+import { paintedRgba, effectiveBackground } from '../helpers/page-color.js';
+import { srgb8ToLinear, contrast } from '../helpers/color.js';
+
+test('table keeps display: table', async ({ page }) => {
+  await page.goto('/tests/pages/tables.html');
+  const d = await page.evaluate(() => [...document.querySelectorAll('table')].map((t) => getComputedStyle(t).display));
+  expect(d).toEqual(['table', 'table']);
+});
+
+test.describe('narrow', () => {
+  test.use({ viewport: { width: 375, height: 800 } });
+
+  test('no cell word breaks mid-word at 375', async ({ page }) => {
+    await page.goto('/tests/pages/tables.html');
+    const broken = await page.evaluate(() => {
+      // A word is a run between natural break opportunities (spaces, and the / - ? & = : . inside URLs),
+      // so a URL may wrap at its slashes and hyphens but no run may be split.
+      const out = [];
+      const walker = document.createTreeWalker(document.querySelector('main'), NodeFilter.SHOW_TEXT);
+      for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+        if (!n.parentElement.closest('th, td')) continue;
+        for (const m of n.data.matchAll(/[^\s/\-?&=:.]+/g)) {
+          const r = document.createRange();
+          r.setStart(n, m.index);
+          r.setEnd(n, m.index + m[0].length);
+          const tops = new Set([...r.getClientRects()].map((q) => Math.round(q.top)));
+          if (tops.size > 1) out.push(m[0]);
+        }
+      }
+      return out;
+    });
+    expect(broken).toEqual([]);
+  });
+
+  test('a long URL makes its table wider than its container at 375', async ({ page }) => {
+    await page.goto('/tests/pages/tables.html');
+    const r = await page.evaluate(() => {
+      const t = document.querySelector('#url-table');
+      const cs = getComputedStyle(t.parentElement);
+      const content = t.parentElement.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+      return { table: t.getBoundingClientRect().width, content, display: getComputedStyle(t).display };
+    });
+    expect(r.display).toBe('table');
+    expect(r.table).toBeGreaterThan(r.content);
+  });
+
+  test('the scroll wrapper contains a long-URL table; the page does not scroll', async ({ page }) => {
+    await page.goto('/tests/pages/tables.html');
+    const r = await page.evaluate(() => {
+      const t = document.querySelector('#url-table');
+      const w = document.createElement('div');
+      w.setAttribute('role', 'region');
+      w.setAttribute('tabindex', '0');
+      w.setAttribute('aria-label', 'Reading list, scrolls sideways');
+      t.replaceWith(w);
+      w.append(t);
+      const root = document.documentElement;
+      return { page: root.scrollWidth <= root.clientWidth, wrapper: w.scrollWidth > w.clientWidth };
+    });
+    expect(r.page).toBe(true);
+    expect(r.wrapper).toBe(true);
+  });
+
+  test('a long unbroken token in a cell stays on one line and the wrapper still scrolls', async ({ page }) => {
+    await page.goto('/tests/pages/tables.html');
+    const r = await page.evaluate(() => {
+      // The unwrapped URL table on this page is wider than the viewport by design; drop it.
+      document.querySelector('#url-table').remove();
+      const token = 'a_very_long_underscore_identifier_with_no_break_opportunity_anywhere_in_it_at_all';
+      const w = document.createElement('div');
+      w.setAttribute('role', 'region');
+      w.setAttribute('tabindex', '0');
+      w.setAttribute('aria-label', 'Identifiers, scrolls sideways');
+      w.innerHTML = `<table><tbody><tr><td id="tok-cell">${token}</td><td>x</td></tr></tbody></table>`;
+      document.querySelector('main').append(w);
+      const cell = document.getElementById('tok-cell');
+      const range = document.createRange();
+      range.selectNodeContents(cell);
+      const tops = new Set([...range.getClientRects()].map((q) => Math.round(q.top)));
+      const root = document.documentElement;
+      return { lines: tops.size, page: root.scrollWidth <= root.clientWidth, wrapper: w.scrollWidth > w.clientWidth };
+    });
+    expect(r.lines).toBe(1);
+    expect(r.page).toBe(true);
+    expect(r.wrapper).toBe(true);
+  });
+
+  test('wrapped wide table scrolls inside its wrapper, not the page', async ({ page }) => {
+    await page.goto('/tests/pages/tables.html');
+    const r = await page.evaluate(() => {
+      document.querySelector('#url-table').remove(); // unwrapped, it is allowed to scroll the page
+      const root = document.documentElement;
+      const w = document.querySelector('#wrapper');
+      return {
+        page: root.scrollWidth <= root.clientWidth,
+        wrapperOverflows: w.scrollWidth > w.clientWidth,
+        overflowX: getComputedStyle(w).overflowX,
+      };
+    });
+    expect(r.page).toBe(true);
+    expect(r.wrapperOverflows).toBe(true);
+    expect(r.overflowX).toBe('auto');
+  });
+
+  test('wrapped table drops its bottom margin; the wrapper keeps one', async ({ page }) => {
+    await page.goto('/tests/pages/tables.html');
+    const r = await page.evaluate(() => ({
+      table: getComputedStyle(document.querySelector('#wide')).marginBottom,
+      wrapper: parseFloat(getComputedStyle(document.querySelector('#wrapper')).marginBottom),
+    }));
+    expect(r.table).toBe('0px');
+    expect(r.wrapper).toBeGreaterThan(0);
+  });
+});
+
+test('wrapper shows the focus ring', async ({ page }) => {
+  await page.goto('/tests/pages/tables.html');
+  await page.keyboard.press('Tab');
+  const r = await page.evaluate(() => {
+    const el = document.activeElement;
+    const s = getComputedStyle(el);
+    return { id: el.id, matches: el.matches(':focus-visible'), style: s.outlineStyle, width: parseFloat(s.outlineWidth) };
+  });
+  expect(r.id).toBe('wrapper');
+  expect(r.matches).toBe(true);
+  expect(r.style).toBe('solid');
+  expect(r.width).toBeGreaterThanOrEqual(2);
+});
+
+test('thead and tfoot rules paint in border-strong, row rules in border', async ({ page }) => {
+  await page.goto(DEMO);
+  const table = page.locator('#grades');
+  await table.evaluate((t) => {
+    t.style.setProperty('--barely-color-border', 'rgb(255 0 0)');
+    t.style.setProperty('--barely-color-border-strong', 'rgb(0 0 255)');
+    t.style.setProperty('--barely-color-surface', 'rgb(255 255 255)');
+    t.style.setProperty('--barely-border-width', '6px');
+    t.style.backgroundColor = 'rgb(255 255 255)';
+    t.scrollIntoView();
+  });
+  const edges = await table.evaluate((t) => {
+    const box = t.getBoundingClientRect();
+    return {
+      theadBottom: t.tHead.getBoundingClientRect().bottom - box.top,
+      tfootTop: t.tFoot.getBoundingClientRect().top - box.top,
+      betweenBody: t.tBodies[0].rows[0].getBoundingClientRect().bottom - box.top,
+      x: t.rows[1].cells[1].getBoundingClientRect().left - box.left + 8,
+    };
+  });
+  const png = PNG.sync.read(await table.screenshot({ scale: 'css' }));
+  const near = (y0) => {
+    const found = new Set();
+    for (let y = Math.round(y0) - 3; y <= Math.round(y0) + 3; y++) {
+      const i = (y * png.width + Math.round(edges.x)) * 4;
+      found.add(`${png.data[i]},${png.data[i + 1]},${png.data[i + 2]}`);
+    }
+    return found;
+  };
+  for (const y of [edges.theadBottom, edges.tfootTop]) {
+    expect(near(y).has('0,0,255')).toBe(true);
+    expect(near(y).has('255,0,0')).toBe(false);
+  }
+  expect(near(edges.betweenBody).has('255,0,0')).toBe(true);
+});
+
+for (const theme of ['light', 'dark']) {
+  test(`stripe rows have 4.5:1 text contrast (${theme})`, async ({ page }) => {
+    await page.goto(DEMO);
+    await page.evaluate((t) => document.documentElement.setAttribute('data-theme', t), theme);
+    const even = page.locator('#grades tbody tr:nth-child(even) td').first();
+    const bg = await effectiveBackground(even);
+    const odd = await effectiveBackground(page.locator('#grades tbody tr:nth-child(odd) td').first());
+    expect(bg).not.toEqual(odd); // the stripe is actually painted
+    const fg = await paintedRgba(even, 'color');
+    expect(contrast(srgb8ToLinear(fg.slice(0, 3)), srgb8ToLinear(bg))).toBeGreaterThanOrEqual(4.5);
+  });
+}

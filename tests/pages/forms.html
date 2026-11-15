@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Forms</title>
+  <link rel="stylesheet" href="../../dist/barely.css">
+</head>
+<body>
+  <main>
+    <h1>Forms</h1>
+    <form>
+      <!-- Stretched labels: flex row where one label has two lines of text. -->
+      <div id="stretch" style="display: flex; gap: 1rem; align-items: stretch;">
+        <label id="tall">A label with much longer text that wraps onto a second line at this narrow width, so its row is taller
+          <input id="tall-input" type="text">
+        </label>
+        <label id="short">Short
+          <input id="short-input" type="text">
+        </label>
+      </div>
+      <label id="abbr-label" for="abbr-input">Enter your <abbr title="Social Security Number">SSN</abbr> now
+        <input id="abbr-input" type="text">
+      </label>
+      <label for="future">Unknown type
+        <input id="future" type="futuretype">
+      </label>
+      <label for="plain">Plain text
+        <input id="plain" type="text">
+      </label>
+      <label for="range">Range
+        <input id="range" type="range" min="0" max="10" step="2" value="4">
+      </label>
+      <label for="area">Area
+        <textarea id="area"></textarea>
+      </label>
+      <p id="row">
+        <input id="row-input" type="text" aria-label="Beside a button">
+        <button id="row-button" type="button">Go</button>
+        <input id="row-reset" type="reset" value="Reset">
+      </p>
+      <label id="out-a">Outside A <input type="text"></label>
+      <label id="out-b">Outside B <input type="text"></label>
+      <fieldset id="fs">
+        <legend>Grouped</legend>
+        <label id="in-a">Inside A <input type="text"></label>
+        <label id="in-b">Inside B <input type="text"></label>
+        <label id="in-c">Inside C <input type="text"></label>
+      </fieldset>
+      <div dir="rtl">
+        <label for="rtl-select">RTL select
+          <select id="rtl-select"><option>One</option></select>
+        </label>
+      </div>
+      <label for="ltr-select">LTR select
+        <select id="ltr-select"><option>One</option></select>
+      </label>
+    </form>
+  </main>
+</body>
+</html>

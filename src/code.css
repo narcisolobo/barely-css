@@ -1,0 +1,36 @@
+@layer base {
+  :where(code, kbd, samp, pre) {
+    font-family: var(--barely-font-mono);
+    font-size: 0.875em;
+  }
+
+  :where(code, samp, kbd) {
+    background-color: var(--barely-color-surface);
+    padding: 0.1em 0.3em;
+    border-radius: calc(var(--barely-radius) * 0.66);
+    overflow-wrap: break-word;
+  }
+
+  :where(kbd) {
+    border: var(--barely-border-width) solid var(--barely-color-border-strong);
+    border-block-end-width: 2px;
+  }
+
+  /* An overflowing pre is a scroll container; Chromium and Firefox make it a tab stop, and the global focus ring covers it. */
+  :where(pre) {
+    background-color: var(--barely-color-surface);
+    padding: var(--barely-spacing);
+    border-radius: var(--barely-radius);
+    overflow-x: auto;
+    line-height: 1.5;
+    tab-size: 4;
+  }
+
+  :where(pre code) {
+    background-color: transparent;
+    padding: 0;
+    border-radius: 0;
+    font-size: inherit;
+    overflow-wrap: normal;
+  }
+}

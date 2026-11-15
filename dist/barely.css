@@ -1,0 +1,1347 @@
+/*! barely-css v0.0.0 | MIT License | Customize by overriding the --barely-* custom properties listed in the tokens section below */
+@layer reset, tokens, base, layout, components, utilities, overrides;
+
+/* ==== reset.css ==== */
+@layer reset {
+  html {
+    box-sizing: border-box;
+  }
+
+  *,
+  ::before,
+  ::after {
+    box-sizing: inherit;
+  }
+
+  :where(body) {
+    margin: 0;
+  }
+
+  :where(img, video, svg, canvas) {
+    display: block;
+  }
+
+  :where(button, input, select, textarea) {
+    font: inherit;
+    color: inherit;
+  }
+
+  :where([hidden]:not([hidden="until-found" i])) {
+    display: none;
+  }
+}
+
+/* ==== tokens.css ==== */
+@layer tokens {
+  /* Follow the system theme. Zero specificity, so data-theme on html can override it. */
+  :where(:root) {
+    color-scheme: light dark;
+  }
+
+  :root {
+    /* Page background. */
+    --barely-color-background: light-dark(oklch(0.985 0.004 250), oklch(0.19 0.012 250));
+    /* Code blocks, table stripes, secondary buttons. */
+    --barely-color-surface: light-dark(oklch(0.955 0.008 250), oklch(0.23 0.014 250));
+    /* Rules, hr, decorative edges. May be low contrast. */
+    --barely-color-border: light-dark(oklch(0.89 0.012 250), oklch(0.33 0.016 250));
+    /* Form control outlines. Reaches 3:1 on background and surface. */
+    --barely-color-border-strong: light-dark(oklch(0.6 0.02 250), oklch(0.58 0.02 250));
+    /* Body text and headings. */
+    --barely-color-text: light-dark(oklch(0.25 0.02 250), oklch(0.93 0.008 250));
+    /* Captions, small, blockquote. */
+    --barely-color-text-muted: light-dark(oklch(0.48 0.02 250), oklch(0.74 0.015 250));
+    /* Links, buttons, focus ring. Hover is derived from this unless --barely-color-primary-hover is set. */
+    --barely-color-primary: light-dark(oklch(0.5 0.16 255), oklch(0.75 0.12 250));
+    /* Text on primary fills. */
+    --barely-color-on-primary: light-dark(oklch(0.985 0.004 250), oklch(0.19 0.012 250));
+    /* Background of mark. */
+    --barely-color-mark: light-dark(oklch(0.93 0.11 95), oklch(0.45 0.09 95));
+    /* Valid state, confirmations. */
+    --barely-color-success: light-dark(oklch(0.5 0.12 150), oklch(0.76 0.14 150));
+    /* Cautions. */
+    --barely-color-warning: light-dark(oklch(0.53 0.12 65), oklch(0.8 0.13 75));
+    /* Invalid state, errors. */
+    --barely-color-danger: light-dark(oklch(0.52 0.18 27), oklch(0.73 0.15 25));
+    /*
+      Not declared here, on purpose: --barely-color-primary-hover (derived from primary at each
+      use site, so a primary override on any element carries through) and
+      --barely-control-background (defaults to --barely-color-background at each use site).
+      Set either one to replace the default.
+    */
+
+    /* Body and heading typeface. System fonts, no downloads. */
+    --barely-font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", Ubuntu, Cantarell, sans-serif;
+    /* Typeface for code, pre, kbd, samp. */
+    --barely-font-mono: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+    /* Base font size. Fluid. */
+    --barely-font-size: clamp(1rem, 0.95rem + 0.2vw, 1.0625rem);
+    /* Line height of body copy. */
+    --barely-line-height: 1.6;
+    /* Line height of headings. */
+    --barely-line-height-heading: 1.2;
+    /* Weight of headings. */
+    --barely-font-weight-heading: 700;
+    /* Heading sizes. h1 to h5 are fluid; each step is at least 1.2x on wide screens. */
+    --barely-font-size-h1: clamp(2.25rem, 1.5rem + 3.2vw, 3.05rem);
+    --barely-font-size-h2: clamp(1.875rem, 1.35rem + 2.2vw, 2.44rem);
+    --barely-font-size-h3: clamp(1.5625rem, 1.2rem + 1.4vw, 1.95rem);
+    --barely-font-size-h4: clamp(1.3125rem, 1.15rem + 0.7vw, 1.5625rem);
+    --barely-font-size-h5: clamp(1.125rem, 1.05rem + 0.35vw, 1.25rem);
+    --barely-font-size-h6: 1rem;
+
+    /* Vertical rhythm between flow blocks. */
+    --barely-spacing: 1rem;
+    /* Corner radius of code, pre, mark, dialog, popover. */
+    --barely-radius: 0.375rem;
+    /* Width of rules and borders. */
+    --barely-border-width: 1px;
+    /* Shadow under dialog and popover. */
+    --barely-shadow: 0 0.5rem 2rem oklch(0 0 0 / 0.18);
+
+    /* Maximum width of page content. */
+    --barely-content-width: 72rem;
+    /* Maximum width of running text and forms. */
+    --barely-reading-width: 70ch;
+    /* Side padding of the page regions. Fluid. */
+    --barely-page-padding-inline: clamp(1rem, 0.5rem + 2.5vw, 2rem);
+    /* Top and bottom padding of the page regions. Fluid. */
+    --barely-page-padding-block: clamp(2rem, 1rem + 4vw, 4rem);
+
+    /* Minimum height of text-like controls and buttons. Never a fixed height. */
+    --barely-control-height: 2.75rem;
+    /* Vertical padding inside controls. */
+    --barely-control-padding-block: 0.5rem;
+    /* Horizontal padding inside controls. */
+    --barely-control-padding-inline: 0.875rem;
+    /* Corner radius of controls and buttons. */
+    --barely-control-radius: 0.375rem;
+    /* Normal control border width. */
+    --barely-control-border-width: 1px;
+    /* Control border width in the invalid state. */
+    --barely-control-border-width-invalid: 2px;
+    /* Checkbox and radio size. The switch is 1.9 times as wide. */
+    --barely-check-size: 1.25rem;
+    /* Focus outline width. */
+    --barely-focus-ring-width: 2px;
+    /* Focus outline offset. */
+    --barely-focus-ring-offset: 2px;
+    /* Space between form fields. */
+    --barely-form-gap: 1.125rem;
+  }
+
+  :where([data-theme="light"]) {
+    color-scheme: light;
+  }
+
+  :where([data-theme="dark"]) {
+    color-scheme: dark;
+  }
+}
+
+/* ==== base.css ==== */
+@layer base {
+  html {
+    font-family: var(--barely-font-sans);
+    font-size: var(--barely-font-size);
+    line-height: var(--barely-line-height);
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  /* A long word or URL wraps instead of widening the page. It inherits, and break-word leaves min-content
+     alone, so table cells (below) and shrink-to-fit boxes keep their natural widths. */
+  :where(html) {
+    overflow-wrap: break-word;
+  }
+
+  /* Tables keep natural word boundaries; a wide one scrolls inside the optional wrapper. */
+  :where(th, td) {
+    overflow-wrap: normal;
+  }
+
+  html,
+  :where([data-theme]) {
+    background-color: var(--barely-color-background);
+    color: var(--barely-color-text);
+  }
+
+  :where(:focus-visible) {
+    outline: var(--barely-focus-ring-width) solid var(--barely-color-primary);
+    outline-offset: var(--barely-focus-ring-offset);
+  }
+
+  @media (forced-colors: active) {
+    :where(:focus-visible) {
+      outline-color: Highlight;
+    }
+  }
+}
+
+/* ==== typography.css ==== */
+@layer base {
+  :where(h1, h2, h3, h4, h5, h6) {
+    margin-block: calc(var(--barely-spacing) * 2) var(--barely-spacing);
+    font-weight: var(--barely-font-weight-heading);
+    line-height: var(--barely-line-height-heading);
+    text-wrap: balance;
+  }
+
+  :where(h1) { font-size: var(--barely-font-size-h1); }
+  :where(h2) { font-size: var(--barely-font-size-h2); }
+  :where(h3) { font-size: var(--barely-font-size-h3); }
+  :where(h4) { font-size: var(--barely-font-size-h4); }
+  :where(h5) { font-size: var(--barely-font-size-h5); }
+  :where(h6) { font-size: var(--barely-font-size-h6); }
+
+  :where(h1, h2, h3, h4, h5, h6):first-child {
+    margin-block-start: 0;
+  }
+
+  :where(p, ul, ol, dl, blockquote, figure, pre, table, hr, details, form, fieldset) {
+    margin-block: 0 var(--barely-spacing);
+  }
+
+  /* Nested lists sit tight inside their parent item. */
+  :where(li) > :where(ul, ol, dl) {
+    margin-block-end: 0;
+  }
+
+  :where(p) {
+    text-wrap: pretty;
+  }
+
+  :where(a) {
+    color: var(--barely-color-primary);
+    text-decoration: underline;
+    text-decoration-thickness: 0.08em;
+    text-underline-offset: 0.18em;
+  }
+
+  :where(a:hover) {
+    color: var(--barely-color-primary-hover, light-dark(oklch(from var(--barely-color-primary) calc(l - 0.07) c h), oklch(from var(--barely-color-primary) calc(l + 0.07) c h)));
+  }
+
+  :where(blockquote) {
+    margin-inline: 0;
+    padding-inline-start: var(--barely-spacing);
+    border-inline-start: 0.25rem solid var(--barely-color-border);
+    color: var(--barely-color-text-muted);
+  }
+
+  :where(hr) {
+    border: 0;
+    border-block-start: var(--barely-border-width) solid var(--barely-color-border);
+    margin-block: calc(var(--barely-spacing) * 2);
+  }
+
+  :where(mark) {
+    background-color: var(--barely-color-mark);
+    color: var(--barely-color-text);
+    padding-inline: 0.15em;
+    border-radius: 0.125rem;
+  }
+
+  :where(abbr[title]) {
+    text-decoration: underline dotted;
+    cursor: help;
+  }
+
+  :where(small) {
+    font-size: 0.875em;
+  }
+
+  :where(sub, sup) {
+    line-height: 0;
+  }
+
+  :where(sub) { vertical-align: sub; }
+  :where(sup) { vertical-align: super; }
+
+  :where(strong, b, dt) {
+    font-weight: bolder;
+  }
+
+  :where(dd) {
+    margin-inline-start: 1.5rem;
+  }
+}
+
+/* ==== layout.css ==== */
+@layer base {
+  /* Page regions: every direct child of body except non-rendered elements (script, style, template) and
+     top-layer ones (dialog, [popover]), which style their own padding in interactive.css.
+     Regions span the viewport; padding keeps their content centered at the content width. */
+  body > :where(:not(script, style, template, dialog, [popover])) {
+    --_barely-region-inline: max(
+      var(--barely-page-padding-inline),
+      (100% - var(--barely-content-width)) / 2
+    );
+    padding-inline: var(--_barely-region-inline);
+  }
+
+  /* Prose placed directly in body is a region too. The region spans the viewport, so it carries
+     the reading width in its end padding instead of a max-inline-size cap. */
+  body > :where(p, ul, ol, dl, blockquote, h1, h2, h3, h4, h5, h6, figcaption, form) {
+    max-inline-size: none;
+    padding-inline-end: max(
+      var(--_barely-region-inline),
+      100% - var(--_barely-region-inline) - var(--barely-reading-width)
+    );
+  }
+
+  /* A table, pre or details placed directly in body takes the region inset as margin, not padding. A
+     border-collapse table has no padding at all, and a pre or details would become a full-bleed band. This
+     matches the same elements inside main, which sit at the content edge. The table is sized to fit between
+     the margins; the pre keeps its own inner padding. */
+  body > :where(table, pre, details) {
+    padding-inline: 0;
+    margin-inline: var(--_barely-region-inline);
+  }
+
+  body > :where(table) {
+    inline-size: calc(100% - 2 * var(--_barely-region-inline));
+  }
+
+  body > :where(pre) {
+    padding-inline: var(--barely-spacing);
+  }
+
+  /* An aside or blockquote in body keeps its start border at the content edge: margin takes the place
+     of region padding, and the text sits one spacing step inside the border. */
+  body > :where(aside, blockquote) {
+    margin-inline-start: var(--_barely-region-inline);
+    padding-inline-start: var(--barely-spacing);
+  }
+
+  /* A list in body keeps its markers inside the content edge: the usual list indent is added to the region padding. */
+  body > :where(ul, ol) {
+    padding-inline-start: calc(var(--_barely-region-inline) + 40px);
+  }
+
+  body > :where(main) {
+    padding-block: var(--barely-page-padding-block);
+  }
+
+  /* A page with no main: the body carries the block padding. */
+  :where(body:not(:has(> main))) {
+    padding-block: var(--barely-page-padding-block);
+  }
+
+  /* Masthead */
+  body > :where(header, footer) {
+    padding-block: calc(var(--barely-page-padding-block) * 0.4);
+    background-color: var(--barely-color-surface);
+  }
+
+  body > :where(header) {
+    border-block-end: var(--barely-border-width) solid var(--barely-color-border);
+  }
+
+  body > :where(footer) {
+    border-block-start: var(--barely-border-width) solid var(--barely-color-border);
+  }
+
+  body > :where(footer),
+  :where(article, section) :where(footer) {
+    color: var(--barely-color-text-muted);
+    font-size: 0.875rem;
+  }
+
+  /* Reading width: prose stays start-aligned inside the wider content box. */
+  :where(p, ul, ol, dl, blockquote, h1, h2, h3, h4, h5, h6, figcaption, form) {
+    max-inline-size: var(--barely-reading-width);
+  }
+
+  /* Header and footer inside article or section are restrained, not mastheads. */
+  :where(article, section) :where(header) {
+    margin-block-end: var(--barely-spacing);
+  }
+
+  :where(article, section) :where(footer) {
+    margin-block-start: var(--barely-spacing);
+  }
+
+  :where(article, section, aside) {
+    margin-block-end: calc(var(--barely-spacing) * 2);
+  }
+
+  :where(aside) {
+    border-inline-start: 0.25rem solid var(--barely-color-border);
+    padding-inline-start: var(--barely-spacing);
+  }
+}
+
+/* ==== navigation.css ==== */
+@layer base {
+  /* Masthead navigation: only body > header nav is laid out horizontally. */
+  :where(body > header nav) {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem var(--barely-spacing);
+  }
+
+  /* Top-level lists only: a submenu ul inside an li stays an ordinary vertical list. */
+  :where(body > header nav > ul) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem var(--barely-spacing);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-inline-size: none;
+  }
+
+  /* inline-block so the padding counts toward the target size. */
+  :where(body > header nav a) {
+    display: inline-block;
+    padding-block: 0.25rem;
+  }
+
+  /* Breadcrumbs: styled wherever they appear. */
+  :where(nav[aria-label="breadcrumb" i] > :is(ol, ul)) {
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    padding: 0;
+  }
+
+  /* The empty alternative text after the slash keeps screen readers from announcing it. */
+  :where(nav[aria-label="breadcrumb" i] li + li)::before {
+    content: "/" / "";
+    margin-inline: 0.5rem;
+    color: var(--barely-color-text-muted);
+  }
+
+  :where(nav[aria-label="breadcrumb" i] [aria-current="page"]) {
+    color: var(--barely-color-text);
+    text-decoration: none;
+  }
+}
+
+/* ==== tables.css ==== */
+@layer base {
+  /* The table keeps its native display: table, so assistive technology keeps its table semantics. */
+  :where(table) {
+    inline-size: 100%;
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+  }
+
+  :where(caption) {
+    caption-side: top;
+    text-align: start;
+    padding-block-end: 0.5rem;
+    color: var(--barely-color-text-muted);
+  }
+
+  /* Cells wrap at natural word boundaries only. A table may grow wider than its container when its content
+     needs it; the optional scroll wrapper below contains that overflow without breaking words. */
+  :where(th, td) {
+    padding: 0.5rem 0.75rem;
+    text-align: start;
+    vertical-align: top;
+  }
+
+  :where(th) {
+    font-weight: bold;
+  }
+
+  :where(tr) {
+    border-block-end: var(--barely-border-width) solid var(--barely-color-border);
+  }
+
+  /* Under border-collapse a row's border beats a row group's at equal width, but a cell's beats a row's,
+     so the strong rules go on the cells. */
+  :where(thead > tr:last-child > *) {
+    border-block-end: var(--barely-border-width) solid var(--barely-color-border-strong);
+  }
+
+  :where(tfoot > tr:first-child > *) {
+    border-block-start: var(--barely-border-width) solid var(--barely-color-border-strong);
+  }
+
+  :where(tbody tr:nth-child(even)) {
+    background-color: var(--barely-color-surface);
+  }
+
+  /* Optional scroll wrapper for a table that is truly too wide. Keyboard users scroll it after focusing it. */
+  :where(div[role="region"][tabindex]:has(> table)) {
+    overflow-x: auto;
+    margin-block-end: var(--barely-spacing);
+  }
+
+  :where(div[role="region"][tabindex] > table) {
+    margin-block-end: 0;
+  }
+}
+
+/* ==== code.css ==== */
+@layer base {
+  :where(code, kbd, samp, pre) {
+    font-family: var(--barely-font-mono);
+    font-size: 0.875em;
+  }
+
+  :where(code, samp, kbd) {
+    background-color: var(--barely-color-surface);
+    padding: 0.1em 0.3em;
+    border-radius: calc(var(--barely-radius) * 0.66);
+    overflow-wrap: break-word;
+  }
+
+  :where(kbd) {
+    border: var(--barely-border-width) solid var(--barely-color-border-strong);
+    border-block-end-width: 2px;
+  }
+
+  /* An overflowing pre is a scroll container; Chromium and Firefox make it a tab stop, and the global focus ring covers it. */
+  :where(pre) {
+    background-color: var(--barely-color-surface);
+    padding: var(--barely-spacing);
+    border-radius: var(--barely-radius);
+    overflow-x: auto;
+    line-height: 1.5;
+    tab-size: 4;
+  }
+
+  :where(pre code) {
+    background-color: transparent;
+    padding: 0;
+    border-radius: 0;
+    font-size: inherit;
+    overflow-wrap: normal;
+  }
+}
+
+/* ==== media.css ==== */
+@layer base {
+  :where(img, video) {
+    max-inline-size: 100%;
+    block-size: auto;
+  }
+
+  :where(audio) {
+    display: block;
+    inline-size: 100%;
+  }
+
+  :where(iframe) {
+    max-inline-size: 100%;
+    border: var(--barely-border-width) solid var(--barely-color-border);
+  }
+
+  :where(iframe:not([height])) {
+    inline-size: 100%;
+    aspect-ratio: 16 / 9;
+    block-size: auto;
+  }
+
+  :where(figure) {
+    margin-inline: 0;
+  }
+
+  :where(figcaption) {
+    color: var(--barely-color-text-muted);
+    font-size: 0.875rem;
+    margin-block-start: 0.5rem;
+  }
+}
+
+/* ==== forms.css ==== */
+@layer base {
+  /* Wrapping label: text stacks above the control. The label stays display: block (never grid or flex), so
+     inline content in the label text flows normally and a stretched label can never stretch its control. */
+  :where(label) {
+    display: block;
+    font-weight: 500;
+    font-size: 0.9375rem;
+  }
+
+  /* Helper text after a control: inside a wrapping label, directly in a fieldset, or right after the control of a
+     label linked with for (a span there counts as help text too, as Django's as_p renders it). Link it with aria-describedby. */
+  :where(
+    label > small,
+    fieldset > small,
+    label + :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]), select, textarea) + :is(small, span)
+  ) {
+    display: block;
+    margin-block-start: 0.375rem;
+    font-weight: 400;
+    font-size: 0.875rem;
+    color: var(--barely-color-text-muted);
+  }
+
+  /* Text-like controls: every input type NOT in the exclusion list, so unknown or future types default here.
+     Tasks for choices and form states build on this same selector. */
+  :where(
+    :is(
+      input:not([type="checkbox"], [type="radio"], [type="range"], [type="file"], [type="color"],
+        [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]),
+      select,
+      textarea
+    )
+  ) {
+    appearance: none;
+    inline-size: 100%;
+    min-block-size: var(--barely-control-height);
+    padding: var(--barely-control-padding-block) var(--barely-control-padding-inline);
+    font: inherit;
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--barely-color-text);
+    background-color: var(--barely-control-background, var(--barely-color-background));
+    border: var(--barely-control-border-width) solid var(--barely-color-border-strong);
+    border-radius: var(--barely-control-radius);
+    margin: 0;
+  }
+
+  :where(textarea) {
+    min-block-size: 6.5rem;
+    resize: vertical;
+  }
+
+  :where(input, textarea)::placeholder {
+    color: var(--barely-color-text-muted);
+    opacity: 1;
+  }
+
+  :where(input)::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+  }
+
+  :where(input:is([type="date"], [type="time"], [type="datetime-local"], [type="month"], [type="week"])) {
+    font-variant-numeric: tabular-nums;
+  }
+
+  :where(input:is([type="date"], [type="time"], [type="datetime-local"], [type="month"], [type="week"]))::-webkit-datetime-edit {
+    padding: 0;
+  }
+
+  /* WebKit keeps focus on the inner editable segments of date and time inputs, so the host never matches
+     :focus-visible there. Draw the same ring when focus is anywhere inside. */
+  :where(input:is([type="date"], [type="time"], [type="datetime-local"], [type="month"], [type="week"]):focus-within) {
+    outline: var(--barely-focus-ring-width) solid var(--barely-color-primary);
+    outline-offset: var(--barely-focus-ring-offset);
+  }
+
+  @media (forced-colors: active) {
+    :where(input:is([type="date"], [type="time"], [type="datetime-local"], [type="month"], [type="week"]):focus-within) {
+      outline-color: Highlight;
+    }
+  }
+
+  /* Select: chevron drawn with gradients in currentColor, so it follows the text token in both themes.
+     A list box (multiple, or size above 1) has no drop-down arrow, so it gets no chevron. */
+  :where(select:not([multiple], [size]:not([size="1"]))) {
+    padding-inline-end: calc(var(--barely-control-padding-inline) + 1.25rem);
+    background-image:
+      linear-gradient(45deg, transparent 50%, currentColor 50%),
+      linear-gradient(135deg, currentColor 50%, transparent 50%);
+    background-position:
+      calc(100% - var(--barely-control-padding-inline) - 5px) 52%,
+      calc(100% - var(--barely-control-padding-inline)) 52%;
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+  }
+
+  :where(select) {
+    cursor: pointer;
+  }
+
+  :where(select:not([multiple], [size]:not([size="1"])):dir(rtl)) {
+    background-position:
+      var(--barely-control-padding-inline) 52%,
+      calc(var(--barely-control-padding-inline) + 5px) 52%;
+  }
+
+  /* Fieldset: borderless group; legend reads like a label. */
+  :where(fieldset) {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.5rem;
+    min-inline-size: 0;
+  }
+
+  :where(legend) {
+    padding: 0;
+    margin-block-end: 0.375rem;
+    font-weight: 500;
+    font-size: 0.9375rem;
+  }
+
+  /* Range: native control tinted with accent-color; keeps platform keyboard and assistive technology behavior. */
+  :where(input[type="range"]) {
+    inline-size: 100%;
+    margin: 0;
+    accent-color: var(--barely-color-primary);
+    min-block-size: 1.5rem;
+    cursor: pointer;
+  }
+
+  /* File: the selector button uses the secondary-button look. */
+  :where(input[type="file"]) {
+    inline-size: 100%;
+    font: inherit;
+    font-weight: 400;
+    font-size: 0.9375rem;
+    color: var(--barely-color-text-muted);
+    padding: 0.3125rem;
+    border: var(--barely-control-border-width) dashed var(--barely-color-border-strong);
+    border-radius: var(--barely-control-radius);
+    background: var(--barely-control-background, var(--barely-color-background));
+  }
+
+  :where(input[type="file"])::file-selector-button {
+    font: inherit;
+    font-weight: 500;
+    font-size: 0.9375rem;
+    margin-inline-end: 0.75rem;
+    min-block-size: calc(var(--barely-control-height) - 0.75rem);
+    padding: 0.25rem 0.875rem;
+    color: var(--barely-color-text);
+    background: var(--barely-color-surface);
+    border: var(--barely-control-border-width) solid var(--barely-color-border-strong);
+    border-radius: calc(var(--barely-control-radius) - 0.125rem);
+    cursor: pointer;
+  }
+
+  /* Color: a swatch sized like other controls. */
+  :where(input[type="color"]) {
+    appearance: none;
+    inline-size: 4.5rem;
+    block-size: var(--barely-control-height);
+    padding: 0.3125rem;
+    margin: 0;
+    background: var(--barely-control-background, var(--barely-color-background));
+    cursor: pointer;
+    border: var(--barely-control-border-width) solid var(--barely-color-border-strong);
+    border-radius: var(--barely-control-radius);
+  }
+
+  :where(input[type="color"])::-webkit-color-swatch-wrapper {
+    padding: 0;
+  }
+
+  :where(input[type="color"])::-webkit-color-swatch {
+    border: 0;
+    border-radius: calc(var(--barely-control-radius) - 0.1875rem);
+  }
+
+  :where(input[type="color"])::-moz-color-swatch {
+    border: 0;
+    border-radius: calc(var(--barely-control-radius) - 0.1875rem);
+  }
+
+  /* Control placement: a control directly under its label text, wrapped or placed right after a label linked with
+     for (Flask-WTF, Django), is a block with a small top margin. This section comes after every control's own
+     rules (they all reset the margin) so the margin wins by source order, and it holds the spacing rules, which
+     depend on that order too. A hidden input never counts as a following sibling below, so Django's trailing
+     hidden fields and Flask-WTF's leading CSRF token leave every gap as it was. */
+  :where(
+    label > :is(input:not([type="checkbox"], [type="radio"]), select, textarea),
+    label + :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]), select, textarea)
+  ) {
+    display: block;
+    margin-block-start: 0.375rem;
+  }
+
+  /* Space between fields in a form: --barely-form-gap after each field except the last. Written after the
+     fieldset reset so it wins on fieldset. */
+  :where(form :is(label, fieldset):not(fieldset > *):has(~ :not(input[type="hidden"]))) {
+    margin-block-end: var(--barely-form-gap);
+  }
+
+  /* Fields inside a fieldset get the same total gap. The fieldset's own 0.5rem grid gap already counts, and it
+     stays for rows of checkboxes and radios, so text fields add only the difference. Choice rows add nothing, wrapped
+     (label around the input) or bare (an input, then its label for it). */
+  :where(fieldset > :is(label, fieldset):not(label:has(> input:is([type="checkbox"], [type="radio"])), input:is([type="checkbox"], [type="radio"]) + label):has(~ :not(input[type="hidden"]))) {
+    margin-block-end: calc(var(--barely-form-gap) - 0.5rem);
+  }
+
+  /* A div or p that holds a control is a field (Django as_p and as_div, Flask-WTF field wrappers). It has no
+     bottom margin of its own at the end of the form or fieldset, and the same gap as a label elsewhere. Its inner
+     label and control spacing is untouched, so nothing doubles. A div or p with no control keeps its normal
+     spacing. */
+  :where(:is(form, fieldset) > :is(div, p):has(:is(input:not([type="hidden"]), select, textarea))) {
+    margin-block-end: 0;
+  }
+
+  :where(form > :is(div, p):has(:is(input:not([type="hidden"]), select, textarea)):has(~ :not(input[type="hidden"]))) {
+    margin-block-end: var(--barely-form-gap);
+  }
+
+  :where(fieldset > :is(div, p):has(:is(input:not([type="hidden"]), select, textarea)):has(~ :not(input[type="hidden"]))) {
+    margin-block-end: calc(var(--barely-form-gap) - 0.5rem);
+  }
+
+  /* A label linked with for, placed right before its control (Flask-WTF, Django). It is spaced like a wrapping
+     label: the label sits right above the control, which carries the 0.375rem margin above, and the control
+     carries the form gap to the next field. In a fieldset the grid's 0.5rem gap is already between the two, so the
+     label gives it back. Only text-like and file, range and color controls count: a button, a hidden input or a
+     choice after a label is not this pattern. These come after the gap rules above, so they win by source order. */
+  :where(label:has(+ :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]), select, textarea))) {
+    margin-block-end: 0;
+  }
+
+  :where(fieldset > label:has(+ :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]), select, textarea))) {
+    margin-block-end: -0.5rem;
+  }
+
+  /* The control carries the gap unless a small or span follows it, in which case that help text carries it (next rules). */
+  :where(form label + :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]), select, textarea):has(~ :not(input[type="hidden"])):not(:has(+ :is(small, span)))) {
+    margin-block-end: var(--barely-form-gap);
+  }
+
+  :where(fieldset > label + :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]), select, textarea):has(~ :not(input[type="hidden"]))) {
+    margin-block-end: calc(var(--barely-form-gap) - 0.5rem);
+  }
+
+  /* In a fieldset a control followed by its help text gives back the grid gap, like the label above it does, so the
+     small sits 0.375rem below the control. */
+  :where(fieldset > label + :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]), select, textarea):has(+ :is(small, span))) {
+    margin-block-end: -0.5rem;
+  }
+
+  :where(form label + :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]), select, textarea) + :is(small, span):has(~ :not(input[type="hidden"]))) {
+    margin-block-end: var(--barely-form-gap);
+  }
+
+  :where(fieldset > label + :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]), select, textarea) + :is(small, span):has(~ :not(input[type="hidden"]))) {
+    margin-block-end: calc(var(--barely-form-gap) - 0.5rem);
+  }
+
+  /* Bare choices placed directly in a fieldset (an input, then its label for it): two columns, so each control
+     shares a line with its label and the 0.5rem row gap separates the rows. Anything else in that fieldset spans
+     both columns. A fieldset of wrapped choice labels has no direct input, so it stays as it is. */
+  :where(fieldset:has(> input:is([type="checkbox"], [type="radio"]) + label)) {
+    grid-template-columns: max-content minmax(0, 1fr);
+    column-gap: 0;
+    align-items: start;
+  }
+
+  :where(fieldset:has(> input:is([type="checkbox"], [type="radio"]) + label) > :not(input:is([type="checkbox"], [type="radio"]), input:is([type="checkbox"], [type="radio"]) + label)) {
+    grid-column: 1 / -1;
+  }
+
+  /* Buttons: button, submit and button inputs are primary. Reset is secondary. */
+  :where(button, input:is([type="submit"], [type="reset"], [type="button"])) {
+    appearance: none;
+    margin: 0;
+    font: inherit;
+    font-weight: 500;
+    font-size: 1rem;
+    line-height: 1.5;
+    min-block-size: var(--barely-control-height);
+    padding: var(--barely-control-padding-block) 1.25rem;
+    border-radius: var(--barely-control-radius);
+    border: var(--barely-control-border-width) solid var(--barely-color-primary);
+    background: var(--barely-color-primary);
+    color: var(--barely-color-on-primary);
+    cursor: pointer;
+  }
+
+  :where(button, input:is([type="submit"], [type="button"])):where(:hover:not(:disabled)) {
+    background: var(--barely-color-primary-hover, light-dark(oklch(from var(--barely-color-primary) calc(l - 0.07) c h), oklch(from var(--barely-color-primary) calc(l + 0.07) c h)));
+    border-color: var(--barely-color-primary-hover, light-dark(oklch(from var(--barely-color-primary) calc(l - 0.07) c h), oklch(from var(--barely-color-primary) calc(l + 0.07) c h)));
+  }
+
+  :where(input[type="reset"]) {
+    background: var(--barely-color-surface);
+    color: var(--barely-color-text);
+    border-color: var(--barely-color-border-strong);
+  }
+
+  :where(input[type="reset"]:hover:not(:disabled)) {
+    border-color: var(--barely-color-text-muted);
+  }
+
+  /* Toggle buttons: aria-pressed="true" takes the secondary look, a strong border and an inset top edge (the
+     cue that is not color). The attribute and :not(:disabled) sit outside :where() so this (0,2,0) rule beats the
+     (0,0,0) base and hover rules, and a disabled pressed button falls through to the disabled look. */
+  :where(button)[aria-pressed="true"]:not(:disabled) {
+    background: var(--barely-color-surface);
+    color: var(--barely-color-text);
+    border-color: var(--barely-color-border-strong);
+    box-shadow: inset 0 2px 0 var(--barely-color-border-strong);
+  }
+
+  @media (forced-colors: active) {
+    /* Forced colors removes the gradient chevron; paint it with system colors instead. */
+    /* Forced colors removes box-shadow, so mark the pressed button with the selection colors. */
+    :where(button)[aria-pressed="true"]:not(:disabled) {
+      background-color: Highlight;
+      color: HighlightText;
+      border-color: Highlight;
+    }
+
+    :where(select) {
+      forced-color-adjust: none;
+      color: CanvasText;
+      background-color: Canvas;
+      border-color: ButtonText;
+    }
+  }
+}
+
+/* ==== choices.css ==== */
+@layer base {
+  /* Checkbox, radio, switch: the label sits beside the control instead of above it. The label is a block with a
+     hanging indent (never grid or flex): wrapped lines align with the text, not under the box, and inline content
+     in the label flows normally. Line height 1.6 keeps each row above the 24px target size (WCAG 2.5.8). */
+  :where(label:has(> input:is([type="checkbox"], [type="radio"]))) {
+    display: block;
+    inline-size: fit-content;
+    max-inline-size: 100%;
+    padding-inline-start: calc(var(--barely-check-size) + 0.625rem);
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.6;
+    cursor: pointer;
+  }
+
+  :where(label:has(> input[type="checkbox"][role="switch"])) {
+    padding-inline-start: calc(var(--barely-check-size) * 1.9 + 0.625rem);
+  }
+
+  :where(input:is([type="checkbox"], [type="radio"])) {
+    appearance: none;
+    flex: none;
+    margin-block: 0;
+    margin-inline: 0 0.5rem;
+    /* Aligns on the box itself, so the checked mark can't shift the baseline. */
+    vertical-align: middle;
+    inline-size: var(--barely-check-size);
+    block-size: var(--barely-check-size);
+    display: inline-grid;
+    place-content: center;
+    background: var(--barely-control-background, var(--barely-color-background));
+    border: var(--barely-control-border-width) solid var(--barely-color-border-strong);
+    border-radius: 0.25rem;
+    cursor: pointer;
+  }
+
+  /* A bare choice in a fieldset (forms.css makes that fieldset a two-column grid) is centered on its label's first
+     line: 1.6 line height at 1rem. This sits after the base rule above, which sets margin-block: 0. */
+  :where(fieldset:has(> input:is([type="checkbox"], [type="radio"]) + label) > input:is([type="checkbox"], [type="radio"])) {
+    margin-block-start: calc((1.6rem - var(--barely-check-size)) / 2);
+  }
+
+  /* Inside its label the control is pulled back into the label's start padding, which is what builds the
+     hanging indent. An unwrapped control (a sibling of its label) has no padding to sit in, so it keeps the
+     plain margin above. */
+  :where(label > input:is([type="checkbox"], [type="radio"])) {
+    margin-inline: calc(-1 * (var(--barely-check-size) + 0.625rem)) 0.625rem;
+  }
+
+  /* The label of an unwrapped control (<input id> then <label for>) sits on the same line, like a wrapped one. */
+  :where(input:is([type="checkbox"], [type="radio"]) + label) {
+    display: inline;
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.6;
+    cursor: pointer;
+  }
+
+  :where(input[type="radio"]) {
+    border-radius: 50%;
+  }
+
+  :where(input:is([type="checkbox"], [type="radio"])):is(:checked, :indeterminate) {
+    background: var(--barely-color-primary);
+    border-color: var(--barely-color-primary);
+  }
+
+  :where(input[type="checkbox"]):checked::before {
+    content: "";
+    inline-size: 0.875rem;
+    block-size: 0.875rem;
+    background: var(--barely-color-on-primary);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.5l3 3 7-7' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.5l3 3 7-7' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+  }
+
+  :where(input[type="checkbox"]):indeterminate::before {
+    content: "";
+    inline-size: 0.625rem;
+    block-size: 2px;
+    border-radius: 1px;
+    background: var(--barely-color-on-primary);
+  }
+
+  :where(input[type="radio"]):checked::before {
+    content: "";
+    inline-size: 0.5rem;
+    block-size: 0.5rem;
+    border-radius: 50%;
+    background: var(--barely-color-on-primary);
+  }
+
+  /* Switch: input[type="checkbox"][role="switch"], Pico's convention. An indeterminate switch is not a supported state. */
+  :where(input[type="checkbox"][role="switch"]) {
+    inline-size: calc(var(--barely-check-size) * 1.9);
+    border-radius: 999px;
+    place-content: center start;
+    padding-inline: 2px;
+    background: var(--barely-color-surface);
+  }
+
+  :where(label > input[type="checkbox"][role="switch"]) {
+    margin-inline-start: calc(-1 * (var(--barely-check-size) * 1.9 + 0.625rem));
+  }
+
+  :where(input[type="checkbox"][role="switch"])::before {
+    content: "";
+    inline-size: calc(var(--barely-check-size) - 6px);
+    block-size: calc(var(--barely-check-size) - 6px);
+    border-radius: 50%;
+    background: var(--barely-color-border-strong);
+    -webkit-mask: none;
+    mask: none;
+  }
+
+  :where(input[type="checkbox"][role="switch"]):checked {
+    background: var(--barely-color-primary);
+  }
+
+  /* After the checkbox mark rule, which has the same specificity, so the knob replaces the check. */
+  :where(input[type="checkbox"][role="switch"]):checked::before {
+    inline-size: calc(var(--barely-check-size) - 6px);
+    block-size: calc(var(--barely-check-size) - 6px);
+    border-radius: 50%;
+    background: var(--barely-color-on-primary);
+    -webkit-mask: none;
+    mask: none;
+    translate: calc(var(--barely-check-size) * 1.9 - var(--barely-check-size)) 0;
+  }
+
+  :where(input[type="checkbox"][role="switch"]):checked:dir(rtl)::before {
+    translate: calc((var(--barely-check-size) * 1.9 - var(--barely-check-size)) * -1) 0;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :where(input[type="checkbox"][role="switch"])::before {
+      transition: translate 140ms ease;
+    }
+  }
+
+  /* Spacing. A choice label placed directly in a form is a plain form field, so the form rule gives it
+     --barely-form-gap below, the same as a text field. Inside a fieldset the grid gap is 0.5rem and choice rows
+     add nothing, so a text field or nested fieldset that FOLLOWS a choice row adds the difference above itself. */
+  :where(
+    fieldset > label:has(> input:is([type="checkbox"], [type="radio"]))
+      + :is(label:not(:has(> input:is([type="checkbox"], [type="radio"]))), fieldset)
+  ) {
+    margin-block-start: calc(var(--barely-form-gap) - 0.5rem);
+  }
+
+  /* Forced colors: keep the custom drawing, but paint it with system colors.
+     forced-color-adjust: none stops the browser from blanking the mask-drawn parts. */
+  @media (forced-colors: active) {
+    :where(input:is([type="checkbox"], [type="radio"])) {
+      forced-color-adjust: none;
+      background: Canvas;
+      border-color: ButtonText;
+    }
+
+    :where(input:is([type="checkbox"], [type="radio"])):is(:checked, :indeterminate) {
+      background: Highlight;
+      border-color: Highlight;
+    }
+
+    :where(input[type="checkbox"]):is(:checked, :indeterminate)::before,
+    :where(input[type="radio"]):checked::before {
+      background: HighlightText;
+    }
+
+    :where(input[type="checkbox"][role="switch"])::before {
+      background: ButtonText;
+    }
+
+    :where(input[type="checkbox"][role="switch"]):checked::before {
+      background: HighlightText;
+    }
+
+    :where(input:is([type="checkbox"], [type="radio"])):focus-visible {
+      outline-color: Highlight;
+    }
+  }
+}
+
+/* ==== form-states.css ==== */
+@layer base {
+  /* Focus. The outline comes from the global focus rule in base.css and is never removed. Here the border also
+     turns primary on text-like controls. WebKit never matches :focus-visible on the host of a date or time
+     input, so those use :focus-within, as the ring in forms.css does. */
+  :where(
+    :is(input, select, textarea):focus-visible:not([type="checkbox"], [type="radio"], [type="range"], [type="color"]),
+    input:is([type="date"], [type="time"], [type="datetime-local"], [type="month"], [type="week"]):focus-within
+  ) {
+    border-color: var(--barely-color-primary);
+  }
+
+  /* Read-only: surface fill and a dashed border, so it is not color alone. Uses [readonly] because :read-only
+     also matches checkboxes. */
+  :where(:is(input:not([type="checkbox"], [type="radio"]), textarea)[readonly]) {
+    background-color: var(--barely-color-surface);
+    border-style: dashed;
+  }
+
+  /* Disabled. */
+  :where(:is(input, select, textarea):disabled) {
+    background-color: var(--barely-color-surface);
+    color: var(--barely-color-text-muted);
+    border-color: var(--barely-color-border);
+    cursor: not-allowed;
+  }
+
+  :where(label:has(> :disabled)) {
+    color: var(--barely-color-text-muted);
+    cursor: not-allowed;
+  }
+
+  /* The state pseudo-classes sit outside :where() so these rules are (0,1,0), the same as the checked rules in
+     choices.css, and win by source order. */
+  :where(input:is([type="checkbox"], [type="radio"])):disabled {
+    background: var(--barely-color-surface);
+    border-color: var(--barely-color-border);
+  }
+
+  :where(input:is([type="checkbox"], [type="radio"])):disabled:is(:checked, :indeterminate) {
+    background: var(--barely-color-border-strong);
+    border-color: var(--barely-color-border-strong);
+  }
+
+  :where(button, input:is([type="submit"], [type="reset"], [type="button"])):where(:disabled) {
+    background: var(--barely-color-surface);
+    color: var(--barely-color-text-muted);
+    border-color: var(--barely-color-border);
+    cursor: not-allowed;
+  }
+
+  /* A focused invalid or valid field keeps its danger or success border on purpose; it does not switch to primary.
+     Invalid: native :user-invalid (after the user interacts) or a server-rendered aria-invalid="true".
+     A thicker border and an icon on the following message, so it is not color alone. The inline-start padding
+     gives back the extra border width, so the text does not move. */
+  :where(:is(input, select, textarea):is(:user-invalid, [aria-invalid="true"]):not([type="checkbox"], [type="radio"])) {
+    border-color: var(--barely-color-danger);
+    border-width: var(--barely-control-border-width-invalid);
+    padding-inline-start: calc(var(--barely-control-padding-inline) - (var(--barely-control-border-width-invalid) - var(--barely-control-border-width)));
+  }
+
+  :where(input:is([type="checkbox"], [type="radio"])):is(:user-invalid, [aria-invalid="true"]) {
+    border-color: var(--barely-color-danger);
+    border-width: var(--barely-control-border-width-invalid);
+  }
+
+  :where(:is(input, select, textarea):is(:user-invalid, [aria-invalid="true"])) + small {
+    color: var(--barely-color-danger);
+  }
+
+  /* Valid: only a server-rendered aria-invalid="false". :user-valid is left unstyled. */
+  :where(:is(input, select, textarea)[aria-invalid="false"]:not([type="checkbox"], [type="radio"])) {
+    border-color: var(--barely-color-success);
+  }
+
+  :where(:is(input, select, textarea)[aria-invalid="false"]) + small {
+    color: var(--barely-color-success);
+  }
+
+  /* Status icons: data-URI masks painted with currentColor, so they follow the message color. */
+  :where(:is(input, select, textarea):is(:user-invalid, [aria-invalid="true"], [aria-invalid="false"])) + small {
+    display: flex;
+    gap: 0.375rem;
+    align-items: flex-start;
+  }
+
+  :where(:is(input, select, textarea):is(:user-invalid, [aria-invalid="true"])) + small::before,
+  :where(:is(input, select, textarea)[aria-invalid="false"]) + small::before {
+    content: "";
+    flex: none;
+    inline-size: 1em;
+    block-size: 1em;
+    margin-block-start: 0.2em;
+    background: currentColor;
+    -webkit-mask: var(--_barely-icon) center / contain no-repeat;
+    mask: var(--_barely-icon) center / contain no-repeat;
+  }
+
+  :where(:is(input, select, textarea):is(:user-invalid, [aria-invalid="true"])) + small {
+    --_barely-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6.5' fill='none' stroke='black' stroke-width='1.6'/%3E%3Cpath d='M8 4.5v4.2' stroke='black' stroke-width='1.8' stroke-linecap='round'/%3E%3Ccircle cx='8' cy='11.3' r='1' fill='black'/%3E%3C/svg%3E");
+  }
+
+  :where(:is(input, select, textarea)[aria-invalid="false"]) + small {
+    --_barely-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6.5' fill='none' stroke='black' stroke-width='1.6'/%3E%3Cpath d='M5 8.3l2 2 4-4.3' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  }
+
+  @media (forced-colors: active) {
+    /* Forced colors blanks mask fills; paint the icons with a system color. */
+    :where(:is(input, select, textarea):is(:user-invalid, [aria-invalid="true"])) + small::before,
+    :where(:is(input, select, textarea)[aria-invalid="false"]) + small::before {
+      forced-color-adjust: none;
+      background: CanvasText;
+    }
+
+    /* Forced-color-adjust: none (choices.css) would make a disabled choice look enabled, so mark it with GrayText.
+       These live here, after the non-forced disabled rules above, so they win at equal specificity. */
+    :where(input:is([type="checkbox"], [type="radio"])):disabled {
+      background: Canvas;
+      border-color: GrayText;
+    }
+
+    :where(input:is([type="checkbox"], [type="radio"])):disabled:is(:checked, :indeterminate) {
+      background: GrayText;
+      border-color: GrayText;
+    }
+
+    /* Forced-color-adjust: none (choices.css) also keeps the author's danger border, which beats the forced
+       ButtonText border at equal specificity. Paint it with ButtonText; the 2px width still marks the state. */
+    :where(input:is([type="checkbox"], [type="radio"])):is(:user-invalid, [aria-invalid="true"]) {
+      border-color: ButtonText;
+    }
+
+    /* The select sets forced-color-adjust: none in forms.css, so the browser's own disabled treatment is off. */
+    :where(select:disabled) {
+      color: GrayText;
+      border-color: GrayText;
+    }
+  }
+}
+
+/* ==== interactive.css ==== */
+@layer base {
+  /* details: a ruled disclosure. Adjacent ones share a rule. The native marker stays. */
+  :where(details) {
+    border-block: var(--barely-border-width) solid var(--barely-color-border);
+  }
+
+  :where(details + details) {
+    border-block-start: 0;
+  }
+
+  :where(summary) {
+    cursor: pointer;
+    padding-block: 0.5rem;
+    font-weight: 600;
+  }
+
+  :where(details[open]) {
+    padding-block-end: var(--barely-spacing);
+  }
+
+  /* dialog and popover: a raised surface. */
+  :where(dialog, [popover]) {
+    background-color: var(--barely-color-background);
+    color: var(--barely-color-text);
+    border: var(--barely-border-width) solid var(--barely-color-border);
+    border-radius: var(--barely-radius);
+    box-shadow: var(--barely-shadow);
+    padding: calc(var(--barely-spacing) * 1.5);
+    max-inline-size: min(var(--barely-reading-width), 100% - 2 * var(--barely-page-padding-inline));
+  }
+
+  dialog::backdrop {
+    background-color: oklch(from var(--barely-color-text) l c h / 0.45);
+  }
+
+  /* progress and meter: a pill track. The track is the element itself (appearance: none). */
+  :where(progress:not(:indeterminate), meter) {
+    appearance: none;
+    inline-size: 100%;
+    block-size: 0.75rem;
+    border-radius: 999px;
+    overflow: hidden;
+    background: var(--barely-color-surface);
+    border: var(--barely-border-width) solid var(--barely-color-border-strong);
+    vertical-align: middle;
+  }
+
+  /* Indeterminate progress is left to the browser: appearance: none would remove its native animation.
+     accent-color tints it with the primary color. */
+  :where(progress:indeterminate) {
+    accent-color: var(--barely-color-primary);
+  }
+
+  /* Each engine's pseudo-elements get their own rule: one unknown pseudo-element invalidates a whole list. */
+  :where(progress)::-webkit-progress-bar {
+    background-color: transparent;
+  }
+
+  :where(progress)::-webkit-progress-value {
+    background-color: var(--barely-color-primary);
+  }
+
+  :where(progress)::-moz-progress-bar {
+    background-color: var(--barely-color-primary);
+  }
+
+  :where(meter)::-webkit-meter-inner-element {
+    /* Chromium sizes the fill from this box and leaves it about half the track high; stretching it in a flex row fills the interior. */
+    display: flex;
+    align-items: stretch;
+  }
+
+  :where(meter)::-webkit-meter-bar {
+    background: transparent;
+    border: 0;
+    block-size: 100%;
+    flex: 1;
+  }
+
+  :where(meter)::-webkit-meter-optimum-value {
+    background: var(--barely-color-success);
+  }
+
+  :where(meter)::-webkit-meter-suboptimum-value {
+    background: var(--barely-color-warning);
+  }
+
+  :where(meter)::-webkit-meter-even-less-good-value {
+    background: var(--barely-color-danger);
+  }
+
+  :where(meter):-moz-meter-optimum::-moz-meter-bar {
+    background: var(--barely-color-success);
+  }
+
+  :where(meter):-moz-meter-sub-optimum::-moz-meter-bar {
+    background: var(--barely-color-warning);
+  }
+
+  :where(meter):-moz-meter-sub-sub-optimum::-moz-meter-bar {
+    background: var(--barely-color-danger);
+  }
+
+  @media (forced-colors: active) {
+    :where(progress:not(:indeterminate), meter) {
+      forced-color-adjust: none;
+      background: Canvas;
+      border-color: ButtonText;
+    }
+
+    :where(progress)::-webkit-progress-value {
+      background-color: Highlight;
+    }
+
+    :where(progress)::-moz-progress-bar {
+      background-color: Highlight;
+    }
+
+    :where(meter)::-webkit-meter-optimum-value,
+    :where(meter)::-webkit-meter-suboptimum-value,
+    :where(meter)::-webkit-meter-even-less-good-value {
+      background: Highlight;
+    }
+
+    :where(meter):-moz-meter-optimum::-moz-meter-bar,
+    :where(meter):-moz-meter-sub-optimum::-moz-meter-bar,
+    :where(meter):-moz-meter-sub-sub-optimum::-moz-meter-bar {
+      background: Highlight;
+    }
+  }
+}

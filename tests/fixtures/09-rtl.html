@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>التسجيل في دورة تطوير الويب</title>
+  <link rel="stylesheet" href="../../dist/barely.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <ul><li><a href="09-rtl.html">أكاديمية النور</a></li></ul>
+      <ul><li><a href="09-rtl.html">الدورات</a></li><li><a href="09-rtl.html">المدربون</a></li><li><a href="09-rtl.html">اتصل بنا</a></li></ul>
+    </nav>
+  </header>
+  <main>
+    <nav aria-label="مسار التنقل">
+      <ol>
+        <li><a href="09-rtl.html">الرئيسية</a></li>
+        <li><a href="09-rtl.html">الدورات</a></li>
+        <li aria-current="page">تطوير الويب</li>
+      </ol>
+    </nav>
+    <h1>التسجيل في دورة تطوير الويب</h1>
+    <p>تبدأ الدورة في السابع من سبتمبر وتستمر اثني عشر أسبوعا. ستتعلم كتابة صفحات ويب واضحة باستخدام لغة HTML وتنسيقها باستخدام CSS، ثم تبني موقعا كاملا في المشروع الأخير. لا تحتاج إلى خبرة سابقة.</p>
+    <blockquote>
+      <p>التعلم رحلة طويلة، لكن كل خطوة صغيرة تقربك من الهدف.</p>
+      <footer>من كلمة المدربة في الحصة الأولى</footer>
+    </blockquote>
+    <h2>جدول الدورة</h2>
+    <div role="region" tabindex="0" aria-label="جدول الدورة، يمكن تمريره أفقيا">
+      <table>
+        <caption>جدول الأسابيع والمواضيع</caption>
+        <thead>
+          <tr>
+            <th scope="col">الأسبوع</th>
+            <th scope="col">الموضوع</th>
+            <th scope="col">المدرب</th>
+            <th scope="col">عدد الساعات</th>
+            <th scope="col">الرسوم بالدولار</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">الأول</th><td>أساسيات HTML</td><td>ليلى حداد</td><td>6</td><td>120</td></tr>
+          <tr><th scope="row">الثاني</th><td>تنسيق الصفحات بلغة CSS</td><td>ليلى حداد</td><td>6</td><td>120</td></tr>
+          <tr><th scope="row">الثالث</th><td>تصميم يناسب شاشات الهاتف</td><td>كريم منصور</td><td>8</td><td>160</td></tr>
+          <tr><th scope="row">الرابع</th><td>النماذج وإمكانية الوصول</td><td>سارة العلي</td><td>8</td><td>160</td></tr>
+        </tbody>
+        <tfoot>
+          <tr><th scope="row">المجموع</th><td></td><td></td><td>28</td><td>560</td></tr>
+        </tfoot>
+      </table>
+    </div>
+    <h2>نموذج التسجيل</h2>
+    <form action="09-rtl.html" method="post">
+      <fieldset>
+        <legend>بياناتك</legend>
+        <label for="name">الاسم الكامل
+          <input id="name" type="text" name="name" autocomplete="name" value="منى الخطيب" required>
+        </label>
+        <label for="email">البريد الإلكتروني
+          <input id="email" type="email" name="email" autocomplete="email" value="mona@example.org" required aria-describedby="email-help">
+          <small id="email-help">سنرسل إليك تفاصيل الدورة على هذا البريد.</small>
+        </label>
+        <label for="phone">رقم الهاتف
+          <input id="phone" type="tel" name="phone" autocomplete="tel" value="0500000000" aria-invalid="true" aria-describedby="phone-error">
+          <small id="phone-error">رقم الهاتف قصير، تأكد من كتابته كاملا.</small>
+        </label>
+        <label for="level">مستواك الحالي
+          <select id="level" name="level">
+            <option>مبتدئ</option>
+            <option selected>متوسط</option>
+            <option>متقدم</option>
+          </select>
+        </label>
+        <label for="notes">ماذا تريد أن تبني؟
+          <textarea id="notes" name="notes">أريد إنشاء موقع صغير لعرض أعمالي الفنية.</textarea>
+        </label>
+      </fieldset>
+      <fieldset>
+        <legend>طريقة الحضور</legend>
+        <label for="m1"><input id="m1" type="radio" name="mode" value="in" checked> حضوري في القاعة</label>
+        <label for="m2"><input id="m2" type="radio" name="mode" value="online"> عن بعد</label>
+      </fieldset>
+      <fieldset>
+        <legend>التنبيهات</legend>
+        <label for="n1"><input id="n1" type="checkbox" name="notify" value="news" checked> أخبار الدورة</label>
+        <label for="n2"><input id="n2" type="checkbox" role="switch" name="remind" checked> تذكير أسبوعي بالمواعيد</label>
+      </fieldset>
+      <p>
+        <button type="submit">إرسال الطلب</button>
+        <button type="reset">مسح الحقول</button>
+      </p>
+    </form>
+    <details>
+      <summary>هل يمكن استرداد الرسوم؟</summary>
+      <p>نعم، يمكنك استرداد الرسوم كاملة خلال الأسبوع الأول من الدورة.</p>
+    </details>
+  </main>
+  <footer>
+    <p>أكاديمية النور، شارع الجامعة. <a href="09-rtl.html">سياسة الخصوصية</a></p>
+  </footer>
+</body>
+</html>

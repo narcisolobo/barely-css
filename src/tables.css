@@ -1,0 +1,55 @@
+@layer base {
+  /* The table keeps its native display: table, so assistive technology keeps its table semantics. */
+  :where(table) {
+    inline-size: 100%;
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+  }
+
+  :where(caption) {
+    caption-side: top;
+    text-align: start;
+    padding-block-end: 0.5rem;
+    color: var(--barely-color-text-muted);
+  }
+
+  /* Cells wrap at natural word boundaries only. A table may grow wider than its container when its content
+     needs it; the optional scroll wrapper below contains that overflow without breaking words. */
+  :where(th, td) {
+    padding: 0.5rem 0.75rem;
+    text-align: start;
+    vertical-align: top;
+  }
+
+  :where(th) {
+    font-weight: bold;
+  }
+
+  :where(tr) {
+    border-block-end: var(--barely-border-width) solid var(--barely-color-border);
+  }
+
+  /* Under border-collapse a row's border beats a row group's at equal width, but a cell's beats a row's,
+     so the strong rules go on the cells. */
+  :where(thead > tr:last-child > *) {
+    border-block-end: var(--barely-border-width) solid var(--barely-color-border-strong);
+  }
+
+  :where(tfoot > tr:first-child > *) {
+    border-block-start: var(--barely-border-width) solid var(--barely-color-border-strong);
+  }
+
+  :where(tbody tr:nth-child(even)) {
+    background-color: var(--barely-color-surface);
+  }
+
+  /* Optional scroll wrapper for a table that is truly too wide. Keyboard users scroll it after focusing it. */
+  :where(div[role="region"][tabindex]:has(> table)) {
+    overflow-x: auto;
+    margin-block-end: var(--barely-spacing);
+  }
+
+  :where(div[role="region"][tabindex] > table) {
+    margin-block-end: 0;
+  }
+}

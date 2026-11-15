@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Assignment: Integration Testing with Mocked APIs (Required)</title>
+    <link rel="stylesheet" href="../../dist/barely.css">
+  </head>
+
+  <body>
+    <main>
+      <h1>Assignment: Integration Testing with Mocked APIs (Required)</h1>
+      <p>
+        In this assignment, you'll write <strong>integration tests</strong> for
+        the Extract stage of your pipeline. You'll simulate API responses so
+        tests are <em>fast</em>, <em>deterministic</em>, and
+        <em>offline‑safe</em>, while still verifying that multiple modules
+        cooperate correctly.
+      </p>
+
+      <hr />
+
+      <h2>Goal</h2>
+      <ul>
+        <li>Understand what integration testing validates vs. unit testing.</li>
+        <li>Use <code>requests-mock</code> to fake HTTP responses.</li>
+        <li>Test the Extract → Transform boundary with realistic JSON.</li>
+        <li>Write negative-path tests (non‑200 responses, timeouts).</li>
+      </ul>
+
+      <hr />
+
+      <h2>Prerequisites</h2>
+      <ul>
+        <li>Virtual environment active; dependencies installed.</li>
+        <li>
+          Why Test? Intro to pytest, Pipeline Setup and Code Review, Writing
+          Unit Tests for the Transform Stage, Unit Testing the Analyze Stage
+          completed.
+        </li>
+        <li>
+          <code>extract.py</code> defines
+          <code>extract(url: str, access_token: str) -&gt; dict | None</code>
+          and calls <code>requests.get(...).raise_for_status()</code>.
+        </li>
+      </ul>
+
+      <hr />
+
+      <h2>Why Mock External APIs?</h2>
+      <p>
+        Integration tests verify that <em>your code</em> works across module
+        boundaries (e.g., Extract → Transform), without depending on the
+        network. We mock the API so the only thing being tested is your logic.
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th
+              scope="col">
+              <strong>Test Type</strong>
+            </th>
+            <th scope="col">
+              <strong>What it checks</strong>
+            </th>
+            <th scope="col">
+              <strong>External calls</strong>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">
+              <strong>Unit</strong>
+            </th>
+            <td>
+              One function's logic in isolation (no I/O).
+            </td>
+            <td>None</td>
+          </tr>
+          <tr>
+            <th scope="row">
+              <strong>Integration</strong>
+            </th>
+            <td>
+              How two or more modules work together (e.g., Extract → Transform).
+            </td>
+            <td>
+              External services are <strong>mocked</strong>.
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">
+              <strong>E2E</strong>
+            </th>
+            <td>
+              Full pipeline behavior and side effects.
+            </td>
+            <td>
+              Real services or full simulated pipeline (mocked APIs only where
+              necessary).
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <hr />
+
+      <h2>Guided Example — Mocking a Generic HTTP <code>GET</code></h2>
+      <p>
+        First, ignore your pipeline and practice mocking a simple HTTP call
+        directly. This keeps the concept focused. We'll use a made‑up endpoint
+        (<code>https://api.example.com/widgets/42</code>) and assert the JSON
+        returned by <code>requests.get</code> is what we expect.
+      </p>
+
+      <h3>Step 1 — Install the mocking tool</h3>
+      <pre><code>pip install requests-mock</code></pre>
+
+      <h3>Step 2 — Your first mocked API test (stand‑alone)</h3>
+      <p>
+        <strong>File:</strong> <code>tests/test_extract_integration.py</code>
+      </p>
+      <pre><code>import requests
+import requests_mock
+
+
+def test_requests_get_returns_expected_json():
+    url = "https://api.example.com/widgets/42"
+    fake_json = {"id": 42, "name": "Widget", "price": 9.99}
+
+    with requests_mock.Mocker() as m:
+        m.get(url, json=fake_json, status_code=200)
+        resp = requests.get(url)
+        assert resp.status_code == 200
+        assert resp.json() == fake_json
+</code></pre>
+
+      <hr />
+
+      <h2>
+        Apply It — Test <code>extract(url, access_token)</code> from Your
+        Project
+      </h2>
+      <p>
+        Now adapt the same idea to your real extractor in
+        <code>extract.py</code>. Your function signature is:
+      </p>
+      <pre><code>def extract(url: str, access_token: str) -&gt; dict | None:
+    ...
+    headers = {"Authorization": f"Bearer {access_token}"}
+    response = requests.get(url, headers=headers)
+    response.raise_for_status()
+    return response.json()
+</code></pre>
+
+      <p>Write a test that:</p>
+      <ul>
+        <li>
+          Mocks a success response and asserts the returned <code>dict</code> is
+          correct.
+        </li>
+        <li>
+          Optionally verifies that an
+          <code>Authorization: Bearer ...</code> header was sent.
+        </li>
+        <li>
+          Asserts that non‑200 responses trigger your error path and return
+          <code>None</code>.
+        </li>
+      </ul>
+
+      <details>
+        <summary><strong>Hint — success path</strong></summary>
+        <!-- Pseudo-code representation -->
+        <pre><code># Arrange: url, token, and a fake JSON payload
+# Act: mock GET(url) to return (200, json=fake)
+# Assert: extract(url, token) == fake
+</code></pre>
+      </details>
+
+      <details>
+        <summary><strong>Hint — header assertion</strong></summary>
+        <!-- Pseudo-code representation -->
+        <pre><code># requests-mock allows inspection via m.request_history
+# After calling extract(url, token), inspect the last request:
+#   req = m.request_history[-1]
+#   assert req.headers["Authorization"].startswith("Bearer ")
+</code></pre>
+      </details>
+
+      <details>
+        <summary><strong>Hint — error paths (404/timeout)</strong></summary>
+        <!-- Pseudo-code representation -->
+        <pre><code># 404: m.get(url, status_code=404) → extract(url, token) returns None
+# timeout: m.get(url, exc=requests.exceptions.Timeout) → returns None
+</code></pre>
+      </details>
+
+      <hr />
+
+      <h2>Optional — Extract → Transform Boundary Test</h2>
+      <p>
+        If you'd like to go one step further, you can build a tiny
+        <em>cart‑shaped</em> payload that matches what your
+        <code>transform()</code> expects and confirm the DataFrame is created
+        correctly.
+      </p>
+      <details>
+        <summary><strong>Hint</strong></summary>
+        <!-- Pseudo-code representation -->
+        <pre><code># Arrange: fake_cart = {"id": 1, "userId": 99, "products": [ ... ]}
+# Mock GET(cart_url) → fake_cart
+# Act: raw = extract(cart_url, token); df = transform(raw)
+# Assert: df is not empty; required columns are present
+</code></pre>
+      </details>
+
+      <hr />
+
+      <h2>Base Level Requirements</h2>
+      <ol>
+        <li>Create <code>tests/test_extract_integration.py</code>.</li>
+        <li>
+          Write the stand‑alone <em>requests.get</em> mock test to prove you
+          understand the concept.
+        </li>
+        <li>
+          Write tests for your real
+          <code>extract(url, access_token)</code> function (success + one error
+          path).
+        </li>
+        <li>Run <code>pytest -v</code> and confirm all tests pass.</li>
+      </ol>
+
+      <hr />
+
+      <h2>Jam-Master Challenges (Optional)</h2>
+      <ul>
+        <li>
+          Assert the <code>Authorization</code> header is sent when a token is
+          provided.
+        </li>
+        <li>Parametrize the test with multiple URLs and payloads.</li>
+        <li>Assert that exactly one HTTP request is made per extraction.</li>
+        <li>
+          Record and assert timing: the mocked request must complete &lt; 50ms.
+        </li>
+        <li>Add a regression test that locks in the JSON keys you rely on.</li>
+      </ul>
+
+      <hr />
+
+      <h2>Summary</h2>
+      <ul>
+        <li>
+          Integration tests validate cooperation between modules without
+          touching real networks.
+        </li>
+        <li>Mocked responses make tests fast, reliable, and deterministic.</li>
+        <li>
+          You now have confidence that <code>extract()</code> behaves correctly
+          and can feed <code>transform()</code> when needed.
+        </li>
+      </ul>
+
+      <hr />
+
+      <h2>What's Next?</h2>
+      <p>
+        In the next lesson you'll test database writes in
+        <code>load.py</code> using a temporary SQLite database, and then bring
+        everything together in an end‑to‑end test.
+      </p>
+    </main>
+  </body>
+</html>

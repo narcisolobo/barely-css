@@ -1,0 +1,138 @@
+@layer base {
+  /* Focus. The outline comes from the global focus rule in base.css and is never removed. Here the border also
+     turns primary on text-like controls. WebKit never matches :focus-visible on the host of a date or time
+     input, so those use :focus-within, as the ring in forms.css does. */
+  :where(
+    :is(input, select, textarea):focus-visible:not([type="checkbox"], [type="radio"], [type="range"], [type="color"]),
+    input:is([type="date"], [type="time"], [type="datetime-local"], [type="month"], [type="week"]):focus-within
+  ) {
+    border-color: var(--barely-color-primary);
+  }
+
+  /* Read-only: surface fill and a dashed border, so it is not color alone. Uses [readonly] because :read-only
+     also matches checkboxes. */
+  :where(:is(input:not([type="checkbox"], [type="radio"]), textarea)[readonly]) {
+    background-color: var(--barely-color-surface);
+    border-style: dashed;
+  }
+
+  /* Disabled. */
+  :where(:is(input, select, textarea):disabled) {
+    background-color: var(--barely-color-surface);
+    color: var(--barely-color-text-muted);
+    border-color: var(--barely-color-border);
+    cursor: not-allowed;
+  }
+
+  :where(label:has(> :disabled)) {
+    color: var(--barely-color-text-muted);
+    cursor: not-allowed;
+  }
+
+  /* The state pseudo-classes sit outside :where() so these rules are (0,1,0), the same as the checked rules in
+     choices.css, and win by source order. */
+  :where(input:is([type="checkbox"], [type="radio"])):disabled {
+    background: var(--barely-color-surface);
+    border-color: var(--barely-color-border);
+  }
+
+  :where(input:is([type="checkbox"], [type="radio"])):disabled:is(:checked, :indeterminate) {
+    background: var(--barely-color-border-strong);
+    border-color: var(--barely-color-border-strong);
+  }
+
+  :where(button, input:is([type="submit"], [type="reset"], [type="button"])):where(:disabled) {
+    background: var(--barely-color-surface);
+    color: var(--barely-color-text-muted);
+    border-color: var(--barely-color-border);
+    cursor: not-allowed;
+  }
+
+  /* A focused invalid or valid field keeps its danger or success border on purpose; it does not switch to primary.
+     Invalid: native :user-invalid (after the user interacts) or a server-rendered aria-invalid="true".
+     A thicker border and an icon on the following message, so it is not color alone. The inline-start padding
+     gives back the extra border width, so the text does not move. */
+  :where(:is(input, select, textarea):is(:user-invalid, [aria-invalid="true"]):not([type="checkbox"], [type="radio"])) {
+    border-color: var(--barely-color-danger);
+    border-width: var(--barely-control-border-width-invalid);
+    padding-inline-start: calc(var(--barely-control-padding-inline) - (var(--barely-control-border-width-invalid) - var(--barely-control-border-width)));
+  }
+
+  :where(input:is([type="checkbox"], [type="radio"])):is(:user-invalid, [aria-invalid="true"]) {
+    border-color: var(--barely-color-danger);
+    border-width: var(--barely-control-border-width-invalid);
+  }
+
+  :where(:is(input, select, textarea):is(:user-invalid, [aria-invalid="true"])) + small {
+    color: var(--barely-color-danger);
+  }
+
+  /* Valid: only a server-rendered aria-invalid="false". :user-valid is left unstyled. */
+  :where(:is(input, select, textarea)[aria-invalid="false"]:not([type="checkbox"], [type="radio"])) {
+    border-color: var(--barely-color-success);
+  }
+
+  :where(:is(input, select, textarea)[aria-invalid="false"]) + small {
+    color: var(--barely-color-success);
+  }
+
+  /* Status icons: data-URI masks painted with currentColor, so they follow the message color. */
+  :where(:is(input, select, textarea):is(:user-invalid, [aria-invalid="true"], [aria-invalid="false"])) + small {
+    display: flex;
+    gap: 0.375rem;
+    align-items: flex-start;
+  }
+
+  :where(:is(input, select, textarea):is(:user-invalid, [aria-invalid="true"])) + small::before,
+  :where(:is(input, select, textarea)[aria-invalid="false"]) + small::before {
+    content: "";
+    flex: none;
+    inline-size: 1em;
+    block-size: 1em;
+    margin-block-start: 0.2em;
+    background: currentColor;
+    -webkit-mask: var(--_barely-icon) center / contain no-repeat;
+    mask: var(--_barely-icon) center / contain no-repeat;
+  }
+
+  :where(:is(input, select, textarea):is(:user-invalid, [aria-invalid="true"])) + small {
+    --_barely-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6.5' fill='none' stroke='black' stroke-width='1.6'/%3E%3Cpath d='M8 4.5v4.2' stroke='black' stroke-width='1.8' stroke-linecap='round'/%3E%3Ccircle cx='8' cy='11.3' r='1' fill='black'/%3E%3C/svg%3E");
+  }
+
+  :where(:is(input, select, textarea)[aria-invalid="false"]) + small {
+    --_barely-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6.5' fill='none' stroke='black' stroke-width='1.6'/%3E%3Cpath d='M5 8.3l2 2 4-4.3' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  }
+
+  @media (forced-colors: active) {
+    /* Forced colors blanks mask fills; paint the icons with a system color. */
+    :where(:is(input, select, textarea):is(:user-invalid, [aria-invalid="true"])) + small::before,
+    :where(:is(input, select, textarea)[aria-invalid="false"]) + small::before {
+      forced-color-adjust: none;
+      background: CanvasText;
+    }
+
+    /* Forced-color-adjust: none (choices.css) would make a disabled choice look enabled, so mark it with GrayText.
+       These live here, after the non-forced disabled rules above, so they win at equal specificity. */
+    :where(input:is([type="checkbox"], [type="radio"])):disabled {
+      background: Canvas;
+      border-color: GrayText;
+    }
+
+    :where(input:is([type="checkbox"], [type="radio"])):disabled:is(:checked, :indeterminate) {
+      background: GrayText;
+      border-color: GrayText;
+    }
+
+    /* Forced-color-adjust: none (choices.css) also keeps the author's danger border, which beats the forced
+       ButtonText border at equal specificity. Paint it with ButtonText; the 2px width still marks the state. */
+    :where(input:is([type="checkbox"], [type="radio"])):is(:user-invalid, [aria-invalid="true"]) {
+      border-color: ButtonText;
+    }
+
+    /* The select sets forced-color-adjust: none in forms.css, so the browser's own disabled treatment is off. */
+    :where(select:disabled) {
+      color: GrayText;
+      border-color: GrayText;
+    }
+  }
+}

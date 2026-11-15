@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Data-heavy table</title>
+  <link rel="stylesheet" href="../../dist/barely.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <ul><li><a href="05-table.html">Greenfield Co-op</a></li></ul>
+      <ul><li><a href="05-table.html">Reports</a></li><li><a href="05-table.html">Members</a></li></ul>
+    </nav>
+  </header>
+  <main>
+    <h1>Quarterly produce sales</h1>
+    <p>Sales, costs and margins for the co-op market stall, by product, for the first quarter of 2026. Figures are in dollars unless a column says otherwise. Scroll sideways on a narrow screen to see every column.</p>
+    <div role="region" tabindex="0" aria-label="Quarterly produce sales, scrolls sideways">
+      <table>
+        <caption>Produce sales, January to March 2026</caption>
+        <thead>
+          <tr>
+            <th scope="col">Product</th>
+            <th scope="col">Supplier</th>
+            <th scope="col">Units sold</th>
+            <th scope="col">Price per unit</th>
+            <th scope="col">Revenue</th>
+            <th scope="col">Cost</th>
+            <th scope="col">Margin</th>
+            <th scope="col">Returned</th>
+            <th scope="col">Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Rainbow carrots, 1 kg</th><td>Hill Farm</td><td>1,240</td><td>3.50</td><td>4,340.00</td><td>2,480.00</td><td>42.8%</td><td>14</td><td>Best seller in February</td></tr>
+          <tr><th scope="row">Free-range eggs, dozen</th><td>Marsh Lane Poultry</td><td>2,015</td><td>5.20</td><td>10,478.00</td><td>7,052.50</td><td>32.7%</td><td>31</td><td>Price rose in March</td></tr>
+          <tr><th scope="row">Sourdough loaf</th><td>Slow Kitchen Bakery</td><td>860</td><td>6.80</td><td>5,848.00</td><td>3,010.00</td><td>48.5%</td><td>6</td><td>Sold out most Saturdays</td></tr>
+          <tr><th scope="row">Wildflower honey, 500 g</th><td>Oakridge Apiary</td><td>412</td><td>9.00</td><td>3,708.00</td><td>2,265.00</td><td>38.9%</td><td>2</td><td>New label from March</td></tr>
+          <tr><th scope="row">Cold-pressed apple juice, 1 L</th><td>Orchard Row</td><td>655</td><td>4.25</td><td>2,783.75</td><td>1,638.00</td><td>41.2%</td><td>19</td><td>Glass bottles returned for deposit</td></tr>
+          <tr><th scope="row">Mixed salad leaves, 200 g</th><td>Hill Farm</td><td>1,530</td><td>2.75</td><td>4,207.50</td><td>2,295.00</td><td>45.5%</td><td>88</td><td>Highest spoilage of any line</td></tr>
+        </tbody>
+        <tfoot>
+          <tr><th scope="row">Total</th><td></td><td>6,712</td><td></td><td>31,365.25</td><td>18,740.50</td><td>40.2%</td><td>160</td><td></td></tr>
+        </tfoot>
+      </table>
+    </div>
+    <p>Margin is revenue minus cost, divided by revenue. Returns are subtracted from units sold before revenue is calculated.</p>
+    <h2>A narrower summary</h2>
+    <table>
+      <caption>Revenue by month</caption>
+      <thead>
+        <tr><th scope="col">Month</th><th scope="col">Revenue</th><th scope="col">Change</th></tr>
+      </thead>
+      <tbody>
+        <tr><th scope="row">January</th><td>8,920.00</td><td>-3.1%</td></tr>
+        <tr><th scope="row">February</th><td>10,455.25</td><td>17.2%</td></tr>
+        <tr><th scope="row">March</th><td>11,990.00</td><td>14.7%</td></tr>
+      </tbody>
+      <tfoot>
+        <tr><th scope="row">Quarter</th><td>31,365.25</td><td>9.6%</td></tr>
+      </tfoot>
+    </table>
+  </main>
+  <footer>
+    <p>Prepared by the co-op treasurer. <a href="05-table.html">Download as a spreadsheet</a>.</p>
+  </footer>
+</body>
+</html>

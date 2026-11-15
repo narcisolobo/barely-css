@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tab stops test page</title>
+  <link rel="stylesheet" href="../../dist/barely.css">
+</head>
+<body>
+  <main>
+    <h1>Tab stops</h1>
+    <a id="first" href="#a">First link</a>
+    <button id="skipped-button" type="button" tabindex="-1">Skipped by tabindex -1</button>
+    <a id="skipped-link" href="#b" tabindex="-1">Skipped link</a>
+    <div id="skipped-div" tabindex="-2">Skipped by tabindex -2</div>
+    <div id="div-stop" tabindex="0">Focusable div</div>
+    <fieldset>
+      <legend>Unchecked group</legend>
+      <input id="unchecked-1" type="radio" name="unchecked" aria-label="Unchecked one">
+      <input id="unchecked-2" type="radio" name="unchecked" aria-label="Unchecked two">
+      <input id="unchecked-3" type="radio" name="unchecked" aria-label="Unchecked three">
+    </fieldset>
+    <fieldset>
+      <legend>Checked group</legend>
+      <input id="checked-1" type="radio" name="checked" aria-label="Checked one">
+      <input id="checked-2" type="radio" name="checked" aria-label="Checked two" checked>
+      <input id="checked-3" type="radio" name="checked" aria-label="Checked three">
+    </fieldset>
+    <a id="last" href="#c">Last link</a>
+  </main>
+</body>
+</html>

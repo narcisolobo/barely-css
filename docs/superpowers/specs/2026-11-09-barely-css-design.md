@@ -33,7 +33,7 @@ barely-css is a single stylesheet with no classes, no JavaScript, and no build s
 
 - **Write semantic HTML.** Plain, portable markup is all a page needs. barely-css never requires a class, wrapper, or attribute for its baseline, so the same HTML reads cleanly under any other stylesheet.
 - **Get a thoughtfully designed website.** The result has to look deliberately designed, not like browser defaults with a new font. That includes the parts most frameworks treat as extras: contrast checked in both themes, layout that needs no wrappers, forms that survive forced colors, and every control usable from the keyboard.
-- **Keep control through CSS custom properties.** Nearly every visual decision reads from a documented token. Overriding a token on `:root` or on any element is enough to change the design, with no selector overrides, and derived values follow automatically.
+- **Keep control through CSS custom properties.** Nearly every visual decision reads from a documented token. Overriding a token on `:root` or on any element is enough to change the design, with no selector overrides, and derived values follow automatically. (Owner decision, 2026-11-15: controls, borders, links and hover follow an override on any element, but repainting that element's own inherited text and background requires `data-theme` on it.)
 
 The project started as a replacement for Pico CSS, which is no longer maintained, and it is still designed so Pico users can switch easily (see the "Coming from Pico" guide). But it is meant to grow beyond that into a project with its own identity. That is why it invests early in testing, versioning, changelog, and migration policies that a one-off stylesheet wouldn't need.
 
@@ -48,7 +48,7 @@ Other target uses: blogs, documentation, knowledge bases, educational projects, 
 
 These are the two problems that started the project. Both now feed the broader promise in [Intent](#intent).
 
-1. **Customization through custom properties.** Pico hard-codes many values, so you end up overriding selectors. In barely-css nearly every visual decision (color, font, size, spacing, radius, border, shadow, control dimensions) reads from a custom property. Overriding a token in `:root`, or on any element, must be enough.
+1. **Customization through custom properties.** Pico hard-codes many values, so you end up overriding selectors. In barely-css nearly every visual decision (color, font, size, spacing, radius, border, shadow, control dimensions) reads from a custom property. Overriding a token in `:root`, or on any element, must be enough. (Owner decision, 2026-11-15: controls, borders, links and hover follow an override on any element, but repainting that element's own inherited text and background requires `data-theme` on it.)
 2. **Page-level spacing.** With Pico the owner kept adding padding to the top of each page because the first element sat too close to the top edge. They also kept adding a custom container class to get side padding. barely-css gives the page's main regions generous block and inline spacing by default, with no class, controlled by two tokens (for example `--barely-page-padding-block` and `--barely-page-padding-inline`). Both are fluid: each defaults to a `clamp()` of the viewport width, so the spacing is tighter on phones and roomier on large screens. Overriding either token replaces the fluid default with a fixed value or a different `clamp()`.
 
 Pico's vertical rhythm inside the page was fine. Keep a similar density and don't loosen it.
@@ -125,7 +125,7 @@ Behavior rules:
   - Breadcrumbs are the one exception. `nav[aria-label="breadcrumb" i]` gets breadcrumb styling wherever it appears. The `i` flag makes the match case-insensitive.
 - **Tables.** Basic content tables are in v1. Dense data views are deferred (see Non-goals).
   - **Semantics come first.** The `table` element keeps its native `display: table`. It is never set to `display: block` to make it scroll, because some browser and screen reader pairs, notably Safari with VoiceOver, have dropped table semantics when that is done.
-  - **Most tables fit by wrapping.** Cells wrap long content, including long words and URLs (`overflow-wrap: break-word`), so most tables fit the content width with no help.
+  - **Readability over containment.** Table readability takes precedence over viewport containment. Cells keep natural word boundaries and the table keeps native sizing, so words and URLs are never broken mid-word. A table may overflow horizontally when its content requires it. Authors can use the optional accessible scroll wrapper to contain that overflow without compromising readability.
   - **Optional scroll wrapper.** For a table that is truly too wide, the README documents an optional wrapper that barely-css styles if it is present:
     ```html
     <div role="region" tabindex="0" aria-label="Grades by week">
@@ -133,7 +133,7 @@ Behavior rules:
     </div>
     ```
     The selector is `div[role="region"][tabindex]:has(> table)`. The wrapper gets `overflow-x: auto` and a visible `:focus-visible` outline, so keyboard users can scroll it. The wrapper is never required, so the no-wrappers rule for the baseline still holds, and the markup still reads cleanly under another stylesheet.
-  - **Accepted exception.** A wide table without the wrapper may make the page scroll horizontally. This is the only place the baseline allows that, and the README says so next to the wrapper example.
+  - **Accepted exception.** A table whose content is wider than the page, without the wrapper, may make the page scroll horizontally. This is the only place the baseline allows that, and the README says so next to the wrapper example.
   - **Smaller defaults (builder's call):**
     - `caption` sits above the table, start-aligned.
     - `th` is start-aligned and bold.
@@ -225,6 +225,7 @@ The approved preview is at https://claude.ai/artifact/UEC92afWaKez4QYLtMtGpV. Th
 - **Color** inputs are a swatch at control height.
 - **Fieldset** is borderless, and its `legend` is styled like a label.
 - **Buttons.** `button`, `input[type="submit"]`, and `input[type="button"]` are primary, matching Pico. `input[type="reset"]` is secondary, because reset destroys input and shouldn't look like the main action. A classless stylesheet can't tell which button is the main action, so this is the whole hierarchy in v1. Buttons share the control height and radius, so a button lines up beside an input.
+- **Toggle buttons.** `button[aria-pressed="true"]` gets the pressed look: secondary fill, strong border and an inset top edge, so it is not color alone. Hover does not switch it back to the primary fill. `aria-pressed="false"` and `"mixed"` look like a normal button, and a disabled pressed button gets the disabled look. In forced colors, which removes shadows, the pressed button uses `Highlight` and `HighlightText`.
 - **States:**
   - **Focus:** a `:focus-visible` outline of `--barely-focus-ring-width` in `primary` at `--barely-focus-ring-offset`. Text-like controls also change their border to `primary`. The outline is never removed.
   - **Disabled:** surface fill, muted text, `border` color, and a not-allowed cursor. The label text is muted too, using `label:has(> :disabled)`.
@@ -232,6 +233,7 @@ The approved preview is at https://claude.ai/artifact/UEC92afWaKez4QYLtMtGpV. Th
   - **Invalid:** `:user-invalid` (native, after interaction or a submit attempt) or `[aria-invalid="true"]` (errors rendered by the server, for example Flask or Django, visible on page load). The border turns `danger` and widens to `--barely-control-border-width-invalid`. A `small` right after the control turns `danger` and gets an icon. Color is never the only signal.
   - **Valid:** shown only for an explicit `[aria-invalid="false"]`, with a `success` border and a check icon on the following `small`. `:user-valid` is not styled, so fields don't turn green as people type.
   - **Required:** CSS adds no asterisk. Native `required` is already announced, and screen readers read a CSS-generated asterisk inconsistently. Authors who want one write it into the label.
+- **Disabled and invalid.** A control that is both disabled and `aria-invalid="true"` keeps the invalid styling (danger border at the invalid width). It matches what assistive technology announces.
 - **Validation** is native only. barely-css never needs script to show a state.
 
 ## Theming

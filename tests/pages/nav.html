@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Navigation</title>
+  <link rel="stylesheet" href="../../dist/barely.css">
+</head>
+<body>
+  <header id="two">
+    <nav>
+      <ul><li><a href="./">Brand</a></li></ul>
+      <ul><li><a href="#a">Docs</a></li><li><a href="#b">Blog</a></li><li><a href="#c">About</a></li></ul>
+    </nav>
+  </header>
+  <header id="single">
+    <nav><ul><li><a href="#a">One</a></li><li><a href="#b">Two</a></li></ul></nav>
+  </header>
+  <header id="wrapped">
+    <div><nav><ul><li><a href="#a">One</a></li><li><a href="#b">Two</a></li></ul></nav></div>
+  </header>
+  <header id="submenu">
+    <nav><ul><li><a href="#a">Parent</a><ul><li><a href="#b">Child one</a></li><li><a href="#c">Child two</a></li></ul></li></ul></nav>
+  </header>
+  <header id="many">
+    <nav>
+      <ul><li><a href="./">A fairly long brand name</a></li></ul>
+      <ul><li><a href="#1">Documentation</a></li><li><a href="#2">Components</a></li><li><a href="#3">Playground</a></li><li><a href="#4">Changelog</a></li><li><a href="#5">Community</a></li></ul>
+    </nav>
+  </header>
+  <header id="crumb-upper">
+    <nav aria-label="Breadcrumb"><ol><li><a href="#a">Home</a></li><li aria-current="page">Here</li></ol></nav>
+  </header>
+  <main>
+    <h1>Navigation</h1>
+    <nav id="main-nav"><ul><li><a href="#a">Main one</a></li><li><a href="#b">Main two</a></li></ul></nav>
+    <article>
+      <nav id="article-nav"><ul><li><a href="#a">Article one</a></li><li><a href="#b">Article two</a></li></ul></nav>
+      <nav aria-label="breadcrumb" id="crumb"><ol><li><a href="#a">Home</a></li><li><a href="#b">Section</a></li><li aria-current="page">Page</li></ol></nav>
+    </article>
+    <aside><nav id="aside-nav"><ul><li><a href="#a">Aside one</a></li><li><a href="#b">Aside two</a></li></ul></nav></aside>
+  </main>
+  <footer>
+    <nav id="footer-nav"><ul><li><a href="#a">Footer one</a></li><li><a href="#b">Footer two</a></li></ul></nav>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,103 @@
+@layer base {
+  /* Page regions: every direct child of body except non-rendered elements (script, style, template) and
+     top-layer ones (dialog, [popover]), which style their own padding in interactive.css.
+     Regions span the viewport; padding keeps their content centered at the content width. */
+  body > :where(:not(script, style, template, dialog, [popover])) {
+    --_barely-region-inline: max(
+      var(--barely-page-padding-inline),
+      (100% - var(--barely-content-width)) / 2
+    );
+    padding-inline: var(--_barely-region-inline);
+  }
+
+  /* Prose placed directly in body is a region too. The region spans the viewport, so it carries
+     the reading width in its end padding instead of a max-inline-size cap. */
+  body > :where(p, ul, ol, dl, blockquote, h1, h2, h3, h4, h5, h6, figcaption, form) {
+    max-inline-size: none;
+    padding-inline-end: max(
+      var(--_barely-region-inline),
+      100% - var(--_barely-region-inline) - var(--barely-reading-width)
+    );
+  }
+
+  /* A table, pre or details placed directly in body takes the region inset as margin, not padding. A
+     border-collapse table has no padding at all, and a pre or details would become a full-bleed band. This
+     matches the same elements inside main, which sit at the content edge. The table is sized to fit between
+     the margins; the pre keeps its own inner padding. */
+  body > :where(table, pre, details) {
+    padding-inline: 0;
+    margin-inline: var(--_barely-region-inline);
+  }
+
+  body > :where(table) {
+    inline-size: calc(100% - 2 * var(--_barely-region-inline));
+  }
+
+  body > :where(pre) {
+    padding-inline: var(--barely-spacing);
+  }
+
+  /* An aside or blockquote in body keeps its start border at the content edge: margin takes the place
+     of region padding, and the text sits one spacing step inside the border. */
+  body > :where(aside, blockquote) {
+    margin-inline-start: var(--_barely-region-inline);
+    padding-inline-start: var(--barely-spacing);
+  }
+
+  /* A list in body keeps its markers inside the content edge: the usual list indent is added to the region padding. */
+  body > :where(ul, ol) {
+    padding-inline-start: calc(var(--_barely-region-inline) + 40px);
+  }
+
+  body > :where(main) {
+    padding-block: var(--barely-page-padding-block);
+  }
+
+  /* A page with no main: the body carries the block padding. */
+  :where(body:not(:has(> main))) {
+    padding-block: var(--barely-page-padding-block);
+  }
+
+  /* Masthead */
+  body > :where(header, footer) {
+    padding-block: calc(var(--barely-page-padding-block) * 0.4);
+    background-color: var(--barely-color-surface);
+  }
+
+  body > :where(header) {
+    border-block-end: var(--barely-border-width) solid var(--barely-color-border);
+  }
+
+  body > :where(footer) {
+    border-block-start: var(--barely-border-width) solid var(--barely-color-border);
+  }
+
+  body > :where(footer),
+  :where(article, section) :where(footer) {
+    color: var(--barely-color-text-muted);
+    font-size: 0.875rem;
+  }
+
+  /* Reading width: prose stays start-aligned inside the wider content box. */
+  :where(p, ul, ol, dl, blockquote, h1, h2, h3, h4, h5, h6, figcaption, form) {
+    max-inline-size: var(--barely-reading-width);
+  }
+
+  /* Header and footer inside article or section are restrained, not mastheads. */
+  :where(article, section) :where(header) {
+    margin-block-end: var(--barely-spacing);
+  }
+
+  :where(article, section) :where(footer) {
+    margin-block-start: var(--barely-spacing);
+  }
+
+  :where(article, section, aside) {
+    margin-block-end: calc(var(--barely-spacing) * 2);
+  }
+
+  :where(aside) {
+    border-inline-start: 0.25rem solid var(--barely-color-border);
+    padding-inline-start: var(--barely-spacing);
+  }
+}

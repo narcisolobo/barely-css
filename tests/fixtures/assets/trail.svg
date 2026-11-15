@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" viewBox="0 0 800 450" role="img" aria-label="Hills at dusk">
+  <rect width="800" height="450" fill="#e9c98a"/>
+  <circle cx="590" cy="130" r="52" fill="#f6e7b8"/>
+  <path d="M0 300 L150 190 L270 270 L420 150 L560 280 L690 210 L800 290 V450 H0 Z" fill="#6f8a5b"/>
+  <path d="M0 360 L120 300 L250 350 L400 290 L560 355 L700 305 L800 350 V450 H0 Z" fill="#40593a"/>
+</svg>

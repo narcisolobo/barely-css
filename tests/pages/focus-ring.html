@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Focus ring test page</title>
+  <link rel="stylesheet" href="../../dist/barely.css">
+  <style>
+    /* Test only: a dark-filled button on a light page, so the backdrop and the fill differ. */
+    html { color-scheme: light; background: rgb(255 255 255); }
+    body { background: rgb(255 255 255); }
+    button { background: rgb(10 10 10); color: rgb(255 255 255); }
+    #inside:focus-visible { outline-offset: -2px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Focus ring</h1>
+    <p><button id="outside" type="button">Outside ring</button></p>
+    <p><button id="inside" type="button">Inside ring</button></p>
+  </main>
+</body>
+</html>

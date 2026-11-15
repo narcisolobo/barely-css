@@ -1,0 +1,37 @@
+@layer base {
+  html {
+    font-family: var(--barely-font-sans);
+    font-size: var(--barely-font-size);
+    line-height: var(--barely-line-height);
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  /* A long word or URL wraps instead of widening the page. It inherits, and break-word leaves min-content
+     alone, so table cells (below) and shrink-to-fit boxes keep their natural widths. */
+  :where(html) {
+    overflow-wrap: break-word;
+  }
+
+  /* Tables keep natural word boundaries; a wide one scrolls inside the optional wrapper. */
+  :where(th, td) {
+    overflow-wrap: normal;
+  }
+
+  html,
+  :where([data-theme]) {
+    background-color: var(--barely-color-background);
+    color: var(--barely-color-text);
+  }
+
+  :where(:focus-visible) {
+    outline: var(--barely-focus-ring-width) solid var(--barely-color-primary);
+    outline-offset: var(--barely-focus-ring-offset);
+  }
+
+  @media (forced-colors: active) {
+    :where(:focus-visible) {
+      outline-color: Highlight;
+    }
+  }
+}

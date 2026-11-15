@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dialog and popover</title>
+  <link rel="stylesheet" href="../../dist/barely.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <ul><li><a href="07-dialog-popover.html">Studio Booker</a></li></ul>
+      <ul><li><a href="07-dialog-popover.html">Rooms</a></li><li><a href="07-dialog-popover.html">Pricing</a></li></ul>
+    </nav>
+  </header>
+  <main>
+    <h1>Book the recording room</h1>
+    <p>The recording room seats up to six people and includes a piano, two microphones and a mixing desk. Sessions run for two hours, and a booking can be moved up to a day before it starts.</p>
+    <h2>Available times</h2>
+    <ul>
+      <li>Tuesday 17 November, 10:00 to 12:00</li>
+      <li>Thursday 19 November, 14:00 to 16:00</li>
+      <li>Saturday 21 November, 10:00 to 12:00</li>
+    </ul>
+    <p>
+      <button type="button" popovertarget="tip">What is included?</button>
+    </p>
+    <div id="tip" popover style="inset: 1rem auto auto 1rem; margin: 0">
+      <p>Headphones, cables and a tuned piano. Bring your own instrument, strings and any sheet music.</p>
+    </div>
+    <dialog aria-labelledby="confirm-title">
+      <h2 id="confirm-title">Confirm your booking</h2>
+      <p>Recording room, Thursday 19 November, 14:00 to 16:00. The cost is $60, paid at the front desk on the day.</p>
+      <form method="dialog">
+        <button type="submit">Confirm booking</button>
+        <button type="reset">Choose another time</button>
+      </form>
+    </dialog>
+  </main>
+  <footer>
+    <p>Studio Booker, open every day from 9:00 to 21:00.</p>
+  </footer>
+  <script>document.querySelector('dialog').showModal();document.querySelector('[popover]').showPopover();</script>
+</body>
+</html>

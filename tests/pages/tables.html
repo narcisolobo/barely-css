@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Table test page</title>
+  <link rel="stylesheet" href="../../dist/barely.css">
+</head>
+<body>
+  <main>
+    <h1>Tables</h1>
+    <table id="url-table">
+      <caption>Reading list</caption>
+      <thead><tr><th scope="col">Title</th><th scope="col">Link</th></tr></thead>
+      <tbody>
+        <tr><td>Course syllabus</td><td>https://example.edu/courses/2026/autumn/introduction-to-typography/syllabus/week-1/readings/required-reading-list-final-version.pdf</td></tr>
+        <tr><td>Supercalifragilisticexpialidocious</td><td>Plain text</td></tr>
+      </tbody>
+    </table>
+    <div role="region" tabindex="0" aria-label="Weekly schedule" id="wrapper">
+      <table id="wide">
+        <thead><tr><th scope="col">Time</th><th scope="col">Monday</th><th scope="col">Tuesday</th><th scope="col">Wednesday</th><th scope="col">Thursday</th><th scope="col">Friday</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">9:00</th><td style="white-space: nowrap">Introduction to Typography</td><td style="white-space: nowrap">Studio: Letterforms</td><td style="white-space: nowrap">Seminar: Print History</td><td style="white-space: nowrap">Studio: Layout Grids</td><td style="white-space: nowrap">Critique and Review</td></tr>
+          <tr><th scope="row">11:00</th><td style="white-space: nowrap">Color Theory Workshop</td><td style="white-space: nowrap">Open Lab</td><td style="white-space: nowrap">Guest Lecture</td><td style="white-space: nowrap">Open Lab</td><td style="white-space: nowrap">Portfolio Clinic</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</body>
+</html>

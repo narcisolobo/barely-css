@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Typography specimen</title>
+  <link rel="stylesheet" href="../../dist/barely.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <ul><li><a href="01-typography.html">Type notes</a></li></ul>
+      <ul><li><a href="01-typography.html">Specimen</a></li><li><a href="01-typography.html">Archive</a></li></ul>
+    </nav>
+  </header>
+  <main>
+    <h1>A specimen of everyday typography</h1>
+    <p>Most of what people read on the web is plain text, so the quality of a page comes down to how headings, paragraphs and lists sit together. This page collects each of those pieces in one place. It is meant for looking at spacing and rhythm, not for reading to the end.</p>
+    <h2>Headings in sequence</h2>
+    <h3>Third-level heading with a longer title that may wrap on a narrow phone screen</h3>
+    <p>A paragraph after a heading shows the space between them. Good spacing makes the heading feel attached to the text it introduces, not to the paragraph above.</p>
+    <h4>Fourth-level heading</h4>
+    <p>Smaller headings still need to stand apart from body text, even when they are only a little larger.</p>
+    <h5>Fifth-level heading</h5>
+    <p>Short paragraph under a fifth-level heading.</p>
+    <h6>Sixth-level heading</h6>
+    <p>Short paragraph under a sixth-level heading.</p>
+    <h2>Inline elements</h2>
+    <p>This sentence has <strong>strong text</strong>, <em>emphasis</em>, <mark>a highlight</mark>, <del>a deletion</del> and <ins>an insertion</ins>. Chemical formulas such as H<sub>2</sub>O and powers such as 10<sup>6</sup> need to sit on the line without pushing the lines apart. The <abbr title="Hypertext Markup Language">HTML</abbr> specification, written by the <a href="01-typography.html">WHATWG community</a>, describes <dfn>semantic markup</dfn> as markup that says what content is. <small>Small print, such as a licence note, sits quietly at the end.</small> Press <kbd>Ctrl</kbd> + <kbd>S</kbd> to save, and expect the terminal to print <samp>Saved 3 files</samp> in reply. Use <code>border-radius</code> for rounded corners, and cite <cite>The Elements of Typographic Style</cite> when in doubt. He said <q>keep the measure under seventy characters</q> and left it there. The file is <s>draft-1.md</s> now final.md, dated <time datetime="2026-03-14">14 March 2026</time>.</p>
+    <h2>Lists</h2>
+    <ul>
+      <li>Typefaces
+        <ul>
+          <li>Serif faces for long reading</li>
+          <li>Sans-serif faces for interface text
+            <ul><li>Humanist designs</li><li>Geometric designs</li></ul>
+          </li>
+        </ul>
+      </li>
+      <li>Line length</li>
+      <li>Vertical rhythm</li>
+    </ul>
+    <ol>
+      <li>Pick a base size.</li>
+      <li>Pick a scale.
+        <ol>
+          <li>Minor third for dense pages.</li>
+          <li>Perfect fourth for editorial pages.</li>
+        </ol>
+      </li>
+      <li>Check the result on a phone.</li>
+    </ol>
+    <dl>
+      <dt>Measure</dt>
+      <dd>The width of a block of text, usually counted in characters per line.</dd>
+      <dt>Leading</dt>
+      <dd>The space between lines of text, named after the lead strips once used in printing.</dd>
+      <dt>Widow</dt>
+      <dd>A short last line at the top of a column or page.</dd>
+    </dl>
+    <blockquote>
+      <p>Typography exists to honor content.</p>
+      <footer>Robert Bringhurst, <cite>The Elements of Typographic Style</cite></footer>
+    </blockquote>
+    <hr>
+    <h2>Code</h2>
+    <p>A short function in a block:</p>
+    <pre><code>function measure(text) {
+  const words = text.trim().split(/\s+/);
+  return Math.round(text.length / words.length);
+}</code></pre>
+    <p>The paragraph after a rule and a code block should return to the usual rhythm, with nothing cramped.</p>
+  </main>
+  <footer>
+    <p>Set in the system font stack. <a href="01-typography.html">Back to the top</a>.</p>
+  </footer>
+</body>
+</html>
