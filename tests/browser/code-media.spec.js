@@ -74,6 +74,30 @@ test.describe('narrow', () => {
     expect(r.preScrolls).toBe(true);
     expect(r.preWrap).toBe('normal');
   });
+
+  test('long code in a table cell stays whole and the wrapper scrolls', async ({ page }) => {
+    await page.goto('/tests/pages/code-media.html');
+    const r = await page.evaluate(() => {
+      const host = document.createElement('div');
+      host.innerHTML =
+        '<div id="t17b-region" role="region" tabindex="0" aria-label="Widgets"><table><thead><tr><th>Name</th><th>Notes</th></tr></thead>' +
+        '<tbody><tr><td><code id="t17b-code">extract_widget_payload_from_response_body_json</code></td><td>Plain text</td></tr></tbody></table></div>';
+      document.querySelector('main').append(host);
+      const code = document.getElementById('t17b-code');
+      const region = document.getElementById('t17b-region');
+      const lh = parseFloat(getComputedStyle(code).lineHeight);
+      return {
+        rects: code.getClientRects().length,
+        height: code.getBoundingClientRect().height,
+        lh,
+        region: region.scrollWidth > region.clientWidth,
+        page: document.documentElement.scrollWidth <= window.innerWidth,
+      };
+    });
+    expect(r.rects).toBe(1);
+    expect(r.region).toBe(true);
+    expect(r.page).toBe(true);
+  });
 });
 
 test('iframe with a height attribute keeps it', async ({ page }) => {
