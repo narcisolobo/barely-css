@@ -107,7 +107,7 @@ To contain a table that is too wide, wrap it in a scrollable region:
 
 barely-css styles the wrapper if it is there: it scrolls sideways and shows a focus outline, so keyboard users can scroll it. The `aria-label` names the region for screen readers. The wrapper is optional, and the markup still reads fine under any other stylesheet.
 
-A table without the wrapper may make the page scroll sideways. The wrapper is the only place the page may scroll sideways, and a wide table without it is the only case where the page does.
+Nothing else makes the page scroll sideways: long text and inline code wrap. `pre` blocks and the table wrapper scroll inside themselves. A wide table without the wrapper is the one exception.
 
 ## Theming
 
@@ -286,6 +286,8 @@ openssl dgst -sha384 -binary dist/barely.min.css | openssl base64 -A
 ```
 
 The hash and version in the exact-version link above are placeholders until `1.0.0` is published.
+
+The full release checklist is in [docs/releasing.md](docs/releasing.md).
 
 ## License
 

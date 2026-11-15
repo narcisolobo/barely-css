@@ -90,7 +90,7 @@ test('warns against linking main', () => {
 
 test('covers the settled behaviors', () => {
   expect(readme).toContain('<div role="region" tabindex="0"');
-  expect(readme).toMatch(/only place the page may scroll sideways/);
+  expect(readme).toMatch(/Nothing else makes the page scroll sideways/);
   expect(readme).toContain('aria-pressed="true"');
   expect(readme).toMatch(/iframe/);
   expect(readme).toContain('data-theme="custom"');
