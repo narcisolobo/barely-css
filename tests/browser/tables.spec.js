@@ -64,6 +64,30 @@ test.describe('narrow', () => {
     expect(r.wrapper).toBe(true);
   });
 
+  test('a long unbroken token in a cell stays on one line and the wrapper still scrolls', async ({ page }) => {
+    await page.goto('/tests/pages/tables.html');
+    const r = await page.evaluate(() => {
+      // The unwrapped URL table on this page is wider than the viewport by design; drop it.
+      document.querySelector('#url-table').remove();
+      const token = 'a_very_long_underscore_identifier_with_no_break_opportunity_anywhere_in_it_at_all';
+      const w = document.createElement('div');
+      w.setAttribute('role', 'region');
+      w.setAttribute('tabindex', '0');
+      w.setAttribute('aria-label', 'Identifiers, scrolls sideways');
+      w.innerHTML = `<table><tbody><tr><td id="tok-cell">${token}</td><td>x</td></tr></tbody></table>`;
+      document.querySelector('main').append(w);
+      const cell = document.getElementById('tok-cell');
+      const range = document.createRange();
+      range.selectNodeContents(cell);
+      const tops = new Set([...range.getClientRects()].map((q) => Math.round(q.top)));
+      const root = document.documentElement;
+      return { lines: tops.size, page: root.scrollWidth <= root.clientWidth, wrapper: w.scrollWidth > w.clientWidth };
+    });
+    expect(r.lines).toBe(1);
+    expect(r.page).toBe(true);
+    expect(r.wrapper).toBe(true);
+  });
+
   test('wrapped wide table scrolls inside its wrapper, not the page', async ({ page }) => {
     await page.goto('/tests/pages/tables.html');
     const r = await page.evaluate(() => {

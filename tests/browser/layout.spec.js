@@ -74,6 +74,27 @@ test.describe('narrow', () => {
 test.describe('1280', () => {
   test.use({ viewport: { width: 1280, height: 800 } });
 
+  test('long words and URLs in prose never scroll the page sideways at 375', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 800 });
+    await page.goto('/tests/pages/no-main.html');
+    const r = await page.evaluate(() => {
+      // No break opportunity: the slashes of a real URL would let it wrap on its own, so the run is unbroken.
+      const url = 'https:example.edu' + 'courses2026autumn'.repeat(6);
+      const token = 'a_very_long_underscore_identifier_with_no_break_opportunity_anywhere_in_it_at_all';
+      const host = document.createElement('main');
+      host.innerHTML =
+        `<h1 id="lw-h1">${token}</h1>` +
+        `<p id="lw-p">${token}</p>` +
+        `<p id="lw-a"><a href="#">${url}</a></p>` +
+        `<ul><li id="lw-li">${token}</li></ul>` +
+        `<blockquote id="lw-bq"><p>${token}</p></blockquote>`;
+      document.body.append(host);
+      const root = document.documentElement;
+      return { scroll: root.scrollWidth, client: root.clientWidth };
+    });
+    expect(r.scroll).toBe(r.client);
+  });
+
   test('no horizontal scroll at 1280 on the demo', async ({ page }) => {
     await page.goto(DEMO);
     await noPageScroll(page);

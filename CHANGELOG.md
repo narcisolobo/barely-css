@@ -16,6 +16,7 @@ Any change to a default value (a token, a spacing step, a color) is listed under
 - Masthead navigation (one or two lists, wrapping) and breadcrumbs, with no classes.
 - Table styles and an optional scroll wrapper (`div[role="region"][tabindex]` around a `table`), with no classes.
 - Code and media styles: `code`, `kbd`, `samp`, scrolling `pre`, responsive `img`, `video`, `audio`, `iframe` (16:9 when it has no height), and `figure` with `figcaption`.
+- Long words and URLs in prose, links and headings wrap at the edge of the line instead of making the page scroll sideways. Table cells still break only at natural word boundaries.
 - Long inline `code`, `kbd` and `samp` break at the edge of the line instead of widening the page; `pre` still scrolls inside itself.
 - Form controls and buttons: block labels that wrap their controls, text-like inputs (including unknown types), `select`, `textarea`, range, file, color, `fieldset` and `legend`, and primary and reset buttons, with no classes.
 - Checkboxes, radios and switches (`input[type="checkbox"][role="switch"]`) drawn with tokens, with the label beside the control, a 24px minimum row, and a mirrored switch in right-to-left text.
