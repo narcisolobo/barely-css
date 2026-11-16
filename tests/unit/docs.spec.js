@@ -78,7 +78,7 @@ test('releasing.md lists every release criterion', () => {
 
   const block = sectionOf(releasing, 'Release criteria');
   expect(block, 'releasing.md has a "Release criteria" section').not.toBe('');
-  const boxes = block.split('\n').filter((l) => /^- \[ \] /.test(l));
+  const boxes = block.split('\n').filter((l) => /^- \[[ x]\] /.test(l));
   expect(boxes.length).toBe(8);
 });
 
