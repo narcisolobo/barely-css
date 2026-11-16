@@ -123,6 +123,7 @@ Behavior rules:
   - Rows wrap at narrow widths and never scroll horizontally. There is no hamburger menu.
   - Every other `nav`, including one in `body > footer`, an `aside`, `main`, or an `article`, is styled as an ordinary list.
   - Breadcrumbs are the one exception. `nav[aria-label="breadcrumb" i]` gets breadcrumb styling wherever it appears. The `i` flag makes the match case-insensitive.
+  - The label is read as a convenience, not a requirement, because a page in another language labels its breadcrumb in that language (Added 2026-11-16 from the visual review, where the RTL fixture showed an unstyled breadcrumb; the exact rule is the builder's call). A `nav` whose direct child `ol` ends in an `li` with `aria-current="page"` is a breadcrumb too. A current page on a link, in the middle of the list, or in a `ul` (pagination, steps, a sidebar) is not.
 - **Tables.** Basic content tables are in v1. Dense data views are deferred (see Non-goals).
   - **Semantics come first.** The `table` element keeps its native `display: table`. It is never set to `display: block` to make it scroll, because some browser and screen reader pairs, notably Safari with VoiceOver, have dropped table semantics when that is done.
   - **Readability over containment.** Table readability takes precedence over viewport containment. Cells keep natural word boundaries and the table keeps native sizing, so words and URLs are never broken mid-word. A table may overflow horizontally when its content requires it. Authors can use the optional accessible scroll wrapper to contain that overflow without compromising readability.
@@ -240,6 +241,7 @@ The approved preview is at https://claude.ai/artifact/UEC92afWaKez4QYLtMtGpV. Th
 
 - Light and dark themes follow `prefers-color-scheme` by default.
 - `data-theme="light"` or `data-theme="dark"` on `<html>` forces a theme for the whole page. On any other element, it creates a nested scope, such as a light panel inside a dark page.
+- A block-level scope (`div`, `section`, `article`, `aside` or `form`) is a panel: it paints its own background, so its content is inset by 1.5 times `--barely-spacing`, and its last child's bottom margin is trimmed so the inset is even. A scope directly in `body` is a page region and keeps region padding. A scope on an inline element or a control (a `span`, a `button`) gets no padding. (Added 2026-11-16 from the visual review, where the nested-theme fixture showed text flush against the painted edge; the 1.5 factor is the builder's call.)
 - Every theme sets `color-scheme`, so native controls and scrollbars match.
 - Suggested approach **(builder's call)**:
   - Define the color tokens with `light-dark()`.

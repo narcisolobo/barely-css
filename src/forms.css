@@ -240,6 +240,12 @@
     margin-block-end: -0.5rem;
   }
 
+  /* A wrapping label around a text-like control, outside any form, fieldset or p (in a panel or a section, say),
+     is spaced like a field: the form gap separates it from what follows, unless it comes last. */
+  :where(label:has(> :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]), select, textarea)):not(:is(form, fieldset, p) label, :last-child)) {
+    margin-block-end: var(--barely-form-gap);
+  }
+
   /* The control carries the gap unless a small or span follows it, in which case that help text carries it (next rules). */
   :where(form label + :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]), select, textarea):has(~ :not(input[type="hidden"])):not(:has(+ :is(small, span)))) {
     margin-block-end: var(--barely-form-gap);

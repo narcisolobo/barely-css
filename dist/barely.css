@@ -370,6 +370,25 @@
     border-inline-start: 0.25rem solid var(--barely-color-border);
     padding-inline-start: var(--barely-spacing);
   }
+
+  /* Headings in an aside step down two levels, to h6 at the smallest. An aside is secondary content, so its
+     heading should not announce itself like a section of the page. */
+  :where(aside) :where(h1) { font-size: var(--barely-font-size-h3); }
+  :where(aside) :where(h2) { font-size: var(--barely-font-size-h4); }
+  :where(aside) :where(h3) { font-size: var(--barely-font-size-h5); }
+  :where(aside) :where(h4, h5) { font-size: var(--barely-font-size-h6); }
+
+  /* A data-theme scope paints its own background, so a block-level one is a panel: its content is inset from the
+     painted edge. A scope directly in body is a page region and already has region padding, and an inline element
+     or a control (a span, a button) keeps its own padding. */
+  :where(:is(div, section, article, aside, form)[data-theme]:not(body > *)) {
+    padding: calc(var(--barely-spacing) * 1.5);
+  }
+
+  /* The last block's bottom margin would add to the padding, so trim it to keep the inset even. */
+  :where(:is(div, section, article, aside, form)[data-theme]:not(body > *)) > :last-child {
+    margin-block-end: 0;
+  }
 }
 
 /* ==== navigation.css ==== */
@@ -400,8 +419,11 @@
     padding-block: 0.25rem;
   }
 
-  /* Breadcrumbs: styled wherever they appear. */
-  :where(nav[aria-label="breadcrumb" i] > :is(ol, ul)) {
+  /* Breadcrumbs: styled wherever they appear. A breadcrumb is a nav labelled "breadcrumb", or, for a label in
+     another language, a nav whose ordered list ends at the current page: its last item carries
+     aria-current="page". A current page on a link, in the middle of the list or in an unordered list (pagination,
+     steps, a sidebar) is not a breadcrumb. */
+  :where(:is(nav[aria-label="breadcrumb" i], nav:has(> ol > li:last-child[aria-current="page"])) > :is(ol, ul)) {
     display: flex;
     flex-wrap: wrap;
     list-style: none;
@@ -409,13 +431,13 @@
   }
 
   /* The empty alternative text after the slash keeps screen readers from announcing it. */
-  :where(nav[aria-label="breadcrumb" i] li + li)::before {
+  :where(:is(nav[aria-label="breadcrumb" i], nav:has(> ol > li:last-child[aria-current="page"])) li + li)::before {
     content: "/" / "";
     margin-inline: 0.5rem;
     color: var(--barely-color-text-muted);
   }
 
-  :where(nav[aria-label="breadcrumb" i] [aria-current="page"]) {
+  :where(:is(nav[aria-label="breadcrumb" i], nav:has(> ol > li:last-child[aria-current="page"])) [aria-current="page"]) {
     color: var(--barely-color-text);
     text-decoration: none;
   }
@@ -791,6 +813,12 @@
 
   :where(fieldset > label:has(+ :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]), select, textarea))) {
     margin-block-end: -0.5rem;
+  }
+
+  /* A wrapping label around a text-like control, outside any form, fieldset or p (in a panel or a section, say),
+     is spaced like a field: the form gap separates it from what follows, unless it comes last. */
+  :where(label:has(> :is(input:not([type="checkbox"], [type="radio"], [type="submit"], [type="reset"], [type="button"], [type="image"], [type="hidden"]), select, textarea)):not(:is(form, fieldset, p) label, :last-child)) {
+    margin-block-end: var(--barely-form-gap);
   }
 
   /* The control carries the gap unless a small or span follows it, in which case that help text carries it (next rules). */

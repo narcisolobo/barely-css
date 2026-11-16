@@ -25,8 +25,11 @@
     padding-block: 0.25rem;
   }
 
-  /* Breadcrumbs: styled wherever they appear. */
-  :where(nav[aria-label="breadcrumb" i] > :is(ol, ul)) {
+  /* Breadcrumbs: styled wherever they appear. A breadcrumb is a nav labelled "breadcrumb", or, for a label in
+     another language, a nav whose ordered list ends at the current page: its last item carries
+     aria-current="page". A current page on a link, in the middle of the list or in an unordered list (pagination,
+     steps, a sidebar) is not a breadcrumb. */
+  :where(:is(nav[aria-label="breadcrumb" i], nav:has(> ol > li:last-child[aria-current="page"])) > :is(ol, ul)) {
     display: flex;
     flex-wrap: wrap;
     list-style: none;
@@ -34,13 +37,13 @@
   }
 
   /* The empty alternative text after the slash keeps screen readers from announcing it. */
-  :where(nav[aria-label="breadcrumb" i] li + li)::before {
+  :where(:is(nav[aria-label="breadcrumb" i], nav:has(> ol > li:last-child[aria-current="page"])) li + li)::before {
     content: "/" / "";
     margin-inline: 0.5rem;
     color: var(--barely-color-text-muted);
   }
 
-  :where(nav[aria-label="breadcrumb" i] [aria-current="page"]) {
+  :where(:is(nav[aria-label="breadcrumb" i], nav:has(> ol > li:last-child[aria-current="page"])) [aria-current="page"]) {
     color: var(--barely-color-text);
     text-decoration: none;
   }

@@ -78,6 +78,8 @@ No classes are needed. Write the HTML that fits the content.
 
 Details worth knowing:
 
+- A breadcrumb is a `nav` labelled `breadcrumb`, or, with a label in your own language, a `nav` whose `ol` ends in an `li` with `aria-current="page"`. A current page on a link, in the middle of the list, or in a `ul` is not a breadcrumb.
+- Headings inside an `aside` step down two levels (an `h2` is drawn at the `h4` size, and nothing goes below `h6`), so a table of contents or a footnote list does not compete with the page's own sections.
 - Only `body > header nav > ul` runs horizontally. Put one list there, or two for a brand at the start edge and links at the end edge. Rows wrap at narrow widths. Every other `nav` is an ordinary list.
 - `body > header` and `body > footer` are the page masthead and footer. A `header` or `footer` inside an `article` or `section` gets restrained styling instead.
 - A checkbox, radio or switch works with its label either way: wrapped by it (`<label><input> Text</label>`) or followed by a `label for` (`<input id="a"><label for="a">Text</label>`). A `label for` placed before a text field, `select` or `textarea` is spaced like a wrapping label too.
@@ -114,7 +116,7 @@ Only a wide table without the wrapper can make the page scroll sideways. Long te
 
 - The light and dark themes follow the visitor's system setting (`prefers-color-scheme`).
 - `data-theme="light"` or `data-theme="dark"` on `<html>` forces a theme for the whole page.
-- On any other element, `data-theme` makes a nested scope, such as a light panel inside a dark page. The scope sets `color` and `background-color` as well as the theme, so its text and background repaint. Any value of `data-theme` sets them, so `data-theme="custom"` works as a hook for your own token overrides.
+- On any other element, `data-theme` makes a nested scope, such as a light panel inside a dark page. The scope sets `color` and `background-color` as well as the theme, so its text and background repaint. A `div`, `section`, `article`, `aside` or `form` scope is also inset by 1.5 times `--barely-spacing`, so the content doesn't touch the painted edge; a scope directly in `body` keeps its page-region padding, and a scope on an inline element or a button gets none. Any value of `data-theme` sets them, so `data-theme="custom"` works as a hook for your own token overrides.
 - Every theme sets `color-scheme`, so native controls and scrollbars match.
 
 Color tokens hold two values, one for light and one for dark, written with `light-dark()`. The page needs no script to switch.

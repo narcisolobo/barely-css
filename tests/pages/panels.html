@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Panels and asides</title>
+  <link rel="stylesheet" href="../../dist/barely.css">
+</head>
+<body>
+  <header><a href="./">Home</a></header>
+  <main>
+    <h1>Panels and asides</h1>
+
+    <section id="dark-panel" data-theme="dark">
+      <h2>Dark panel</h2>
+      <p>Text in a nested scope.</p>
+      <label for="panel-name">Name
+        <input id="panel-name" type="text" name="name" value="Reader">
+      </label>
+      <p id="panel-button-row"><button type="button">Go</button></p>
+    </section>
+
+    <div id="custom-panel" data-theme="custom"><p>A div scope with any value.</p></div>
+
+    <p>
+      <span id="inline-scope" data-theme="dark">inline</span>
+      <button id="plain-button" type="button">plain</button>
+      <button id="scoped-button" data-theme="dark" type="button">scoped</button>
+    </p>
+
+    <aside id="toc"><h2>On this page</h2><ul><li><a href="#a">One</a></li></ul></aside>
+
+    <aside id="aside-levels">
+      <h1>One</h1>
+      <h2>Two</h2>
+      <h3>Three</h3>
+      <h4>Four</h4>
+      <h5>Five</h5>
+      <h6>Six</h6>
+    </aside>
+
+    <section id="levels">
+      <h1>One</h1>
+      <h2>Two</h2>
+      <h3>Three</h3>
+      <h4>Four</h4>
+      <h5>Five</h5>
+      <h6>Six</h6>
+    </section>
+  </main>
+
+  <section id="region-panel" data-theme="dark"><p>A scope directly in body is a page region.</p></section>
+  <section id="region-plain"><p>A plain section directly in body.</p></section>
+  <aside id="region-aside"><h2>Aside in body</h2><p>Directly in body.</p></aside>
+</body>
+</html>

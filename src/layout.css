@@ -100,4 +100,23 @@
     border-inline-start: 0.25rem solid var(--barely-color-border);
     padding-inline-start: var(--barely-spacing);
   }
+
+  /* Headings in an aside step down two levels, to h6 at the smallest. An aside is secondary content, so its
+     heading should not announce itself like a section of the page. */
+  :where(aside) :where(h1) { font-size: var(--barely-font-size-h3); }
+  :where(aside) :where(h2) { font-size: var(--barely-font-size-h4); }
+  :where(aside) :where(h3) { font-size: var(--barely-font-size-h5); }
+  :where(aside) :where(h4, h5) { font-size: var(--barely-font-size-h6); }
+
+  /* A data-theme scope paints its own background, so a block-level one is a panel: its content is inset from the
+     painted edge. A scope directly in body is a page region and already has region padding, and an inline element
+     or a control (a span, a button) keeps its own padding. */
+  :where(:is(div, section, article, aside, form)[data-theme]:not(body > *)) {
+    padding: calc(var(--barely-spacing) * 1.5);
+  }
+
+  /* The last block's bottom margin would add to the padding, so trim it to keep the inset even. */
+  :where(:is(div, section, article, aside, form)[data-theme]:not(body > *)) > :last-child {
+    margin-block-end: 0;
+  }
 }

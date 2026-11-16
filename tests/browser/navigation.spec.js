@@ -78,6 +78,27 @@ test('breadcrumb matches case-insensitively', async ({ page }) => {
   expect(await style(page, '#crumb ol', 'listStyleType')).toBe('none');
 });
 
+test('a breadcrumb with a translated label is styled as a breadcrumb', async ({ page }) => {
+  expect(await style(page, '#crumb-localized ol', 'display')).toBe('flex');
+  expect(await style(page, '#crumb-localized ol', 'listStyleType')).toBe('none');
+  const sep = await page.evaluate(() => getComputedStyle(document.querySelector('#crumb-localized li + li'), '::before').content);
+  expect(sep).toContain('/');
+  expect(await style(page, '#crumb-localized li[aria-current="page"]', 'textDecorationLine')).toBe('none');
+  const items = await rects(page, '#crumb-localized li');
+  expect(Math.abs(items[1].top - items[0].top)).toBeLessThan(2);
+});
+
+test('an unlabeled nav whose ordered list ends at the current page is a breadcrumb', async ({ page }) => {
+  expect(await style(page, '#crumb-unlabeled ol', 'display')).toBe('flex');
+});
+
+test('other navs with aria-current stay ordinary lists', async ({ page }) => {
+  // Current page in the middle, on a link, or in an unordered list: none of these are breadcrumbs.
+  for (const id of ['steps', 'pager', 'side-list']) {
+    expect(await style(page, `#${id} > :is(ol, ul)`, 'display'), id).toBe('block');
+  }
+});
+
 test('breadcrumb separator is hidden from the accessibility tree', async ({ page }) => {
   const sep = await page.evaluate(() => getComputedStyle(document.querySelector('#crumb li + li'), '::before').content);
   expect(sep).toContain('/');

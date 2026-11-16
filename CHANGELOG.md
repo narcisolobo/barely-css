@@ -32,5 +32,8 @@ Any change to a default value (a token, a spacing step, a color) is listed under
 - Toggle button pressed state: `button[aria-pressed="true"]` gets the secondary fill, a strong border and an inset top edge.
 - Native interactive elements: `details` and `summary`, `dialog` with its backdrop, `[popover]`, `progress` and `meter` (with optimum, suboptimum and even-less-good colors), with forced-colors support.
 - A "Coming from Pico" guide with a variable mapping, linked from the README.
+- A block-level `data-theme` scope (`div`, `section`, `article`, `aside`, `form`) is inset by 1.5 times `--barely-spacing` so its content doesn't touch the painted edge, and a labelled text field outside a form, fieldset or `p` now has the form gap before the next block. A scope directly in `body`, on an inline element or on a control gets no extra padding.
+- Headings in an `aside` step down two levels, to `h6` at the smallest, so a table of contents or footnotes don't compete with the page's sections.
+- A breadcrumb with a label in another language is styled: a `nav` whose `ol` ends in an `li` with `aria-current="page"` counts as a breadcrumb, as well as `nav[aria-label="breadcrumb"]`.
 
 [Unreleased]: https://github.com/narcisolobo/barely-css/commits/main
