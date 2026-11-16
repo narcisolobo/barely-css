@@ -13,9 +13,9 @@ The download link (`barely-css@1.0.0/dist/barely.css`) and the exact-version sni
 
 `1.0.0` is published only when all of these are true.
 
-- [ ] Every element in the baseline table is styled and appears on the demo page in both themes. The demo also includes the nested theme scope and the RTL section.
-- [ ] The axe scan reports no violations on the demo page, and all three contrast layers pass in both themes: token pairs, rendered states, and token propagation.
-- [ ] Both dist files are current with `src/` (`pnpm check:dist`), and the README covers everything listed under Deliverables in the spec.
+- [x] Every element in the baseline table is styled and appears on the demo page in both themes. The demo also includes the nested theme scope and the RTL section.
+- [x] The axe scan reports no violations on the demo page, and all three contrast layers pass in both themes: token pairs, rendered states, and token propagation.
+- [x] Both dist files are current with `src/` (`pnpm check:dist`), and the README covers everything listed under Deliverables in the spec.
 - [ ] The visual regression report for every fixture, engine, theme, and width has been reviewed, and every screenshot looks deliberately designed at 375px, 768px, and 1280px. For 1.0 there is no earlier release, so this review judges the screenshots on their own.
 - [ ] The Playwright suite passes in Chromium, Firefox, and WebKit, including the `file://` check. The demo page has also been checked by hand in current Chrome, Firefox, and Safari.
 - [ ] The demo page has been operated by hand with the keyboard only, without a mouse, in current Chrome, Firefox, and Safari. In Safari this uses Option+Tab. Every control can be reached and used, and focus is always visible.
