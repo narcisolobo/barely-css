@@ -82,6 +82,7 @@ Details worth knowing:
 - Headings inside an `aside` step down two levels (an `h2` is drawn at the `h4` size, and nothing goes below `h6`), so a table of contents or a footnote list does not compete with the page's own sections.
 - Only `body > header nav > ul` runs horizontally. Put one list there, or two for a brand at the start edge and links at the end edge. Rows wrap at narrow widths. Every other `nav` is an ordinary list.
 - `body > header` and `body > footer` are the page masthead and footer. A `header` or `footer` inside an `article` or `section` gets restrained styling instead.
+- A `fieldset` is a group with a rule across its top and no box, and its `legend` is a small heading that sits in that rule, so the rule runs on from the legend to the end edge. This is the browser's own legend placement, so it needs no markup beyond `fieldset` and `legend`, and it mirrors in right-to-left text. Only a `legend` that is the first child of a `fieldset` is styled.
 - A checkbox, radio or switch works with its label either way: wrapped by it (`<label><input> Text</label>`) or followed by a `label for` (`<input id="a"><label for="a">Text</label>`). A `label for` placed before a text field, `select` or `textarea` is spaced like a wrapping label too.
 - A switch is `input[type="checkbox"][role="switch"]`.
 - A toggle button is `button[aria-pressed="true"]`. It is drawn as pressed, with a different fill, a strong border and an inset top edge, so the state is not shown by color alone.

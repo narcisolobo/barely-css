@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fieldsets and legends</title>
+  <link rel="stylesheet" href="../../dist/barely.css">
+</head>
+<body>
+  <header><a href="./">Home</a></header>
+  <main>
+    <h1>Fieldsets and legends</h1>
+
+    <form id="lead-form" action="#" method="post">
+      <fieldset id="lead">
+        <legend>First in its form</legend>
+        <label>Name <input type="text" name="lead-name"></label>
+      </fieldset>
+    </form>
+
+    <form id="f" action="#" method="post">
+      <p id="before">Some text before the groups.</p>
+      <fieldset id="first">
+        <legend>About you</legend>
+        <label>Full name <input type="text" name="name"></label>
+        <label>Email <input type="email" name="email"></label>
+      </fieldset>
+      <fieldset id="second">
+        <legend>Delivery</legend>
+        <label><input type="radio" name="d" checked> In person</label>
+        <label><input type="radio" name="d"> Online</label>
+      </fieldset>
+    </form>
+
+    <fieldset id="alone">
+      <legend>Outside a form</legend>
+      <p>A fieldset does not need a form around it.</p>
+    </fieldset>
+
+    <fieldset id="rtl" dir="rtl">
+      <legend>بياناتك</legend>
+      <label>الاسم <input type="text" name="ar-name"></label>
+    </fieldset>
+
+    <div id="stray"><legend id="stray-legend">A legend outside any fieldset (invalid markup)</legend></div>
+
+    <label id="plain-label">A plain label <input type="text" name="plain"></label>
+    <h2 id="heading">A heading</h2>
+  </main>
+</body>
+</html>

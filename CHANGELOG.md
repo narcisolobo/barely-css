@@ -34,6 +34,7 @@ Any change to a default value (a token, a spacing step, a color) is listed under
 - A "Coming from Pico" guide with a variable mapping, linked from the README.
 - A block-level `data-theme` scope (`div`, `section`, `article`, `aside`, `form`) is inset by 1.5 times `--barely-spacing` so its content doesn't touch the painted edge, and a labelled text field outside a form, fieldset or `p` now has the form gap before the next block. A scope directly in `body`, on an inline element or on a control gets no extra padding.
 - Headings in an `aside` step down two levels, to `h6` at the smallest, so a table of contents or footnotes don't compete with the page's sections.
+- A `fieldset` has a rule across its top, drawn in `--barely-color-border`, with its `legend` notched into the rule as a small heading (heading weight, 1.0625rem), so a group of fields is told apart from the labels inside it. There is no box. The same space sits above it as above a heading, and nothing below its last field. Only a `legend` that is the first child of a `fieldset` is styled.
 - A breadcrumb with a label in another language is styled: a `nav` whose `ol` ends in an `li` with `aria-current="page"` counts as a breadcrumb, as well as `nav[aria-label="breadcrumb"]`.
 
 [Unreleased]: https://github.com/narcisolobo/barely-css/commits/main
